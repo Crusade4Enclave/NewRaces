@@ -123,7 +123,7 @@ public class dbAccountHandler extends dbHandlerBase {
 
 	public void CREATE_SINGLE(String accountName, String password) {
 
-		prepareCallable("CALL singleAccountCreate(`?`,`?`);");
+		prepareCallable("CALL singleAccountCreate(?,?)");
 		setString(1, accountName);
 		setString(2, password);
 		executeUpdate();
