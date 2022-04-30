@@ -12,6 +12,7 @@ package engine.server.login;
 import engine.Enum;
 import engine.Enum.DispatchChannel;
 import engine.Enum.GameObjectType;
+import engine.gameManager.ConfigManager;
 import engine.gameManager.DbManager;
 import engine.gameManager.SessionManager;
 import engine.job.JobScheduler;
@@ -174,12 +175,26 @@ public class LoginServerMsgHandler implements NetMsgHandler {
 
         account = DbManager.AccountQueries.GET_ACCOUNT(uname);
 
+        // Create the account if it doesn't exist and MB_LOGIN_AUTOREG is TRUE;
+        // This is to support MagicBox users without a web hosting skillset.
+
         if (account == null) {
 
-            this.KickToLogin(MBServerStatics.LOGINERROR_INVALID_USERNAME_PASSWORD, "Could not find account (" + uname + ')', clientConnection);
-            Logger.info("Could not find account (" + uname + ')');
-            return;
+            if (ConfigManager.MB_LOGIN_AUTOREG.getValue().equals("FALSE")) {
+                this.KickToLogin(MBServerStatics.LOGINERROR_INVALID_USERNAME_PASSWORD, "Could not find account (" + uname + ')', clientConnection);
+                Logger.info("Could not find account (" + uname + ')');
+                return;
+            }
 
+                Logger.info("AutoRegister: " + uname + "/" + pass);
+                DbManager.AccountQueries.CREATE_SINGLE(uname, pass);
+                account = DbManager.AccountQueries.GET_ACCOUNT(uname);
+
+            if (account == null) {
+                this.KickToLogin(MBServerStatics.LOGINERROR_INVALID_USERNAME_PASSWORD, "Could not find account (" + uname + ')', clientConnection);
+                Logger.info("Could not auto-create (" + uname + ')');
+                return;
+            }
         }
 
         if (account.getLastLoginFailure() + MBServerStatics.RESET_LOGIN_ATTEMPTS_AFTER < System.currentTimeMillis())
