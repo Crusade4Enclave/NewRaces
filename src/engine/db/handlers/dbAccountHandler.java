@@ -121,6 +121,14 @@ public class dbAccountHandler extends dbHandlerBase {
 		executeUpdate();
 	}
 
+	public void CREATE_SINGLE(String accountName, String password) {
+
+		prepareCallable("CALL singleAccountCreate(`?`,`?");
+		setString(1, accountName);
+		setString(2, password);
+		executeUpdate();
+	}
+
 	public Account GET_ACCOUNT(String uname) {
 
 		if (Account.AccountsMap.get(uname) != null)
