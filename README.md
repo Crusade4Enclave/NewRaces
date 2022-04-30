@@ -84,4 +84,4 @@ You should now be able to build the game!
 
 ### What now?
 
-Support is available through the repo Wiki or in the Magicbane Discord server.  Feel free to come in and pick MagicBot's brain! the Magicbane Shadowbane Emulator
+Support is available through the repo Wiki or in the Magicbane Discord server.  Feel free to come in and pick MagicBot's brain!
