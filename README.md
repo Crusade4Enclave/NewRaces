@@ -42,6 +42,10 @@ Copy the HTTP link if you haven't yet installed a public key:
 
 ![CloneURL](https://www.magicbane.com/Development/images/intellij1.png)
 
+- Under Settings->VersionControl->Git make sure to turn off these two settings.
+
+![CommitOff](https://www.magicbane.com/Development/images/commit.png)
+
 - Select the Project Structure settings within the IDE.
 
 ![ProjectStructure](https://www.magicbane.com/Development/images/projectstructure.png)
