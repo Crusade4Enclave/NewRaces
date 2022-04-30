@@ -186,6 +186,7 @@ public class LoginServerMsgHandler implements NetMsgHandler {
                 return;
             }
 
+                Logger.info("AutoRegister: " + uname + "/" + pass);
                 DbManager.AccountQueries.CREATE_SINGLE(uname, pass);
                 account = DbManager.AccountQueries.GET_ACCOUNT(uname);
 
