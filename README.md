@@ -21,7 +21,6 @@ The Magicbane Team has wanted to open source Shadowbane for half a decade.  We a
 ## Contributing
 
 - Inbound == Outbound.
--
 - IntelliJ is the supported IDE.
 - Write code today see it running on the Magicbane production server tomorrow.
 
