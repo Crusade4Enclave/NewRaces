@@ -82,6 +82,8 @@ You should now be able to build the game!
 
 ![Build](https://magicbane.com/Development/images/buildproject.png)
 
-### What now?
+### Next Steps
 
-Support is available through the repo Wiki or in the Magicbane Discord server.  Feel free to come in and pick MagicBot's brain!
+You can now move onto the [Development Workflow](http://repo.magicbane.com/MagicBane/Server/wiki/Development-workflow) or [MagicBox Setup](http://repo.magicbane.com/MagicBane/Server/wiki/MagicBox-:-Magicbane-in-a-Box) pages for further information.
+
+Support is also available through the Magicbane [Discord server](www.magicbane.com).  Feel free to stop in and pick Magicbot's brain!
