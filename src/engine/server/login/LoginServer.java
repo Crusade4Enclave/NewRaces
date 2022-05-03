@@ -271,17 +271,20 @@ public class LoginServer {
 
             String name = ConfigManager.MB_WORLD_NAME.getValue();
 
-            // Find publicIP address for use in worldserver response
-            // message.  Sending the client to an unroutable address
-            // doesn't work so well.
+
+            if (ConfigManager.MB_PUBLIC_ADDR.getValue().equals("0.0.0.0")) {
+
+                // Autoconfigure IP address for use in worldserver response
+                // message.
 
                 URL whatismyip = new URL("http://checkip.amazonaws.com");
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         whatismyip.openStream()));
                 ConfigManager.MB_PUBLIC_ADDR.setValue(in.readLine());
-                Logger.info("Public address: " + ConfigManager.MB_PUBLIC_ADDR.getValue());
+            }
 
-            Logger.info("Magicbane network config: " + ConfigManager.MB_BIND_ADDR.getValue() + ":" + ConfigManager.MB_LOGIN_PORT.getValue());
+            Logger.info("Public address: " + ConfigManager.MB_PUBLIC_ADDR.getValue());
+            Logger.info("Magicbane bind config: " + ConfigManager.MB_BIND_ADDR.getValue() + ":" + ConfigManager.MB_LOGIN_PORT.getValue());
 
             InetAddress addy = InetAddress.getByName(ConfigManager.MB_BIND_ADDR.getValue());
             int port = Integer.parseInt(ConfigManager.MB_LOGIN_PORT.getValue());
