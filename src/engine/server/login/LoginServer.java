@@ -275,8 +275,8 @@ public class LoginServer {
             if (ConfigManager.MB_PUBLIC_ADDR.getValue().equals("0.0.0.0")) {
 
                 // Autoconfigure IP address for use in worldserver response
-                // message.
-
+                // .
+                Logger.info("AUTOCONFIG PUBLIC IP ADDRESS");
                 URL whatismyip = new URL("http://checkip.amazonaws.com");
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         whatismyip.openStream()));
