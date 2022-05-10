@@ -29,6 +29,8 @@ import org.pmw.tinylog.writers.RollingFileWriter;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -85,6 +87,23 @@ public class MagicBot extends ListenerAdapter {
         if (ConfigManager.init() == false) {
             Logger.error("ABORT! Missing config entry!");
             return;
+        }
+
+        if (ConfigManager.MB_PUBLIC_ADDR.getValue().equals("0.0.0.0")) {
+
+            // Autoconfigure IP address for use in worldserver response
+            // .
+            Logger.info("AUTOCONFIG PUBLIC IP ADDRESS");
+            URL whatismyip = null;
+
+            try {
+                whatismyip = new URL("http://checkip.amazonaws.com");
+                BufferedReader in = null;
+                in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+                ConfigManager.MB_PUBLIC_ADDR.setValue(in.readLine());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // Configure Discord essential identifiers
