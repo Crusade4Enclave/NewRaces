@@ -89,23 +89,6 @@ public class MagicBot extends ListenerAdapter {
             return;
         }
 
-        if (ConfigManager.MB_PUBLIC_ADDR.getValue().equals("0.0.0.0")) {
-
-            // Autoconfigure IP address for use in worldserver response
-            // .
-            Logger.info("AUTOCONFIG PUBLIC IP ADDRESS");
-            URL whatismyip = null;
-
-            try {
-                whatismyip = new URL("http://checkip.amazonaws.com");
-                BufferedReader in = null;
-                in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-                ConfigManager.MB_PUBLIC_ADDR.setValue(in.readLine());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         // Configure Discord essential identifiers
 
         discordServerID = Long.parseLong(ConfigManager.MB_MAGICBOT_SERVERID.getValue());
