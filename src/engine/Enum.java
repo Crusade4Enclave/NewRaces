@@ -2416,8 +2416,7 @@ public class Enum {
 
 	public enum CityBoundsType {
 
-		GRID(448),
-		TERRAFORM(544),
+		GRID(640),
 		ZONE(672),
 		SIEGE(814);
 
