@@ -325,8 +325,8 @@ public class EffectsBase {
 						eb.useRampAdd = rs.getBoolean("UseAddFormula");
 						
 						String damageType1 = rs.getString("damageType1");
-						String damageType2 = rs.getString("damageType1");
-						String damageType3 = rs.getString("damageType1");
+						String damageType2 = rs.getString("damageType2");
+						String damageType3 = rs.getString("damageType3");
 						
 						
 						if (damageType1.isEmpty() && damageType2.isEmpty() && damageType3.isEmpty())
