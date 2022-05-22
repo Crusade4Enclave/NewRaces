@@ -359,8 +359,8 @@ public class Zone extends AbstractGameObject {
 
 		if (zone.playerCityID > 0) {
 			writer.put((byte) 1); // Player City - True
-			writer.putFloat(Enum.CityBoundsType.TERRAFORM.extents);
-			writer.putFloat(Enum.CityBoundsType.TERRAFORM.extents);
+			writer.putFloat(Enum.CityBoundsType.ZONE.extents);
+			writer.putFloat(Enum.CityBoundsType.ZONE.extents);
 		} else
 			writer.put((byte) 0); // Player City - False
 
