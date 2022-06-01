@@ -2756,7 +2756,7 @@ public class Enum {
 		AMAZONGUARD(1500,1670, MinionClass.MELEE,"Guard","Amazon"),
 		AMAZONMAGE(1502, 1638, MinionClass.MAGE,"Fury","Amazon"),
 		ARACOIXGUARD(1600,1672,MinionClass.MELEE, "Guard","Aracoix"), //used guard captain equipset.
-		ARACOIXMAGE(1602,000,MinionClass.MAGE,"Adept","Aracoix"),
+		ARACOIXMAGE(1602,885,MinionClass.MAGE,"Adept","Aracoix"),
 		CENTAURGUARD(1650,1642, MinionClass.MELEE,"Guard","Centaur"),
 		CENTAURMAGE(1652, 1640, MinionClass.MAGE,"Druid","Centaur"),
 		DWARVENARCHER(845,1644, MinionClass.ARCHER, "Marksman","Dwarven"),
@@ -2765,7 +2765,7 @@ public class Enum {
 		ELFGUARD(1180,1671, MinionClass.MELEE,"Guard","Elven"), //old 1645
 		ELFMAGE(1182, 1667, MinionClass.MAGE,"Adept","Elven"),
 		FORESTGUARD(1550,1668, MinionClass.MELEE,"Guard","Forest"), //captain changed to guard equipset
-		FORESTMAGE(1552, 000, MinionClass.MAGE,"Adept","Forest"),
+		FORESTMAGE(1552, 436, MinionClass.MAGE,"Adept","Forest"),
 		HOLYGUARD(1525,1658, MinionClass.MELEE,"Guard","Holy Church"),
 		HOLYMAGE(1527, 1646, MinionClass.MAGE,"Prelate","Holy Church"),
 		HUMANARCHER(846,1654,MinionClass.ARCHER, "Archer","Human"),
@@ -2779,7 +2779,7 @@ public class Enum {
 		NORTHMANMAGE(1252, 1650, MinionClass.MAGE,"Runecaster","Northman"),
 		SHADEGUARD(1450,1662, MinionClass.MELEE,"Guard","Shade"),
 		SHADEMAGE(1452, 1664, MinionClass.MAGE,"Adept","Shade"),
-		TEMPLARGUARD(841,000,MinionClass.MELEE,"Marksman","Templar"),
+		TEMPLARGUARD(841,1564,MinionClass.MELEE,"Marksman","Templar"),
 		TEMPLEGUARD(1575,1652, MinionClass.MELEE,"Guard","Temple"),
 		TEMPLEMAGE(1577, 1656, MinionClass.MAGE,"Confessor","Temple"),
 		UNDEADGUARD(980100,1674,MinionClass.MELEE,"Guard","Undead"),
