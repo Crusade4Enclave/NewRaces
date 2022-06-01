@@ -2765,7 +2765,7 @@ public class Enum {
 		ELFGUARD(1180,1671, MinionClass.MELEE,"Guard","Elven"), //old 1645
 		ELFMAGE(1182, 1667, MinionClass.MAGE,"Adept","Elven"),
 		FORESTGUARD(1550,1668, MinionClass.MELEE,"Guard","Forest"), //captain changed to guard equipset
-		FORESTMAGE(1552, 000, MinionClass.MAGE,"Adept","Forest"),
+		FORESTMAGE(1552, 436, MinionClass.MAGE,"Adept","Forest"),
 		HOLYGUARD(1525,1658, MinionClass.MELEE,"Guard","Holy Church"),
 		HOLYMAGE(1527, 1646, MinionClass.MAGE,"Prelate","Holy Church"),
 		HUMANARCHER(846,1654,MinionClass.ARCHER, "Archer","Human"),
