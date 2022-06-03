@@ -4781,8 +4781,11 @@ public void dismissNecroPets() {
 			}finally{
 				this.updateLock.writeLock().unlock();
 			}
+			if(AbstractCharacter.CanFly(this) == false && this.altitude > 0)
+			{
+				GroundPlayer(this);
+			}
 		}
-
 	}
 	@Override
 	public void updateFlight() {
