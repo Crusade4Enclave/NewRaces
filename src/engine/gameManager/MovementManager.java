@@ -374,7 +374,7 @@ public enum MovementManager {
 
 		// if stam less that 2 - time to force a landing
 		if (pc.getStamina() < 10f || !canFly) {
-
+			PlayerCharacter.GroundPlayer(pc);
 			// dont call stop movement here as we want to
 			// preserve endloc
 			//pc.stopMovement();
