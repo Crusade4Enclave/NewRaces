@@ -76,75 +76,108 @@ public abstract class AbstractPowerAction {
 				int token = DbManager.hasher.SBStringHash(IDString);
 				//cache token, used for applying effects.
 				PowersManager.ActionTokenByIDString.put(IDString, token);
-				if (type.equals("ApplyEffect"))
-					apa = new ApplyEffectPowerAction(rs, effects);
-				else if (type.equals("ApplyEffects"))
-					apa = new ApplyEffectsPowerAction(rs, effects);
-				else if (type.equals("DeferredPower"))
-					apa = new DeferredPowerPowerAction(rs, effects);
-				else if (type.equals("DamageOverTime"))
-					apa = new DamageOverTimePowerAction(rs, effects);
-				else if (type.equals("Peek"))
-					apa = new PeekPowerAction(rs);
-				else if (type.equals("Charm"))
-					apa = new CharmPowerAction(rs);
-				else if (type.equals("Fear"))
-					apa = new FearPowerAction(rs);
-				else if (type.equals("Confusion"))
-					apa = new ConfusionPowerAction(rs);
-				else if (type.equals("RemoveEffect"))
-					apa = new RemoveEffectPowerAction(rs);
-				else if (type.equals("Track"))
-					apa = new TrackPowerAction(rs, effects);
-				else if (type.equals("DirectDamage"))
-					apa = new DirectDamagePowerAction(rs, effects);
-				else if (type.equals("Transform"))
-					apa = new TransformPowerAction(rs, effects);
-				else if (type.equals("CreateMob"))
-					apa = new CreateMobPowerAction(rs);
-				else if (type.equals("Invis"))
-					apa = new InvisPowerAction(rs, effects);
-				else if (type.equals("ClearNearbyAggro"))
-					apa = new ClearNearbyAggroPowerAction(rs);
-				else if (type.equals("MobRecall"))
-					apa = new MobRecallPowerAction(rs);
-				else if (type.equals("SetItemFlag"))
-					apa = new SetItemFlagPowerAction(rs);
-				else if (type.equals("SimpleDamage"))
-					apa = new SimpleDamagePowerAction(rs);
-				else if (type.equals("TransferStatOT"))
-					apa = new TransferStatOTPowerAction(rs, effects);
-				else if (type.equals("TransferStat"))
-					apa = new TransferStatPowerAction(rs, effects);
-				else if (type.equals("Teleport"))
-					apa = new TeleportPowerAction(rs);
-				else if (type.equals("TreeChoke"))
-					apa = new TreeChokePowerAction(rs);
-				else if (type.equals("Block"))
-					apa = new BlockPowerAction(rs);
-				else if (type.equals("Resurrect"))
-					apa = new ResurrectPowerAction(rs);
-				else if (type.equals("ClearAggro"))
-					apa = new ClearAggroPowerAction(rs);
-				else if (type.equals("ClaimMine"))
-					apa = new ClaimMinePowerAction(rs);
-				else if (type.equals("Recall"))
-					apa = new RecallPowerAction(rs);
-				else if (type.equals("SpireDisable"))
-					apa = new SpireDisablePowerAction(rs);
-				else if (type.equals("Steal"))
-					apa = new StealPowerAction(rs);
-				else if (type.equals("Summon"))
-					apa = new SummonPowerAction(rs);
-				else if (type.equals("RunegateTeleport"))
-					apa = new RunegateTeleportPowerAction(rs);
-				else if (type.equals("RunegateTeleport"))
-					apa = new RunegateTeleportPowerAction(rs);
-				else if (type.equals("OpenGate"))
-					apa = new OpenGatePowerAction(rs);
-				else {
-					Logger.error("valid type not found for poweraction of ID" + rs.getInt("ID"));
-					continue;
+				apa = null;
+				switch (type)
+				{
+					default:
+						Logger.error("valid type not found for poweraction of ID" + rs.getInt("ID"));
+						break;
+					case "ApplyEffect":
+						apa = new ApplyEffectPowerAction(rs, effects);
+						break;
+					case "ApplyEffects":
+						apa = new ApplyEffectsPowerAction(rs, effects);
+						break;
+					case "DeferredPower":
+						apa = new DeferredPowerPowerAction(rs, effects);
+						break;
+					case "DamageOverTime":
+						apa = new DamageOverTimePowerAction(rs, effects);
+						break;
+					case "Peek":
+						apa = new PeekPowerAction(rs);
+						break;
+					case "Charm":
+						apa = new CharmPowerAction(rs);
+						break;
+					case "Fear":
+						apa = new FearPowerAction(rs);
+						break;
+					case "Confusion":
+						apa = new ConfusionPowerAction(rs);
+						break;
+					case "RemoveEffect":
+						apa = new RemoveEffectPowerAction(rs);
+						break;
+					case "Track":
+						apa = new TrackPowerAction(rs, effects);
+						break;
+					case "DirectDamage":
+						apa = new DirectDamagePowerAction(rs, effects);
+						break;
+					case "Transform":
+						apa = new TransformPowerAction(rs, effects);
+						break;
+					case "CreateMob":
+						apa = new CreateMobPowerAction(rs);
+						break;
+					case "Invis":
+						apa = new InvisPowerAction(rs, effects);
+						break;
+					case "ClearNearbyAggro":
+						apa = new ClearNearbyAggroPowerAction(rs);
+						break;
+					case "MobRecall":
+						apa = new MobRecallPowerAction(rs);
+						break;
+					case "SetItemFlag":
+						apa = new SetItemFlagPowerAction(rs);
+						break;
+					case "SimpleDamage":
+						apa = new SimpleDamagePowerAction(rs);
+						break;
+					case "TransferStatOT":
+						apa = new TransferStatOTPowerAction(rs, effects);
+						break;
+					case "TransferStat":
+						apa = new TransferStatPowerAction(rs, effects);
+						break;
+					case "Teleport":
+						apa = new TeleportPowerAction(rs);
+						break;
+					case "TreeChoke":
+						apa = new TreeChokePowerAction(rs);
+						break;
+					case "Block":
+						apa = new BlockPowerAction(rs);
+						break;
+					case "Resurrect":
+						apa = new ResurrectPowerAction(rs);
+						break;
+					case "ClearAggro":
+						apa = new ClearAggroPowerAction(rs);
+						break;
+					case "ClaimMine":
+						apa = new ClaimMinePowerAction(rs);
+						break;
+					case "Recall":
+						apa = new RecallPowerAction(rs);
+						break;
+					case "SpireDisable":
+						apa = new SpireDisablePowerAction(rs);
+						break;
+					case "Steal":
+						apa = new StealPowerAction(rs);
+						break;
+					case "Summon":
+						apa = new SummonPowerAction(rs);
+						break;
+					case "RunegateTeleport":
+						apa = new RunegateTeleportPowerAction(rs);
+						break;
+					case "OpenGate":
+						apa = new OpenGatePowerAction(rs);
+						break;
 				}
 				powerActions.put(IDString, apa);
 				powerActionsByID.put(apa.UUID, apa);
