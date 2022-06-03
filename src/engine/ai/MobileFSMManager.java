@@ -76,16 +76,11 @@ public class MobileFSMManager {
 			ThreadUtils.sleep(1);
 
 			if (System.currentTimeMillis() > mobPulse) {
-				
-				HashSet<Integer> auditMobs = new HashSet<Integer>();
 
 				for (Zone zone : ZoneManager.getAllZones()) {
 
 					for (Mob mob : zone.zoneMobSet) {
-						
-						if (auditMobs.contains(mob.getObjectUUID()))
-							continue;
-						auditMobs.add(mob.getObjectUUID());
+
 						try {
 							if (mob != null)
 								MobileFSM.run(mob);
