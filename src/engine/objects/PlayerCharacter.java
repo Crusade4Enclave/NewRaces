@@ -4782,10 +4782,9 @@ public void dismissNecroPets() {
 				this.updateLock.writeLock().unlock();
 			}
 			//temp removal
-			//if(AbstractCharacter.CanFly(this) == false && this.altitude > 0)
-			//{
-			//	GroundPlayer(this);
-			//}
+			if(AbstractCharacter.CanFly(this) == false && this.altitude > 0)
+				GroundPlayer(this);
+
 		}
 	}
 	@Override
