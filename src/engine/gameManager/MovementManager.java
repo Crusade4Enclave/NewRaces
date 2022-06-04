@@ -18,7 +18,6 @@ import engine.exception.MsgSendException;
 import engine.job.JobContainer;
 import engine.job.JobScheduler;
 import engine.jobs.ChangeAltitudeJob;
-import engine.jobs.FlightJob;
 import engine.math.Bounds;
 import engine.math.Vector3f;
 import engine.math.Vector3fImmutable;
@@ -339,61 +338,7 @@ public enum MovementManager {
 
 	}
 
-	//Update for when the character is in flight
-	public static void updateFlight(PlayerCharacter pc, ChangeAltitudeMsg msg, int duration) {
-		if (pc == null)
-			return;
 
-		// clear flight timer job as we are about to update stuff and submit a new job
-		pc.clearTimer(flightTimerJobName);
-
-		if (!pc.isActive()) {
-			pc.setAltitude(0);
-			pc.setDesiredAltitude(0);
-			pc.setTakeOffTime(0);
-			return;
-		}
-
-		// Check to see if we are mid height change
-		JobContainer cjc = pc.getTimers().get(changeAltitudeTimerJobName);
-		if (cjc != null) {
-			addFlightTimer(pc, msg, MBServerStatics.FLY_FREQUENCY_MS);
-			return;
-		}
-
-		// Altitude is zero, do nothing
-		if (pc.getAltitude() < 1)
-			return;
-
-		//make sure player is still allowed to fly
-		boolean canFly = false;
-		PlayerBonuses bonus = pc.getBonuses();
-
-		if (bonus != null && !bonus.getBool(ModType.NoMod, SourceType.Fly) && bonus.getBool(ModType.Fly, SourceType.None) && pc.isAlive())
-			canFly = true;
-
-		// if stam less that 2 - time to force a landing
-		if (pc.getStamina() < 10f || !canFly) {
-			PlayerCharacter.GroundPlayer(pc);
-			// dont call stop movement here as we want to
-			// preserve endloc
-			//pc.stopMovement();
-			// sync world location
-			pc.setLoc(pc.getLoc());
-			// force a landing
-			msg.setStartAlt(pc.getAltitude());
-			msg.setTargetAlt(0);
-			msg.setAmountToMove(pc.getAltitude());
-			msg.setUp(false);
-			DispatchMessage.dispatchMsgToInterestArea(pc, msg, DispatchChannel.PRIMARY, MBServerStatics.CHARACTER_LOAD_RANGE, true, false);
-			MovementManager.addChangeAltitudeTimer(pc, msg.getStartAlt(), msg.getTargetAlt(), (int) (MBServerStatics.HEIGHT_CHANGE_TIMER_MS * pc.getAltitude()));
-			pc.setAltitude(msg.getStartAlt() - 10);
-
-		} else //Add a new flight timer to check stam / force land
-			if (pc.getAltitude() > 0)
-				addFlightTimer(pc, msg, MBServerStatics.FLY_FREQUENCY_MS);
-
-	}
 
 	public static void finishChangeAltitude(AbstractCharacter ac, float targetAlt) {
 
@@ -529,27 +474,6 @@ public enum MovementManager {
 			member.setEndLoc(destination);
 		}
 	}
-
-	//Getting rid of flgith timer.
-
-	public static void addFlightTimer(PlayerCharacter pc, ChangeAltitudeMsg msg, int duration) {
-		if (pc == null || pc.getTimers() == null)
-			return;
-		if (!pc.getTimers().containsKey(flightTimerJobName)) {
-			FlightJob ftj = new FlightJob(pc, msg, duration);
-			JobContainer jc = JobScheduler.getInstance().scheduleJob(ftj, duration);
-			pc.getTimers().put(flightTimerJobName, jc);
-		}
-	}
-
-	public static void addChangeAltitudeTimer(PlayerCharacter pc, float startAlt, float targetAlt, int duration) {
-		if (pc == null || pc.getTimers() == null)
-			return;
-		ChangeAltitudeJob catj = new ChangeAltitudeJob(pc, startAlt, targetAlt);
-		JobContainer jc = JobScheduler.getInstance().scheduleJob(catj, duration);
-		pc.getTimers().put(changeAltitudeTimerJobName, jc);
-	}
-
 	
 	public static void translocate(AbstractCharacter teleporter, Vector3fImmutable targetLoc, Regions region) {
 
@@ -557,15 +481,10 @@ public enum MovementManager {
 		if (targetLoc == null)
 			return;
 
-
 		Vector3fImmutable oldLoc = new Vector3fImmutable(teleporter.getLoc());
-			
-		
+
 			teleporter.stopMovement(targetLoc);
-			
 			teleporter.setRegion(region);
-		
-	
 
 			//mobs ignore region sets for now.
 			if (teleporter.getObjectType().equals(GameObjectType.Mob)){
@@ -588,17 +507,11 @@ public enum MovementManager {
 	
 	public static void translocateToObject(AbstractCharacter teleporter, AbstractWorldObject worldObject) {
 
-
-		
 		Vector3fImmutable targetLoc = teleporter.getLoc();
 
 		Vector3fImmutable oldLoc = new Vector3fImmutable(teleporter.getLoc());
 
-			teleporter.stopMovement(teleporter.getLoc());
-
-		
-		
-	
+		teleporter.stopMovement(teleporter.getLoc());
 
 			//mobs ignore region sets for now.
 			if (teleporter.getObjectType().equals(GameObjectType.Mob)){
@@ -609,6 +522,7 @@ public enum MovementManager {
 				DispatchMessage.dispatchMsgToInterestArea(oldLoc, teleporter, msg, DispatchChannel.PRIMARY, MBServerStatics.CHARACTER_LOAD_RANGE, false, false);
 				return;
 			}
+
 		boolean collide = false;
 		int maxFloor = -1;
 		int buildingID = 0;
@@ -619,6 +533,7 @@ public enum MovementManager {
 			if (collide)
 				break;
 		}
+
 		if (!collide) {
 			teleporter.setInBuildingID(0);
 			teleporter.setInBuilding(-1);
@@ -632,7 +547,6 @@ public enum MovementManager {
 				teleporter.setInFloorID(0);
 			}
 		}
-
 
 		TeleportToPointMsg msg = new TeleportToPointMsg(teleporter, targetLoc.getX(), targetLoc.getY(), targetLoc.getZ(), 0, -1, -1);
 		//we shouldnt need to send teleport message to new area, as loadjob should pick it up.
