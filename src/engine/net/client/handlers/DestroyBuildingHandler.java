@@ -57,7 +57,7 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 		if (!BuildingManager.PlayerCanControlNotOwner(building, pc))
 			return true;
 Bane bane = city.getBane();
-if(bane.getSiegePhase() != Enum.SiegePhase.WAR && bane != null) {
+if(bane.getSiegePhase() == Enum.SiegePhase.WAR && bane != null) {
 	ErrorPopupMsg.sendErrorPopup(pc, 171);
 	return true;
 }
