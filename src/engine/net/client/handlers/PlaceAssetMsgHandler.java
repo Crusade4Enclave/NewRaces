@@ -92,7 +92,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		if (buildingList == null) {
 			Logger.error("Player " + playerCharacter.getCombinedName()
-			+ " null building list on deed use");
+					+ " null building list on deed use");
 			PlaceAssetMsg.sendPlaceAssetError(origin, 1, "A Serious error has occurred. Please post details for to ensure transaction integrity");
 			closePlaceAssetWindow(origin);
 			return true;
@@ -115,7 +115,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		if (buildingBlueprint == null) {
 			Logger.error("Player " + playerCharacter.getCombinedName()
-			+ " null blueprint UUID: " + buildingList.getBlueprintUUID() + " on deed use");
+					+ " null blueprint UUID: " + buildingList.getBlueprintUUID() + " on deed use");
 			PlaceAssetMsg.sendPlaceAssetError(origin, 1, "A Serious error has occurred. Please post details for to ensure transaction integrity");
 			closePlaceAssetWindow(origin);
 			return true;
@@ -130,66 +130,66 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		boolean close = true;
 		lock.writeLock().lock();
-
+		boolean isSiege = false;
 		try {
 			switch (buildingBlueprint.getBuildingGroup()) {
 
-			case TOL:
-				if (contract == null)
+				case TOL:
+					if (contract == null)
+						break;
+					buildingCreated = placeTreeOfLife(playerCharacter, origin, msg);
 					break;
-				buildingCreated = placeTreeOfLife(playerCharacter, origin, msg);
-				break;
-			case WAREHOUSE:
-				if (contract == null)
+				case WAREHOUSE:
+					if (contract == null)
+						break;
+					if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+						break;
+					buildingCreated = placeWarehouse(playerCharacter, origin, msg);
 					break;
-				if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+				case SIEGETENT:
+				case BULWARK:
+					if (contract == null)
+						break;
+					if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+						break;
+					buildingCreated = placeSiegeEquip(playerCharacter, origin, msg);
 					break;
-				buildingCreated = placeWarehouse(playerCharacter, origin, msg);
-				break;
-			case SIEGETENT:
-			case BULWARK:
-				if (contract == null)
+				case SPIRE:
+					if (contract == null)
+						break;
+					if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+						break;
+					buildingCreated = placeSpire(playerCharacter, origin, msg);
 					break;
-				if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+				case SHRINE:
+					if (contract == null)
+						break;
+					if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+						break;
+					buildingCreated = placeShrine(playerCharacter, origin, msg);
 					break;
-				buildingCreated = placeSiegeEquip(playerCharacter, origin, msg);
-				break;
-			case SPIRE:
-				if (contract == null)
+				case BARRACK:
+					if (contract == null)
+						break;
+					if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+						break;
+					buildingCreated = placeBarrack(playerCharacter, origin, msg);
 					break;
-				if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+				case WALLSTRAIGHT:
+				case WALLCORNER:
+				case SMALLGATE:
+				case ARTYTOWER:
+				case WALLSTAIRS:
+					buildingCreated = placeCityWalls(playerCharacter, origin, msg);
+					close = false;
 					break;
-				buildingCreated = placeSpire(playerCharacter, origin, msg);
-				break;
-			case SHRINE:
-				if (contract == null)
+				default:
+					if (contract == null)
+						break;
+					if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
+						break;
+					buildingCreated = placeSingleBuilding(playerCharacter, origin, msg);
 					break;
-				if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
-					break;
-				buildingCreated = placeShrine(playerCharacter, origin, msg);
-				break;
-			case BARRACK:
-				if (contract == null)
-					break;
-				if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
-					break;
-				buildingCreated = placeBarrack(playerCharacter, origin, msg);
-				break;
-			case WALLSTRAIGHT:
-			case WALLCORNER:
-			case SMALLGATE:
-			case ARTYTOWER:
-			case WALLSTAIRS:
-				buildingCreated = placeCityWalls(playerCharacter, origin, msg);
-				close = false;
-				break;
-			default:
-				if (contract == null)
-					break;
-				if (!playerCharacter.getCharItemManager().doesCharOwnThisItem(contract.getObjectUUID()))
-					break;
-				buildingCreated = placeSingleBuilding(playerCharacter, origin, msg);
-				break;
 			}
 		} catch (Exception e) {
 			Logger.error("PlaceAssetHandler", e.getMessage());
@@ -230,7 +230,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		buildingList = msg.getFirstPlacementInfo();
 
 		serverZone = ZoneManager.findSmallestZone(buildingList.getLoc());
-
 		// Early exit if something went horribly wrong
 		// with locating the current or zone
 
@@ -346,125 +345,125 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			City attackerCity = null;
 			if (bane != null)
 				attackerCity = bane.getCity();
-			
+
 			if (attackerCity != null)
 				if (buildingList.getLoc().isInsideCircle(attackerCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
-				serverCity = attackerCity;
+					serverCity = attackerCity;
 		}
 		//no city found for attacker city,
 		//check if defender city
-		
+
 		if (serverCity == null){
 			if (player.getGuild().getOwnedCity() != null)
 				if (buildingList.getLoc().isInsideCircle(player.getGuild().getOwnedCity().getLoc(), Enum.CityBoundsType.SIEGE.extents))
 					serverCity = player.getGuild().getOwnedCity();
 		}
-		
-		
+
+
 
 		if ((serverCity != null) &&
-		    (serverCity.getBane() != null)) {
+				(serverCity.getBane() != null)) {
 
 			// Set the server zone to the city zone in order to account for being inside
 			// the siege bounds buffer area
 
 			serverZone = serverCity.getParent();
 
-				if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild()) == false)
-						&& (player.getGuild().equals(serverCity.getGuild()) == false)) {
-					PlaceAssetMsg.sendPlaceAssetError(origin, 54, ""); // Must belong to attacker or defender
-					return false;
-				}
+			if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild()) == false)
+					&& (player.getGuild().equals(serverCity.getGuild()) == false)) {
+				PlaceAssetMsg.sendPlaceAssetError(origin, 54, ""); // Must belong to attacker or defender
+				return false;
+			}
 		}
-		
+
 		// cant place siege equipment off city zone.
-		
-		
+
+
 		// Create the siege Building
 
-				siegeBuilding = createStructure(player, msg.getFirstPlacementInfo(), serverZone);
-				if (serverCity == null)
-					return true;
-				// Oops something went really wrong
+		siegeBuilding = createStructure(player, msg.getFirstPlacementInfo(), serverZone);
+		if (serverCity == null)
+			return true;
+		// Oops something went really wrong
 
-				if (siegeBuilding == null)
-					return false;
+		if (siegeBuilding == null)
+			return false;
 
-				
-				if (serverCity.getBane() == null)
-					return true;
-				
+
+		if (serverCity.getBane() == null)
+			return true;
+
 		// If there is an bane placed, we protect 2x the stone rank's worth of attacker assets
 		// and 1x the tree rank's worth of assets automatically
-				
-				HashSet<AbstractWorldObject> awoList = WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
 
-				
-				
+		HashSet<AbstractWorldObject> awoList = WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
+
+
+
 		for (AbstractWorldObject awo : awoList) {
 			Building building = (Building)awo;
-			
+
 			if (building.getBlueprint() != null)
 				if (!building.getBlueprint().isSiegeEquip())
 					continue;
 
 			if (!building.getLoc().isInsideCircle(serverCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
 				continue;
-			
+
 			if (building.getGuild() == null)
 				continue;
-			
+
 			if (building.getGuild().isErrant())
 				continue;
-			
+
 
 			if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 				continue;
 
-				// Only count auto protected buildings
-				if (building.getProtectionState() != ProtectionState.PROTECTED)
-					continue;
+			// Only count auto protected buildings
+			if (building.getProtectionState() != ProtectionState.PROTECTED)
+				continue;
 
-				if (building.getGuild().equals(serverCity.getGuild()))
-					numDefenderBuildings++;
-				else
-				if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-					numAttackerBuildings++;
+			if (building.getGuild().equals(serverCity.getGuild()))
+				numDefenderBuildings++;
+			else
+			if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
+				numAttackerBuildings++;
 
-			
+
 		}
 
 		// Validate bane limits on siege assets
 
 		if (serverCity.getBane() != null)
-		if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild())) &&
-				(numAttackerBuildings >= serverCity.getBane().getStone().getRank() * 2)) {
-			return true;
-		}
+			if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild())) &&
+					(numAttackerBuildings >= serverCity.getBane().getStone().getRank() * 2)) {
+				return true;
+			}
 
 		if ((player.getGuild().equals(serverCity.getGuild())) &&
 				(numDefenderBuildings >= serverCity.getTOL().getRank())) {
 			return true;
 		}
-		
-		
+
+
 
 		// passes validation: can assign auto-protection to war asset
-		
-		if (serverCity.getBane() != null)
-		if (serverCity.isLocationOnCityGrid(siegeBuilding.getBounds()))
-			if (player.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-				return true;
-				
-		
 
-		
-		
+		if (serverCity.getBane() != null)
+			if (serverCity.isLocationOnCityGrid(siegeBuilding.getBounds()))
+				if (player.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
+					return true;
+
+
+
+
+
 
 		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
 		// No bane placed.  We're done!
 
-		
+
 		return true;
 	}
 
@@ -507,8 +506,8 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		}
 
 		Vector3fImmutable plantLoc = new Vector3fImmutable(treeInfo.getLoc().x,
-		                                                   serverZone.getHeightMap().getInterpolatedTerrainHeight(treeInfo.getLoc()),
-															treeInfo.getLoc().z);
+				serverZone.getHeightMap().getInterpolatedTerrainHeight(treeInfo.getLoc()),
+				treeInfo.getLoc().z);
 
 		cityObjects = DbManager.CityQueries.CREATE_CITY(playerCharacter.getObjectUUID(), serverZone.getObjectUUID(),
 				serverRealm.getRealmID(),
@@ -527,18 +526,18 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		for (AbstractGameObject gameObject : cityObjects) {
 
 			switch (gameObject.getObjectType()) {
-			case Building:
-				treeObject = (Building) gameObject;
-				treeObject.runAfterLoad();
-				break;
-			case City:
-				cityObject = (City) gameObject;
-				break;
-			case Zone:
-				cityZone = (Zone) gameObject;
-				break;
-			default:
-				// log some error here? *** Refactor
+				case Building:
+					treeObject = (Building) gameObject;
+					treeObject.runAfterLoad();
+					break;
+				case City:
+					cityObject = (City) gameObject;
+					break;
+				case Zone:
+					cityZone = (Zone) gameObject;
+					break;
+				default:
+					// log some error here? *** Refactor
 			}
 		}
 
@@ -562,7 +561,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		ZoneManager.addZone(cityZone.getObjectUUID(), cityZone);
 		ZoneManager.addPlayerCityZone(cityZone);
 		serverZone.addNode(cityZone);
-		
+
 		cityZone.generateWorldAltitude();
 
 		cityObject.setParent(cityZone);
@@ -708,7 +707,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		}
 
 		blueprint = Blueprint.getBlueprint(msg.getFirstPlacementInfo().getBlueprintUUID());
-		
+
 		if (blueprint == null){
 			return false;
 		}
@@ -716,7 +715,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		for (Building building : serverZone.zoneBuildingSet) {
 			if (building.getBlueprint() == null)
 				continue;
-			
+
 			if (building.getBlueprint().getBuildingGroup() == BuildingGroup.SHRINE) {
 				if (building.getBlueprintUUID() == blueprint.getMeshForRank(0)) {
 					PlaceAssetMsg.sendPlaceAssetError(origin, 43, "");  // "shrine of that type exists"
@@ -811,13 +810,13 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		if (serverZone == null)
 			return false;
-		
-		
-			if (player.getCharItemManager().getGoldTrading() > 0){
-				ErrorPopupMsg.sendErrorPopup(player, 195);
-				return false;
-			}
-		
+
+
+		if (player.getCharItemManager().getGoldTrading() > 0){
+			ErrorPopupMsg.sendErrorPopup(player, 195);
+			return false;
+		}
+
 
 		// Method checks validation conditions arising when placing
 		// buildings.  Player must be on a city grid, must be
@@ -956,7 +955,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 	// Method validates the location we have selected for our new city
 
 	private static boolean validateTreeOfLifePlacement(PlayerCharacter playerCharacter, Realm serverRealm, Zone serverZone,
-			ClientConnection origin, PlaceAssetMsg msg) {
+													   ClientConnection origin, PlaceAssetMsg msg) {
 
 		PlacementInfo placementInfo = msg.getFirstPlacementInfo();
 
@@ -995,7 +994,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		if (
 				(realmType.equals(RealmType.MAELSTROM)) ||
-				(realmType.equals(RealmType.OBLIVION))) {
+						(realmType.equals(RealmType.OBLIVION))) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 57, playerCharacter.getName()); // No building may be placed within this territory
 			return false;
 		}
@@ -1107,7 +1106,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		float buildingRotation = buildingInfo.getRot().y;
 		float vendorRotation = buildingInfo.getW();
 
-		
+
 		ArrayList<AbstractGameObject> shrineObjects = DbManager.ShrineQueries.CREATE_SHRINE(
 				currentZone.getObjectUUID(), player.getObjectUUID(), blueprint.getName(), blueprint.getMeshForRank(0),
 				localLoc, 1.0f, blueprint.getMaxHealth(0), ProtectionState.PROTECTED, 0, 0,
@@ -1121,20 +1120,20 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		for (AbstractGameObject ago : shrineObjects) {
 
 			switch (ago.getObjectType()) {
-			case Building:
-				newMesh = (Building) ago;
-				newMesh.runAfterLoad();
-				newMesh.setObjectTypeMask(MBServerStatics.MASK_BUILDING);
-				MaintenanceManager.setMaintDateTime(newMesh, LocalDateTime.now().plusDays(7));
-				WorldGrid.addObject(newMesh, player);
-				break;
-			case Shrine:
-				newShrine = (Shrine) ago;
-				newShrine.getShrineType().addShrineToServerList(newShrine);
-				break;
-			default:
-				PlaceAssetMsg.sendPlaceAssetError(player.getClientConnection(), 1, "A Serious error has occurred. Please post details for to ensure transaction integrity");
-				break;
+				case Building:
+					newMesh = (Building) ago;
+					newMesh.runAfterLoad();
+					newMesh.setObjectTypeMask(MBServerStatics.MASK_BUILDING);
+					MaintenanceManager.setMaintDateTime(newMesh, LocalDateTime.now().plusDays(7));
+					WorldGrid.addObject(newMesh, player);
+					break;
+				case Shrine:
+					newShrine = (Shrine) ago;
+					newShrine.getShrineType().addShrineToServerList(newShrine);
+					break;
+				default:
+					PlaceAssetMsg.sendPlaceAssetError(player.getClientConnection(), 1, "A Serious error has occurred. Please post details for to ensure transaction integrity");
+					break;
 			}
 		}
 
@@ -1172,7 +1171,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		float vendorRotation = buildingInfo.getW();
 		DateTime completionDate = DateTime.now().plusHours(blueprint.getRankTime(1));
 
-		
+
 		newMesh = DbManager.BuildingQueries.CREATE_BUILDING(
 				currentZone.getObjectUUID(), player.getObjectUUID(), blueprint.getName(), blueprint.getMeshForRank(0),
 				localLoc, 1.0f, blueprint.getMaxHealth(0), ProtectionState.PROTECTED, 0, 0,
@@ -1249,6 +1248,85 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		RealmType currentRealm;
 
+		if(Blueprint.getBlueprint(placementInfo.getBlueprintUUID()).isSiegeEquip() == false)
+		{
+			if (serverZone.isPlayerCity() == false) {
+				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				return false;
+			}
+			City city = ZoneManager.getCityAtLocation(placementInfo.getLoc());
+
+			if (player.getGuild().equals(city.getGuild()) == false) {
+				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				return false;
+			}
+			if (city.isLocationOnCityGrid(placementInfo.getLoc()) == false) {
+				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				return false;
+			}
+		}
+		else
+		{
+			City city = ZoneManager.getCityAtLocation(placementInfo.getLoc());
+
+			if(city == null)
+			{
+				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				return false;
+			}
+			Bane bane = city.getBane();
+			//check if player is owner/IC of tree or bane
+			if (player.getGuild().equals(city.getGuild()) == true)
+			{
+				//is from owners guild
+				if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
+				{
+					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					return false;
+				}
+			}
+			else
+			{
+				//is not from owners guild
+				if(bane == null)
+				{
+					//bane was null
+					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					return false;
+				}
+				if(city == null)
+				{
+					//city was null
+					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					return false;
+				}
+				//check if player is from siege guild
+				if(player.getGuild().equals(bane.getOwner().getGuild()) == false)
+				{
+					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					return false;
+				}
+
+				//check if player is GL or IC of the bane guild
+				if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
+				{
+					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					return false;
+				}
+
+				//cannot place on grid until bane is live
+				if(bane.getSiegePhase() != SiegePhase.WAR && city.isLocationOnCityGrid(placementInfo.getLoc()) == true)
+				{
+					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					return false;
+				}
+				if(city.isLocationWithinSiegeBounds(placementInfo.getLoc()) == false && city.isLocationOnCityZone(placementInfo.getLoc()) == false)
+				{
+					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					return false;
+				}
+			}
+		}
 		// Retrieve the building details we're placing
 
 		if (serverZone.isNPCCity() == true) {
@@ -1259,7 +1337,14 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// Errant guilds cannot place assets
 
 		if (player.getGuild().getGuildState() == GuildState.Errant) {
-			PlaceAssetMsg.sendPlaceAssetError(origin, 1, "Only soverign or sworn guilds may place assets.");
+			PlaceAssetMsg.sendPlaceAssetError(origin, 1, "Only sovereign or sworn guilds may place assets.");
+			return false;
+		}
+
+		// Player must be GL or IC of a guild to place buildings.
+
+		if (GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false) {
+			PlaceAssetMsg.sendPlaceAssetError(origin, 10, ""); // You must be a guild leader
 			return false;
 		}
 
@@ -1282,7 +1367,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		if (
 				(currentRealm.equals(RealmType.MAELSTROM)) ||
-				(currentRealm.equals(RealmType.OBLIVION))) {
+						(currentRealm.equals(RealmType.OBLIVION))) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName()); // No building may be placed within this territory
 			return false;
 		}
@@ -1373,8 +1458,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 				PlaceAssetMsg.sendPlaceAssetError(origin, 9, "");  //You must be a guild member to place this asset
 				return false;
 			}
-
 		return true;
 	}
-
 }

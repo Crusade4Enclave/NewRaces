@@ -2416,9 +2416,9 @@ public class Enum {
 
 	public enum CityBoundsType {
 
-		GRID(576),
-		ZONE(640),
-		SIEGE(814);
+		GRID(512),
+		ZONE(576),
+		SIEGE(1040);
 
 		public final float extents;
 
