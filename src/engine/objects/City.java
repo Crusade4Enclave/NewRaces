@@ -1019,7 +1019,6 @@ public class City extends AbstractWorldObject {
 
 			if (!this.isLocationOnCityZone(player.getLoc()))
 				continue;
-
 			// Apply safehold affect to player if needed
 
 			if ((this.isSafeHold == 1))
