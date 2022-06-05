@@ -8,6 +8,7 @@ import engine.gameManager.BuildingManager;
 import engine.net.client.ClientConnection;
 import engine.net.client.msg.ClientNetMsg;
 import engine.net.client.msg.DestroyBuildingMsg;
+import engine.net.client.msg.PlaceAssetMsg;
 import engine.objects.*;
 
 /*
@@ -56,6 +57,7 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 			return true;
 Bane bane = city.getBane();
 if(bane.getSiegePhase() == Enum.SiegePhase.WAR && bane != null) {
+	PlaceAssetMsg.sendPlaceAssetError(origin, 171, pc.getName());
 	return true;
 }
 		// Can't destroy a tree of life
