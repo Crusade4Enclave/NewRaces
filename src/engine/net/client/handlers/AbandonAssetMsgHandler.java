@@ -12,6 +12,8 @@ import engine.net.client.msg.ErrorPopupMsg;
 import engine.objects.*;
 import org.pmw.tinylog.Logger;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /*
  * @Author:
  * @Summary: Processes application protocol message which processes
@@ -92,7 +94,23 @@ public class AbandonAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Trees require special handling beyond an individual building
 		if ((building.getBlueprint().getBuildingGroup() == BuildingGroup.TOL))
+		{
+			// CHECK IF GUILD HAS A BANE DROPPED
+			City city = ZoneManager.getCityAtLocation(building.getLoc());
+			if(city.getGuild().isNation() == true)
+			{
+				//nations cant abandon their tree
+				ErrorPopupMsg.sendErrorMsg(player, "Nations Cannot Abandon Their Capital!");
+				return true;
+			}
+			if(Bane.getBaneByAttackerGuild(city.getGuild()) != null)
+			{
+				ErrorPopupMsg.sendErrorMsg(player, "You Cannot Abandon Your Tree With An Active Siege!");
+				return true;
+			}
+
 			AbandonAllCityObjects(player, building);
+		}
 		else
 			AbandonSingleAsset(player, building);
 
