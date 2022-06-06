@@ -16,10 +16,12 @@ import engine.Enum;
 import engine.net.NetMsgHandler;
 import engine.server.login.LoginServer;
 import engine.server.world.WorldServer;
+import jdk.nashorn.internal.runtime.regexp.joni.ast.StringNode;
 import org.pmw.tinylog.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public enum ConfigManager {
 
@@ -47,6 +49,8 @@ public enum ConfigManager {
 
     MB_LOGIN_PORT,
     MB_LOGIN_AUTOREG,
+    MB_LOGIN_FNAME_REGEX,
+
     MB_MAJOR_VER,
     MB_MINOR_VER,
 
@@ -87,6 +91,7 @@ public enum ConfigManager {
     public static NetMsgHandler handler;
     public static WorldServer worldServer;
     public static LoginServer loginServer;
+    public static Map<ConfigManager, Pattern> regex = new HashMap<>();
 
     // Called at bootstrap: ensures that all config values are loaded.
 
@@ -102,6 +107,10 @@ public enum ConfigManager {
                 Logger.error("Update your MagicBox: docker pull magicbane/magicbox:latest");
                 return false;
             }
+
+            // compile regex here
+
+            regex.put(MB_LOGIN_FNAME_REGEX, Pattern.compile(MB_LOGIN_FNAME_REGEX.getValue()));
 
       return true;
     }

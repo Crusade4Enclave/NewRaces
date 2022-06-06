@@ -9,6 +9,7 @@
 
 package engine.util;
 
+import engine.gameManager.ConfigManager;
 import engine.server.MBServerStatics;
 
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public class MiscUtils {
 				|| (firstName.length() < MBServerStatics.MIN_NAME_LENGTH)) {
 			return true;
 		}
-		return (!firstNameRegex.matcher(firstName).matches());
+		    return (!ConfigManager.regex.get(ConfigManager.MB_LOGIN_FNAME_REGEX).matcher(firstName).matches());
 	}
 
 	public static boolean checkIfLastNameInvalid(String lastName) {
