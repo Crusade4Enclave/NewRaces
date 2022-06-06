@@ -180,7 +180,7 @@ public class LoginServerMsgHandler implements NetMsgHandler {
 
         if (account == null) {
 
-            if (ConfigManager.MB_LOGIN_AUTOREG.getValue().equals("FALSE")) {
+            if (ConfigManager.MB_LOGIN_AUTOREG.getValue().equalsIgnoreCase("false")) {
                 this.KickToLogin(MBServerStatics.LOGINERROR_INVALID_USERNAME_PASSWORD, "Could not find account (" + uname + ')', clientConnection);
                 Logger.info("Could not find account (" + uname + ')');
                 return;

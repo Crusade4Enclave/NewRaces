@@ -349,7 +349,7 @@ public enum MaintenanceManager {
 
         // Run maintenance on player buildings
 
-        if ((boolean)  ConfigManager.MB_WORLD_MAINTENANCE.getValue().equals("true"))
+        if ((boolean)  ConfigManager.MB_WORLD_MAINTENANCE.getValue().equalsIgnoreCase("true"))
             processBuildingMaintenance();
         else
             Logger.info("Maintenance Costings: DISABLED");
