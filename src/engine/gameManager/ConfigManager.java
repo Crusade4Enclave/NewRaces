@@ -99,6 +99,7 @@ public enum ConfigManager {
                 Logger.info(configSetting.name() + ":" + configSetting.getValue());
             else {
                 Logger.error("Missing Config: " + configSetting.name());
+                Logger.error("Update your MagicBox: docker pull magicbane/magicbox:latest");
                 return false;
             }
 
