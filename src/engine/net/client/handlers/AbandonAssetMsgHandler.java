@@ -97,7 +97,7 @@ public class AbandonAssetMsgHandler extends AbstractClientMsgHandler {
 		{
 			// CHECK IF GUILD HAS A BANE DROPPED
 			City city = ZoneManager.getCityAtLocation(building.getLoc());
-			if(city.getGuild().isNation() == true)
+			if(city.getGuild().getSubGuildList().isEmpty() == false)
 			{
 				//nations cant abandon their tree
 				ErrorPopupMsg.sendErrorMsg(player, "Nations Cannot Abandon Their Capital!");
