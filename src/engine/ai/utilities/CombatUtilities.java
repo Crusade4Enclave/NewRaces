@@ -388,7 +388,7 @@ public class CombatUtilities {
 		if(agent.isSummonedPet() == true)
 		{
 			min = 40 * (1 + (agent.getLevel()/10));
-			max = 60 * (1 + (agent.getLevel()/10));
+			max = 60 * (1 + (agent.getLevel()/8));
 			//check if we have powers to cast
 			if(agent.mobPowers.isEmpty() == false) {
 				//check for power usage
