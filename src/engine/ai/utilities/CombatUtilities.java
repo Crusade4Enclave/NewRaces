@@ -387,6 +387,8 @@ public class CombatUtilities {
 		float max = (mainHand) ? agent.getMaxDamageHandOne() : agent.getMaxDamageHandTwo();;
 		if(agent.isSummonedPet() == true)
 		{
+			min = 40 * (1 + (agent.getLevel()/10));
+			max = 60 * (1 + (agent.getLevel()/10));
 			//check if we have powers to cast
 			if(agent.mobPowers.isEmpty() == false) {
 				//check for power usage
