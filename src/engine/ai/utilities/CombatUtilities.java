@@ -15,13 +15,17 @@ import engine.Enum.*;
 import engine.ai.MobileFSM.STATE;
 import engine.gameManager.ChatManager;
 import engine.gameManager.CombatManager;
+import engine.gameManager.PowersManager;
 import engine.math.Vector3fImmutable;
 import engine.net.DispatchMessage;
 import engine.net.client.msg.TargetedActionMsg;
 import engine.objects.*;
+import engine.powers.ActionsBase;
+import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
 
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -381,10 +385,42 @@ public class CombatUtilities {
 
 		float min = (mainHand) ? agent.getMinDamageHandOne() : agent.getMinDamageHandTwo();
 		float max = (mainHand) ? agent.getMaxDamageHandOne() : agent.getMaxDamageHandTwo();;
+		if(agent.isSummonedPet() == true)
+		{
+			//check if we have powers to cast
+			if(agent.mobPowers.isEmpty() == false) {
+				//check for power usage
+				Random random = new Random();
+				int value = random.nextInt(0 + (agent.mobPowers.size() + (agent.mobPowers.size() * 5))) + 0;
+				if (value <= agent.mobPowers.size())
+				{
+					//do power
+					int powerId = agent.mobPowers.get(value);
+					PowersManager.runPowerAction(agent,target,target.getLoc(),new ActionsBase(),40, PowersManager.getPowerByToken(powerId));
+				}
+				else
+				{
+					//do mele damage
+					float range = max - min;
+					float damage = min + ((ThreadLocalRandom.current().nextFloat() * range) + (ThreadLocalRandom.current().nextFloat() * range)) / 2;
+					if (AbstractWorldObject.IsAbstractCharacter(target))
+						if (((AbstractCharacter) target).isSit())
+							damage *= 2.5f; //increase damage if sitting
 
+					if (AbstractWorldObject.IsAbstractCharacter(target))
+						return ((AbstractCharacter) target).getResists().getResistedDamage(agent, (AbstractCharacter) target, dt, damage, 0);
+
+					if (target.getObjectType() == GameObjectType.Building) {
+						Building building = (Building) target;
+						Resists resists = building.getResists();
+						return damage * (1 - (resists.getResist(dt, 0) / 100));
+					}
+				}
+			}
+		}
 		float range = max - min;
 		float damage = min + ((ThreadLocalRandom.current().nextFloat()*range)+(ThreadLocalRandom.current().nextFloat()*range))/2;
-
+//DAMAGE FORMULA FOR PET
 		if (AbstractWorldObject.IsAbstractCharacter(target))
 			if (((AbstractCharacter)target).isSit())
 				damage *= 2.5f; //increase damage if sitting

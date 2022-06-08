@@ -1126,8 +1126,7 @@ public class MobileFSM {
             return;
         }
 
-        //HashMap<Integer, Integer> staticPowers = aiAgent.getMobBase().getStaticPowers();
-        HashMap<Integer,Integer> staticPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(aiAgent.getMobBaseID());
+        HashMap<Integer, Integer> staticPowers = aiAgent.getMobBase().getStaticPowers();
         if (staticPowers != null && !staticPowers.isEmpty()) {
 
             int chance = ThreadLocalRandom.current().nextInt(100);
