@@ -311,7 +311,34 @@ public class CombatUtilities {
 						if(count == random)
 						{
 							powerToken = entry.getKey();
-							powerRank = entry.getValue();
+							//powerRank = entry.getValue();
+							switch(agent.getLevel())
+							{
+								default:
+									powerRank = 1;
+									break;
+								case 10:
+									powerRank = 5;
+									break;
+								case 20:
+									powerRank = 10;
+									break;
+								case 30:
+									powerRank = 15;
+									break;
+								case 40:
+									powerRank = 25;
+									break;
+								case 50:
+									powerRank = 30;
+									break;
+								case 60:
+									powerRank = 35;
+									break;
+								case 70:
+									powerRank = 40;
+									break;
+							}
 							System.out.println(agent.getMobBase().getFirstName() + " is casting: " + PowersManager.getPowerByToken(powerToken).skillName);
 							PowersManager.applyPower(agent,target,target.getLoc(),powerToken,powerRank, false);
 						}
