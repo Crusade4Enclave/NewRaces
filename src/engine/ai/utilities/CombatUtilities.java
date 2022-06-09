@@ -291,7 +291,7 @@ public class CombatUtilities {
 			else
 				//check for a cast here?
 
-			agent.mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(agent.getMobBaseID());
+			//agent.mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(agent.getMobBaseID());
 
 			if(agent.mobPowers.size() > 0 && agent.mobPowers != null)
 			{

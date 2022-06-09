@@ -2203,7 +2203,7 @@ public class Mob extends AbstractIntelligenceAgent {
 		} catch(Exception e){
 			Logger.error( e.getMessage());
 		}
-
+		mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(this.getMobBaseID());
 		if (this.equip == null) {
 			Logger.error("Null equipset returned for uuid " + currentID);
 			this.equip = new HashMap<>(0);
