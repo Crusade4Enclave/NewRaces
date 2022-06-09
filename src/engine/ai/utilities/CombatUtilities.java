@@ -12,6 +12,7 @@ package engine.ai.utilities;
 
 import engine.Enum;
 import engine.Enum.*;
+import engine.ai.MobileFSM;
 import engine.ai.MobileFSM.STATE;
 import engine.gameManager.ChatManager;
 import engine.gameManager.CombatManager;
@@ -25,8 +26,11 @@ import engine.powers.ActionsBase;
 import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
+import sun.security.util.Debug;
 
+import java.security.KeyStore;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -286,21 +290,32 @@ public class CombatUtilities {
 				swingIsBlock(agent,target, passiveAnim);
 			else
 				//check for a cast here?
-			if(agent.isCasting() == true)
+
+			agent.mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(agent.getMobBaseID());
+
+			if(agent.mobPowers.size() > 0 && agent.mobPowers != null)
 			{
-				//force stop if they are already casting
-				return;
-			}
-			if(agent.mobPowers.size() > 0)
-			{
-				//get cast chance
+				//get cast chance 33% cast 67% mele
 				int random = ThreadLocalRandom.current().nextInt(agent.mobPowers.size() * 3);
 				//allow casting of spell
 				if(random <= agent.mobPowers.size())
 				{
+					int powerToken;
+					int powerRank;
 					//cast a spell
-					ActionsBase ab = new ActionsBase();
-
+					Map<Integer,Integer> entries = agent.mobPowers;
+					int count = 0;
+					for(Map.Entry<Integer,Integer> entry : entries.entrySet())
+					{
+						count += 1;
+						if(count == random)
+						{
+							powerToken = entry.getKey();
+							powerRank = entry.getValue();
+							System.out.println(agent.getMobBase().getFirstName() + " is casting: " + PowersManager.getPowerByToken(powerToken).skillName);
+							PowersManager.applyPower(agent,target,target.getLoc(),powerToken,powerRank, false);
+						}
+					}
 					return;
 				}
 			}
