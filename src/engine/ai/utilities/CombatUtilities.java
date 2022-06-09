@@ -15,6 +15,7 @@ import engine.Enum.*;
 import engine.ai.MobileFSM.STATE;
 import engine.gameManager.ChatManager;
 import engine.gameManager.CombatManager;
+import engine.gameManager.DbManager;
 import engine.gameManager.PowersManager;
 import engine.math.Vector3fImmutable;
 import engine.net.DispatchMessage;
@@ -25,6 +26,7 @@ import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
 
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -241,7 +243,6 @@ public class CombatUtilities {
 			speed = agent.getSpeedHandOne();
 		else
 			speed = agent.getSpeedHandTwo();
-
 		DamageType dt = DamageType.Crush;
 		if (agent.isSiege())
 			dt = DamageType.Siege;
@@ -284,6 +285,26 @@ public class CombatUtilities {
 			else if(triggerBlock(agent,target))
 				swingIsBlock(agent,target, passiveAnim);
 			else
+				//check for a cast here?
+			if(agent.isCasting() == true)
+			{
+				//force stop if they are already casting
+				return;
+			}
+			if(agent.mobPowers.size() > 0)
+			{
+				//get cast chance
+				int random = ThreadLocalRandom.current().nextInt(agent.mobPowers.size() * 3);
+				//allow casting of spell
+				if(random <= agent.mobPowers.size())
+				{
+					//cast a spell
+					ActionsBase ab = new ActionsBase();
+
+					return;
+				}
+			}
+			//finished with casting check
 				swingIsDamage(agent,target, determineDamage(agent,target, mainHand, speed, dt), anim);
 
 			if (agent.getWeaponPower() != null)
@@ -419,6 +440,7 @@ public class CombatUtilities {
 					}
 				}
 			}
+
 		}
 		float range = max - min;
 		float damage = min + ((ThreadLocalRandom.current().nextFloat()*range)+(ThreadLocalRandom.current().nextFloat()*range))/2;
