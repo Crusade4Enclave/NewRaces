@@ -1019,7 +1019,7 @@ public class City extends AbstractWorldObject {
 			if (_playerMemory.contains(player.getObjectUUID()))
 				continue;
 
-			if (!this.isLocationOnCityZone(player.getLoc()))
+			if (!this.isLocationWithinSiegeBounds(player.getLoc()))
 				continue;
 
 			// Apply safehold affect to player if needed
