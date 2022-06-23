@@ -32,7 +32,6 @@ import engine.net.client.msg.ManageCityAssetsMsg;
 import engine.net.client.msg.PetMsg;
 import engine.net.client.msg.PlaceAssetMsg;
 import engine.powers.EffectsBase;
-import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 import engine.server.world.WorldServer;
 import org.joda.time.DateTime;

@@ -53,7 +53,9 @@ import org.pmw.tinylog.labelers.TimestampLabeler;
 import org.pmw.tinylog.policies.StartupPolicy;
 import org.pmw.tinylog.writers.RollingFileWriter;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;

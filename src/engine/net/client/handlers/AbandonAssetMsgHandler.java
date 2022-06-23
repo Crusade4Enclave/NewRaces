@@ -12,8 +12,6 @@ import engine.net.client.msg.ErrorPopupMsg;
 import engine.objects.*;
 import org.pmw.tinylog.Logger;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 /*
  * @Author:
  * @Summary: Processes application protocol message which processes

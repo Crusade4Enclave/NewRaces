@@ -16,7 +16,6 @@ import engine.Enum;
 import engine.net.NetMsgHandler;
 import engine.server.login.LoginServer;
 import engine.server.world.WorldServer;
-import jdk.nashorn.internal.runtime.regexp.joni.ast.StringNode;
 import org.pmw.tinylog.Logger;
 
 import java.util.HashMap;

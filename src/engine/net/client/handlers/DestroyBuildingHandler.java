@@ -9,7 +9,6 @@ import engine.net.client.ClientConnection;
 import engine.net.client.msg.ClientNetMsg;
 import engine.net.client.msg.DestroyBuildingMsg;
 import engine.net.client.msg.ErrorPopupMsg;
-import engine.net.client.msg.PlaceAssetMsg;
 import engine.objects.*;
 
 /*
