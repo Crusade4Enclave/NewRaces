@@ -12,24 +12,18 @@ package engine.ai.utilities;
 
 import engine.Enum;
 import engine.Enum.*;
-import engine.ai.MobileFSM;
 import engine.ai.MobileFSM.STATE;
 import engine.gameManager.ChatManager;
 import engine.gameManager.CombatManager;
-import engine.gameManager.DbManager;
 import engine.gameManager.PowersManager;
 import engine.math.Vector3fImmutable;
 import engine.net.DispatchMessage;
 import engine.net.client.msg.TargetedActionMsg;
 import engine.objects.*;
 import engine.powers.ActionsBase;
-import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
-import sun.security.util.Debug;
 
-import java.security.KeyStore;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -447,7 +441,7 @@ public class CombatUtilities {
 	public static float determineDamage(Mob agent,AbstractWorldObject target, boolean mainHand, float speed, DamageType dt) {
 
 		float min = (mainHand) ? agent.getMinDamageHandOne() : agent.getMinDamageHandTwo();
-		float max = (mainHand) ? agent.getMaxDamageHandOne() : agent.getMaxDamageHandTwo();;
+		float max = (mainHand) ? agent.getMaxDamageHandOne() : agent.getMaxDamageHandTwo();
 		if(agent.isSummonedPet() == true)
 		{
 			min = 40 * (1 + (agent.getLevel()/10));
@@ -506,10 +500,7 @@ public class CombatUtilities {
 	
 	public static boolean RunAIRandom(){
 		int random = ThreadLocalRandom.current().nextInt(4);
-		
-		if (random == 0)
-			return true;
-		
-		return false;
+
+		return random == 0;
 	}
 }
