@@ -12,16 +12,26 @@ package engine.ai.utilities;
 
 import engine.Enum;
 import engine.Enum.*;
+import engine.ai.MobileFSM;
 import engine.ai.MobileFSM.STATE;
 import engine.gameManager.ChatManager;
 import engine.gameManager.CombatManager;
+import engine.gameManager.DbManager;
+import engine.gameManager.PowersManager;
 import engine.math.Vector3fImmutable;
 import engine.net.DispatchMessage;
 import engine.net.client.msg.TargetedActionMsg;
 import engine.objects.*;
+import engine.powers.ActionsBase;
+import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
+import sun.security.util.Debug;
 
+import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -237,7 +247,6 @@ public class CombatUtilities {
 			speed = agent.getSpeedHandOne();
 		else
 			speed = agent.getSpeedHandTwo();
-
 		DamageType dt = DamageType.Crush;
 		if (agent.isSiege())
 			dt = DamageType.Siege;
@@ -280,6 +289,64 @@ public class CombatUtilities {
 			else if(triggerBlock(agent,target))
 				swingIsBlock(agent,target, passiveAnim);
 			else
+				//check for a cast here?
+
+			//agent.mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(agent.getMobBaseID());
+
+			if(agent.mobPowers.size() > 0 && agent.mobPowers != null)
+			{
+				//get cast chance 33% cast 67% mele
+				int random = ThreadLocalRandom.current().nextInt(agent.mobPowers.size() * 3);
+				//allow casting of spell
+				if(random <= agent.mobPowers.size())
+				{
+					int powerToken;
+					int powerRank;
+					//cast a spell
+					Map<Integer,Integer> entries = agent.mobPowers;
+					int count = 0;
+					for(Map.Entry<Integer,Integer> entry : entries.entrySet())
+					{
+						count += 1;
+						if(count == random)
+						{
+							powerToken = entry.getKey();
+							//powerRank = entry.getValue();
+							switch(agent.getLevel())
+							{
+								default:
+									powerRank = 1;
+									break;
+								case 10:
+									powerRank = 5;
+									break;
+								case 20:
+									powerRank = 10;
+									break;
+								case 30:
+									powerRank = 15;
+									break;
+								case 40:
+									powerRank = 25;
+									break;
+								case 50:
+									powerRank = 30;
+									break;
+								case 60:
+									powerRank = 35;
+									break;
+								case 70:
+									powerRank = 40;
+									break;
+							}
+							System.out.println(agent.getMobBase().getFirstName() + " is casting: " + PowersManager.getPowerByToken(powerToken).skillName);
+							PowersManager.applyPower(agent,target,target.getLoc(),powerToken,powerRank, false);
+						}
+					}
+					return;
+				}
+			}
+			//finished with casting check
 				swingIsDamage(agent,target, determineDamage(agent,target, mainHand, speed, dt), anim);
 
 			if (agent.getWeaponPower() != null)
@@ -381,10 +448,45 @@ public class CombatUtilities {
 
 		float min = (mainHand) ? agent.getMinDamageHandOne() : agent.getMinDamageHandTwo();
 		float max = (mainHand) ? agent.getMaxDamageHandOne() : agent.getMaxDamageHandTwo();;
+		if(agent.isSummonedPet() == true)
+		{
+			min = 40 * (1 + (agent.getLevel()/10));
+			max = 60 * (1 + (agent.getLevel()/8));
+			//check if we have powers to cast
+			if(agent.mobPowers.isEmpty() == false) {
+				//check for power usage
+				Random random = new Random();
+				int value = random.nextInt(0 + (agent.mobPowers.size() + (agent.mobPowers.size() * 5))) + 0;
+				if (value <= agent.mobPowers.size())
+				{
+					//do power
+					int powerId = agent.mobPowers.get(value);
+					PowersManager.runPowerAction(agent,target,target.getLoc(),new ActionsBase(),40, PowersManager.getPowerByToken(powerId));
+				}
+				else
+				{
+					//do mele damage
+					float range = max - min;
+					float damage = min + ((ThreadLocalRandom.current().nextFloat() * range) + (ThreadLocalRandom.current().nextFloat() * range)) / 2;
+					if (AbstractWorldObject.IsAbstractCharacter(target))
+						if (((AbstractCharacter) target).isSit())
+							damage *= 2.5f; //increase damage if sitting
 
+					if (AbstractWorldObject.IsAbstractCharacter(target))
+						return ((AbstractCharacter) target).getResists().getResistedDamage(agent, (AbstractCharacter) target, dt, damage, 0);
+
+					if (target.getObjectType() == GameObjectType.Building) {
+						Building building = (Building) target;
+						Resists resists = building.getResists();
+						return damage * (1 - (resists.getResist(dt, 0) / 100));
+					}
+				}
+			}
+
+		}
 		float range = max - min;
 		float damage = min + ((ThreadLocalRandom.current().nextFloat()*range)+(ThreadLocalRandom.current().nextFloat()*range))/2;
-
+//DAMAGE FORMULA FOR PET
 		if (AbstractWorldObject.IsAbstractCharacter(target))
 			if (((AbstractCharacter)target).isSit())
 				damage *= 2.5f; //increase damage if sitting

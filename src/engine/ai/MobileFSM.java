@@ -16,10 +16,7 @@ import engine.Enum.GameObjectType;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.utilities.CombatUtilities;
 import engine.ai.utilities.MovementUtilities;
-import engine.gameManager.BuildingManager;
-import engine.gameManager.CombatManager;
-import engine.gameManager.MovementManager;
-import engine.gameManager.PowersManager;
+import engine.gameManager.*;
 import engine.math.Vector3fImmutable;
 import engine.net.DispatchMessage;
 import engine.net.client.msg.PerformActionMsg;
@@ -1130,7 +1127,6 @@ public class MobileFSM {
         }
 
         HashMap<Integer, Integer> staticPowers = aiAgent.getMobBase().getStaticPowers();
-
         if (staticPowers != null && !staticPowers.isEmpty()) {
 
             int chance = ThreadLocalRandom.current().nextInt(100);
