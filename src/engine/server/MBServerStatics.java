@@ -125,16 +125,6 @@ public class MBServerStatics {
 	public static final int CHM_THREAD_LOW = 1;
 
 	/*
-	 * LoginServer related
-	 */
-
-	public static final String PCMajorVer = "1.2.25.5";
-	public static final String PCMinorVer = "5.25.5";
-
-	public static final String MACMajorVer = "1.2.24.3";
-	public static final String MACMinorVer = "5.24.3";
-
-	/*
 	 * LoginErrorMsg related
 	 */
 	public static final int LOGINERROR_INVALID_USERNAME_PASSWORD = 1;
