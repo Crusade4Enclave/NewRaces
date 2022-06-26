@@ -103,7 +103,8 @@ public enum ConfigManager {
                 Logger.info(configSetting.name() + ":" + configSetting.getValue());
             else {
                 Logger.error("Missing Config: " + configSetting.name());
-                Logger.error("Update your MagicBox: docker pull magicbane/magicbox:latest");
+                Logger.error("This codebase expects >= MagicBox v1.3 " + configSetting.name());
+                Logger.error("docker pull magicbane/magicbox:latest");
                 return false;
             }
 
