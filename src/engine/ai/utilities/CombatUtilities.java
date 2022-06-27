@@ -301,7 +301,7 @@ public class CombatUtilities {
 			if(agent.mobPowers.size() > 0 && agent.mobPowers != null)
 			{
 				//get cast chance 33% cast 67% mele
-				int random = ThreadLocalRandom.current().nextInt(agent.mobPowers.size() * 3);
+				int random = ThreadLocalRandom.current().nextInt(agent.mobPowers.size() * 10);
 				//allow casting of spell
 				if(random <= agent.mobPowers.size())
 				{
