@@ -346,8 +346,8 @@ public class CombatUtilities {
 							}
 							//System.out.println(agent.getMobBase().getFirstName() + " is casting: " + PowersManager.getPowerByToken(powerToken).skillName);
 							PowersManager.applyPower(agent,target,target.getLoc(),powerToken,powerRank, false);
-							PerformActionMsg msg = new PerformActionMsg();
-							PowersManager.sendPowerMsg((PlayerCharacter)target,0,msg);
+							//PerformActionMsg msg = new PerformActionMsg();
+							//PowersManager.sendPowerMsg((PlayerCharacter)target,0,msg);
 							//return;
 						}
 					}
