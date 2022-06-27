@@ -18,9 +18,11 @@ import engine.gameManager.CombatManager;
 import engine.gameManager.PowersManager;
 import engine.math.Vector3fImmutable;
 import engine.net.DispatchMessage;
+import engine.net.client.msg.PerformActionMsg;
 import engine.net.client.msg.TargetedActionMsg;
 import engine.objects.*;
 import engine.powers.ActionsBase;
+import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
 
@@ -274,14 +276,23 @@ public class CombatUtilities {
 
 		int passiveAnim =  CombatManager.getSwingAnimation(wb, null,mainHand);
 		if(canSwing(agent)) {
-			if(triggerDefense(agent,target))
-				swingIsMiss(agent,target, passiveAnim);
-			else if(triggerDodge(agent,target))
-				swingIsDodge(agent,target, passiveAnim);
-			else if(triggerParry(agent,target))
-				swingIsParry(agent,target, passiveAnim);
-			else if(triggerBlock(agent,target))
-				swingIsBlock(agent,target, passiveAnim);
+			if(triggerDefense(agent,target)) {
+				swingIsMiss(agent, target, passiveAnim);
+				return;
+			}
+			else if(triggerDodge(agent,target)) {
+				swingIsDodge(agent, target, passiveAnim);
+				return;
+			}
+			else if (triggerParry(agent, target)){
+					swingIsParry(agent, target, passiveAnim);
+
+				return;
+			}
+			else if(triggerBlock(agent,target)) {
+				swingIsBlock(agent, target, passiveAnim);
+				return;
+			}
 			else
 				//check for a cast here?
 
@@ -333,8 +344,11 @@ public class CombatUtilities {
 									powerRank = 40;
 									break;
 							}
-							System.out.println(agent.getMobBase().getFirstName() + " is casting: " + PowersManager.getPowerByToken(powerToken).skillName);
+							//System.out.println(agent.getMobBase().getFirstName() + " is casting: " + PowersManager.getPowerByToken(powerToken).skillName);
 							PowersManager.applyPower(agent,target,target.getLoc(),powerToken,powerRank, false);
+							PerformActionMsg msg = new PerformActionMsg();
+							PowersManager.sendPowerMsg((PlayerCharacter)target,0,msg);
+							//return;
 						}
 					}
 					return;
