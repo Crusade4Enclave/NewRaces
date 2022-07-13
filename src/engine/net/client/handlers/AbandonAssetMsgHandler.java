@@ -92,7 +92,23 @@ public class AbandonAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Trees require special handling beyond an individual building
 		if ((building.getBlueprint().getBuildingGroup() == BuildingGroup.TOL))
+		{
+			// CHECK IF GUILD HAS A BANE DROPPED
+			City city = ZoneManager.getCityAtLocation(building.getLoc());
+			if(city.getGuild().getSubGuildList().isEmpty() == false)
+			{
+				//nations cant abandon their tree
+				ErrorPopupMsg.sendErrorMsg(player, "Nations Cannot Abandon Their Capital!");
+				return true;
+			}
+			if(Bane.getBaneByAttackerGuild(city.getGuild()) != null)
+			{
+				ErrorPopupMsg.sendErrorMsg(player, "You Cannot Abandon Your Tree With An Active Siege!");
+				return true;
+			}
+
 			AbandonAllCityObjects(player, building);
+		}
 		else
 			AbandonSingleAsset(player, building);
 

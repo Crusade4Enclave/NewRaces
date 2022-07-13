@@ -8,10 +8,8 @@ import engine.gameManager.BuildingManager;
 import engine.net.client.ClientConnection;
 import engine.net.client.msg.ClientNetMsg;
 import engine.net.client.msg.DestroyBuildingMsg;
-import engine.objects.Blueprint;
-import engine.objects.Building;
-import engine.objects.City;
-import engine.objects.PlayerCharacter;
+import engine.net.client.msg.ErrorPopupMsg;
+import engine.objects.*;
 
 /*
  * @Author:
@@ -43,7 +41,7 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 		Blueprint blueprint;
 
 		blueprint = building.getBlueprint();
-
+		City city = building.getCity();
 		// Can't destroy buildings without a blueprint.
 
 		if (blueprint == null)
@@ -57,7 +55,11 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 
 		if (!BuildingManager.PlayerCanControlNotOwner(building, pc))
 			return true;
-
+Bane bane = city.getBane();
+if(bane.getSiegePhase() == Enum.SiegePhase.WAR && bane != null) {
+	ErrorPopupMsg.sendErrorPopup(pc, 171);
+	return true;
+}
 		// Can't destroy a tree of life
 		if (blueprint.getBuildingGroup() == BuildingGroup.TOL)
 			return true;
@@ -71,15 +73,12 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 
 		if (blueprint.getBuildingGroup() == BuildingGroup.RUNEGATE)
 			return true;
-
+//stop if active siege
 		// Turn off spire if destoying
 		if (blueprint.getBuildingGroup() == BuildingGroup.SPIRE)
 			building.disableSpire(true);
 
 		if (blueprint.getBuildingGroup() == BuildingGroup.WAREHOUSE) {
-
-			City city = building.getCity();
-
 			if (city != null)
 				city.setWarehouseBuildingID(0);
 		}

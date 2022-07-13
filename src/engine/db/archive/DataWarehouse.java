@@ -39,7 +39,7 @@ public class DataWarehouse implements Runnable {
         // If WarehousePush is disabled
         // then early exit
 
-        if ( ConfigManager.MB_WORLD_WAREHOUSE_PUSH.getValue().equals("false")) {
+        if ( ConfigManager.MB_WORLD_WAREHOUSE_PUSH.getValue().equalsIgnoreCase("false")) {
             Logger.info("Warehouse Remote Connection disabled along with push");
             return;
         }

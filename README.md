@@ -20,70 +20,11 @@ The Magicbane Team has wanted to open source Shadowbane for half a decade.  We a
 
 ## Contributing
 
+- Project is released under an MIT license.  Please see the LICENSE file.
 - Inbound == Outbound.
 - IntelliJ is the supported IDE.
 - Write code today see it running on the Magicbane production server tomorrow.
 
-## Project setup
+## Support
 
-**Prerequisites**:
-
-- Git
-- IntelliJ
-- Java 8 JDK
-- Account on the Magicbane [Public Repository](http://repo.magicbane.com)
-
-
-Copy the HTTP link if you haven't yet installed a public key:
-
-![CopyUrl](https://www.magicbane.com/Development/images/repo.png)
-
-- Clone the Magicbane public repo to your local machine using the copied URL.
-
-![CloneURL](https://www.magicbane.com/Development/images/intellij1.png)
-
-- Under Settings->VersionControl->Git make sure to turn off these two settings.
-
-![CommitOff](https://www.magicbane.com/Development/images/commit.png)
-
-- Select the Project Structure settings within the IDE.
-
-![ProjectStructure](https://www.magicbane.com/Development/images/projectstructure.png)
-
-- Select Java 8 as the IDE target as shown.
-
-![Java8](https://www.magicbane.com/Development/images/project.png)
-
-- Delete and recreate content root pointing at the **Server** directory.
-- Make sure the Language Level still reflects Java 8.
-- The IDE should now autodetect the cloned source.
-
-![hmm](https://www.magicbane.com/Development/images/module.png)
-
-Magicbane currently has the following dependencies.
-<br>
-
-- [EnumBitSet](https://github.com/claudemartin/enum-bit-set)
-- [HikariCP](https://github.com/brettwooldridge/HikariCP)
-- [JDA](https://github.com/DV8FromTheWorld/JDA)
-- [JodaTime](https://github.com/JodaOrg/joda-time)
-- [TinyLog](https://github.com/tinylog-org/tinylog/tree/v1.3)
-- [MySqlConnector](https://dev.mysql.com/downloads/connector/j/)
-
-They are all directly obtainable from a running MagicBox instance.
-
-``` docker cp magicbox:/usr/share/java/EnumBitSet.jar Dependencies/```
-
-Add the jar files as project libraries as shown.
-
-![Libs](https://www.magicbane.com/Development/images/libraries.png)
-
-You should now be able to build the game!
-
-![Build](https://magicbane.com/Development/images/buildproject.png)
-
-### Next Steps
-
-You can now move onto the [Development Workflow](http://repo.magicbane.com/MagicBane/Server/wiki/Development-workflow) or [MagicBox Setup](http://repo.magicbane.com/MagicBane/Server/wiki/MagicBox-:-Magicbane-in-a-Box) pages for further information.
-
-Support is also available through the Magicbane [Discord server](www.magicbane.com).  Feel free to stop in and pick Magicbot's brain!
+Documentation is available through the Magicbane [Wiki](http://repo.magicbane.com/MagicBane/Server/wiki) and [Discord server](www.magicbane.com).

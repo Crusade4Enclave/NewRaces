@@ -111,7 +111,7 @@ public class Mob extends AbstractIntelligenceAgent {
 	public boolean despawned = false;
 	public Vector3fImmutable destination = Vector3fImmutable.ZERO;
 	public Vector3fImmutable localLoc = Vector3fImmutable.ZERO;
-
+	public HashMap<Integer,Integer> mobPowers;
 	/**
 	 * No Id Constructor
 	 */
@@ -365,6 +365,7 @@ public class Mob extends AbstractIntelligenceAgent {
 				this.setObjectTypeMask(MBServerStatics.MASK_PET | this.getTypeMasks());
 				if (ConfigManager.serverType.equals(ServerType.LOGINSERVER))
 				this.setLoc(this.getLoc());
+				mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(this.getMobBaseID());
 			}
 			if (!isPet && this.contract == null) {
 				this.level = (short) this.mobBase.getLevel();
@@ -393,10 +394,10 @@ public class Mob extends AbstractIntelligenceAgent {
 		//TODO set these correctly later
 		this.rangeHandOne = 8;
 		this.rangeHandTwo = -1;
-		this.minDamageHandOne = 0;
-		this.maxDamageHandOne = 0;
-		this.minDamageHandTwo = 1;
-		this.maxDamageHandTwo = 4;
+			this.minDamageHandOne = 0;
+			this.maxDamageHandOne = 0;
+			this.minDamageHandTwo = 1;
+			this.maxDamageHandTwo = 4;
 		this.atrHandOne = 300;
 		this.atrHandOne = 300;
 		this.defenseRating = (short) this.mobBase.getDefenseRating();
@@ -2201,7 +2202,7 @@ public class Mob extends AbstractIntelligenceAgent {
 		} catch(Exception e){
 			Logger.error( e.getMessage());
 		}
-
+		mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(this.getMobBaseID());
 		if (this.equip == null) {
 			Logger.error("Null equipset returned for uuid " + currentID);
 			this.equip = new HashMap<>(0);

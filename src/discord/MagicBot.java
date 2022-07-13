@@ -10,7 +10,6 @@
 package discord;
 
 import discord.handlers.*;
-import engine.Enum;
 import engine.gameManager.ConfigManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -29,8 +28,6 @@ import org.pmw.tinylog.writers.RollingFileWriter;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;

@@ -169,8 +169,8 @@ public class LoginServer {
 
         // Configure the VersionInfoMsgs:
 
-        this.versionInfoMessage = new VersionInfoMsg(MBServerStatics.PCMajorVer,
-                MBServerStatics.PCMinorVer);
+        this.versionInfoMessage = new VersionInfoMsg(ConfigManager.MB_MAJOR_VER.getValue(),
+                ConfigManager.MB_MINOR_VER.getValue());
 
         Logger.info("Initializing Database Pool");
         initDatabasePool();

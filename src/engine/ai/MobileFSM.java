@@ -1130,7 +1130,6 @@ public class MobileFSM {
         }
 
         HashMap<Integer, Integer> staticPowers = aiAgent.getMobBase().getStaticPowers();
-
         if (staticPowers != null && !staticPowers.isEmpty()) {
 
             int chance = ThreadLocalRandom.current().nextInt(100);

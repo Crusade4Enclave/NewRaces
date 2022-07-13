@@ -999,11 +999,9 @@ public class City extends AbstractWorldObject {
 		HashSet<Integer> currentMemory;
 		PlayerCharacter player;
 
-		// Gather current list of players within a distance defined by the x extent of the
-		// city zone.  As we want to grab all players with even a remote possibility of
-		// being in the zone, we might have to increase this distance.
+		// Gather current list of players within a distance defined by the seige bounds
 
-		currentPlayers = WorldGrid.getObjectsInRangePartial(this.location, this.parentZone.getBounds().getHalfExtents().x * 1.41421356237, MBServerStatics.MASK_PLAYER);
+		currentPlayers = WorldGrid.getObjectsInRangePartial(this.location, CityBoundsType.SIEGE.extents, MBServerStatics.MASK_PLAYER);
 		currentMemory = new HashSet<>();
 
 		for (AbstractWorldObject playerObject : currentPlayers) {
@@ -1019,9 +1017,8 @@ public class City extends AbstractWorldObject {
 			if (_playerMemory.contains(player.getObjectUUID()))
 				continue;
 
-			if (!this.isLocationOnCityZone(player.getLoc()))
+			if (!this.isLocationWithinSiegeBounds(player.getLoc()))
 				continue;
-
 			// Apply safehold affect to player if needed
 
 			if ((this.isSafeHold == 1))
@@ -1065,7 +1062,8 @@ public class City extends AbstractWorldObject {
 
 
 			player = PlayerCharacter.getFromCache(playerUUID);
-			if (this.isLocationOnCityZone(player.getLoc()))
+
+			if (this.isLocationWithinSiegeBounds(player.getLoc()))
 				continue;
 
 			// Remove players safezone status if warranted
