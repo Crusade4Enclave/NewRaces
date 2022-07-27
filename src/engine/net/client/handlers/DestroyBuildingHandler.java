@@ -30,6 +30,8 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 
 		DestroyBuildingMsg msg;
 		msg = (DestroyBuildingMsg) baseMsg;
+		Bane bane = null;
+		Blueprint blueprint;
 
 		int buildingUUID = msg.getUUID();
 
@@ -38,10 +40,9 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 		if (pc == null || building == null)
 			return true;
 
-		Blueprint blueprint;
-
 		blueprint = building.getBlueprint();
 		City city = building.getCity();
+
 		// Can't destroy buildings without a blueprint.
 
 		if (blueprint == null)
@@ -55,11 +56,17 @@ public class DestroyBuildingHandler extends AbstractClientMsgHandler {
 
 		if (!BuildingManager.PlayerCanControlNotOwner(building, pc))
 			return true;
-Bane bane = city.getBane();
-if(bane.getSiegePhase() == Enum.SiegePhase.WAR && bane != null) {
-	ErrorPopupMsg.sendErrorPopup(pc, 171);
-	return true;
-}
+
+		// Can't delete siege assets during an active bane.
+
+		if (city != null)
+			bane = city.getBane();
+
+		if ( bane != null && bane.getSiegePhase() == Enum.SiegePhase.WAR) {
+			ErrorPopupMsg.sendErrorPopup(pc, 171);
+			return true;
+		}
+
 		// Can't destroy a tree of life
 		if (blueprint.getBuildingGroup() == BuildingGroup.TOL)
 			return true;
@@ -68,12 +75,17 @@ if(bane.getSiegePhase() == Enum.SiegePhase.WAR && bane != null) {
 		if (blueprint.getBuildingGroup() == BuildingGroup.SHRINE)
 			return true;
 
+		// Cannot destroy  mines outside of normal mine mechanics
+
 		if (blueprint.getBuildingGroup() == BuildingGroup.MINE)
 			return true;
 
+		// Cannot delete rungates
+
 		if (blueprint.getBuildingGroup() == BuildingGroup.RUNEGATE)
 			return true;
-//stop if active siege
+
+
 		// Turn off spire if destoying
 		if (blueprint.getBuildingGroup() == BuildingGroup.SPIRE)
 			building.disableSpire(true);
