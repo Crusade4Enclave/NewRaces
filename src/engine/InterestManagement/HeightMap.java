@@ -1032,8 +1032,12 @@ public class HeightMap {
                 this.bucketWidthY = 51.20000076f;
                 break;
 
-            case 502:
+            case 10401:
+                this.bucketWidthX = 51.20000076f;
+                this.bucketWidthY = 51.20000076f;
+                break;
 
+            case 502:
                 this.bucketWidthX = 130.0317535f;
                 this.bucketWidthY = 130.0317535f;
                 break;
