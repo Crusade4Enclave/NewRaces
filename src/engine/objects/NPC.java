@@ -1453,7 +1453,7 @@ public class NPC extends AbstractCharacter {
 			return null;
 
 		mob = new Mob(minionMobBase, guild, parent, level,new Vector3fImmutable(1,1,1), 0,false);
-
+		mob.runAfterLoad();
 		mob.despawned = true;
 		DbManager.addToCache(mob);
 
