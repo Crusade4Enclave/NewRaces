@@ -2032,11 +2032,6 @@ public class Mob extends AbstractIntelligenceAgent {
 			this.maxDamageHandTwo = (short) maxDamage;
 			this.speedHandTwo = 30;
 		}
-		if(this.isSiege() == true)
-		{
-			this.rangeHandOne = 310;
-			this.rangeHandTwo = 310;
-		}
 	}
 
 	private static float getModifiedAmount(CharacterSkill skill) {
