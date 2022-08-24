@@ -1935,8 +1935,8 @@ public class Mob extends AbstractIntelligenceAgent {
 		// calculate atr
 		float atr = this.mobBase.getAttackRating();
 
-		atr += ((int) skillPercentage * 4f); //<-round down skill% -
-		atr += ((int) masteryPercentage * 3f);
+		//atr += ((int) skillPercentage * 4f); //<-round down skill% -
+		//atr += ((int) masteryPercentage * 3f);
 
 		if (this.statStrCurrent > this.statDexCurrent)
 			atr += statStrCurrent / 2;
