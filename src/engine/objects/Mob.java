@@ -365,7 +365,6 @@ public class Mob extends AbstractIntelligenceAgent {
 				this.setObjectTypeMask(MBServerStatics.MASK_PET | this.getTypeMasks());
 				if (ConfigManager.serverType.equals(ServerType.LOGINSERVER))
 				this.setLoc(this.getLoc());
-				mobPowers = DbManager.MobBaseQueries.LOAD_STATIC_POWERS(this.getMobBaseID());
 			}
 			if (!isPet && this.contract == null) {
 				this.level = (short) this.mobBase.getLevel();
