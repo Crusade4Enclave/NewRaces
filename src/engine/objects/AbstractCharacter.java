@@ -1600,11 +1600,26 @@ public abstract class AbstractCharacter extends AbstractWorldObject {
 
 	//Call to apply any new effects to player
 	public synchronized void applyBonuses() {
+		PlayerCharacter player;
 		//tell the player to applyBonuses because something has changed
 
 		//start running the bonus calculations
+
 		try{
 		runBonuses();
+
+		// Check if calculations affected flight.
+
+			if (this.getGridObjectType().equals(GameObjectType.PlayerCharacter)) {
+				player = (PlayerCharacter) this;
+
+				// Ground players who cannot fly but are currently flying
+
+				if (CanFly(player) == false &&
+						player.getMovementState().equals(MovementState.FLYING))
+					PlayerCharacter.GroundPlayer(player);
+			}
+
 		}catch(Exception e){
 			Logger.error("Error in run bonuses for object UUID " + this.getObjectUUID());
 			Logger.error(e);
