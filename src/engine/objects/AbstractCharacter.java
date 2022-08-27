@@ -1610,7 +1610,7 @@ public abstract class AbstractCharacter extends AbstractWorldObject {
 
 		// Check if calculations affected flight.
 
-			if (this.getGridObjectType().equals(GameObjectType.PlayerCharacter)) {
+			if (this.getObjectType().equals(GameObjectType.PlayerCharacter)) {
 				player = (PlayerCharacter) this;
 
 				// Ground players who cannot fly but are currently flying
