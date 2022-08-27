@@ -4771,6 +4771,12 @@ public void dismissNecroPets() {
 					}
 				}
 
+				// Ground players who cannot fly but are currently flying
+
+				if (CanFly(this) &&
+				    this.getMovementState().equals(MovementState.FLYING))
+					GroundPlayer(this);
+
 					RealmMap.updateRealm(this);
 					updateBlessingMessage();
 			
