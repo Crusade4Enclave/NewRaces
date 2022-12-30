@@ -30,7 +30,19 @@ public class WeaponSpeedEffectModifier extends AbstractEffectModifier {
 	}
 
 	@Override
-	public void applyBonus(AbstractCharacter ac, int trains) {}
+	public void applyBonus(AbstractCharacter ac, int trains) {
+
+			Float amount = 0f;
+
+			if (this.useRampAdd)
+				amount = this.percentMod + (this.ramp * trains);
+			else
+				amount = this.percentMod * (1 + (this.ramp * trains));
+
+			amount = amount/100;
+
+			ac.getBonuses().addFloat(this, amount);
+		}
 
 	@Override
 	public void applyBonus(Item item, int trains) {
