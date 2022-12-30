@@ -3885,7 +3885,7 @@ public void dismissNecroPets() {
 		else
 			speed = 20f; //unarmed attack speed
 			if (weapon != null)
-			speed *= (1 + weapon.getBonusPercent(ModType.WeaponSpeed, SourceType.None));
+				speed *= (1 + this.bonuses.getFloatPercentAll(ModType.WeaponSpeed, SourceType.None));
 			speed *=  (1 + this.bonuses.getFloatPercentAll(ModType.AttackDelay, SourceType.None));
 		if (speed < 10)
 			speed = 10;
