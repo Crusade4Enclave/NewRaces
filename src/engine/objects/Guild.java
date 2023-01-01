@@ -559,17 +559,21 @@ public class Guild extends AbstractWorldObject {
 
 	}
 
-	public boolean canSubAGuild(Guild toSub){
+	public boolean canSubAGuild(Guild toSub, Guild nation){
 
 		boolean canSub;
 		
 		if (this.equals(toSub))
 			return false;
-
-		switch(this.guildState){
-		case Nation:
-		case Sovereign:
-			canSub = true;
+		City nationCap = City.getCity(nation.cityUUID);
+		if (nation.getSubGuildList().size() >= nationCap.getRank()) {
+			canSub = false;
+			return canSub;
+		}
+		switch(this.guildState) {
+			case Nation:
+			case Sovereign:
+				canSub = true;
 			break;
 		default:
 			canSub = false;

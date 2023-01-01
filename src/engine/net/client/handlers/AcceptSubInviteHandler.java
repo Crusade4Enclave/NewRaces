@@ -75,7 +75,7 @@ public class AcceptSubInviteHandler extends AbstractClientMsgHandler {
 		//source guild is limited to 7 subs
 		//TODO this should be based on TOL rank
 
-		if (!targetGuild.canSubAGuild(sourceGuild)) {
+		if (!targetGuild.canSubAGuild(sourceGuild,targetGuild)) {
 			ErrorPopupMsg.sendErrorPopup(sourcePlayer, 45); // Failure to swear guild
 			return true;
 		}
