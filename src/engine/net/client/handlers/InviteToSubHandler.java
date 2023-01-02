@@ -103,7 +103,7 @@ public class InviteToSubHandler extends AbstractClientMsgHandler {
 		//TODO this should be based on TOL rank
 
 
-		if (!sourceGuild.canSubAGuild(targetGuild, null)) {
+		if (!sourceGuild.canSubAGuild(targetGuild)) {
 			sendChat(source, "This Guild can't be subbed.");
 			return true;
 		}
