@@ -166,17 +166,11 @@ public class Mine extends AbstractGameObject {
 		if (LocalDateTime.now().isAfter(this.openDate.plusHours(1)))
 			this.openDate = this.openDate.plusDays(1);
 		return;
-	}else{
+	}else
 		this.openDate =  mineTimeStamp.toLocalDateTime().withHour(mineTime);
-		
-		if (LocalDateTime.now().isAfter(this.openDate.plusHours(1))){
-			this.openDate = this.openDate.plusDays(1);
-			return;
-		}
-	}
-	
+
 	//after 1 day...
-	if(this.openDate.getDayOfYear() - LocalDateTime.now().getDayOfYear() > 1){
+	if (this.openDate.getDayOfYear() - LocalDateTime.now().getDayOfYear() > 1){
 		this.openDate = this.openDate.withDayOfYear(LocalDateTime.now().getDayOfYear());
 		if (LocalDateTime.now().isAfter(this.openDate.plusHours(1)))
 			this.openDate = this.openDate.plusDays(1);
