@@ -77,7 +77,7 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 
 		// Enforce 15hr restriction between WOO edits
 
-		if (LocalDateTime.now().isBefore(mineGuild.lastWooEditTime.plusHours(15))) {
+		if (LocalDateTime.now().isBefore(mineGuild.lastWooEditTime.plusHours(14))) {
 			ErrorPopupMsg.sendErrorMsg(playerCharacter, "You must wait 15 hours between WOO changes.");
 			return true;
 		}
@@ -98,6 +98,15 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 
 		mineGuild.setMineTime(newMineTime);
 		mineGuild.lastWooEditTime = LocalDateTime.now();
+
+		// Update guild WOO timer for reboot persistence
+
+		if (!DbManager.GuildQueries.SET_LAST_WOO_UPDATE(mineGuild, mineGuild.lastWooEditTime)) {
+			Logger.error("MineWindowChange", "Failed to update woo timer for guild " + mineGuild.getObjectUUID());
+			ChatManager.chatGuildError(playerCharacter, "A Serious error has for to occurred.");
+			return true;
+		}
+
 		ChatManager.chatGuildInfo(playerCharacter, "Mine time updated.");
             
             return true;
