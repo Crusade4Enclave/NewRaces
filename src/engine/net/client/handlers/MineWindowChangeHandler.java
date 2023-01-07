@@ -20,6 +20,7 @@ import engine.net.DispatchMessage;
 import engine.net.client.ClientConnection;
 import engine.net.client.msg.ArcMineWindowChangeMsg;
 import engine.net.client.msg.ClientNetMsg;
+import engine.net.client.msg.ErrorPopupMsg;
 import engine.net.client.msg.KeepAliveServerClientMsg;
 import engine.objects.Building;
 import engine.objects.Guild;
@@ -73,6 +74,13 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 			return true;
 
 		newMineTime = mineWindowChangeMsg.getTime();
+
+		// Enforce 15hr restriction between WOO edits
+
+		if (LocalDateTime.now().isBefore(mineGuild.lastWooEditTime.plusHours(15))) {
+			ErrorPopupMsg.sendErrorMsg(playerCharacter, "You must wait 15 hours between WOO changes.");
+			return true;
+		}
 
 		//hodge podge sanity check to make sure they don't set it before early window and is not set at late window.
 
