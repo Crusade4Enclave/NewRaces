@@ -1746,10 +1746,6 @@ boolean updateCity = false;
 				
 				
 				cost = sell.getBaseValue();
-				
-				if (sell.isID())
-					cost = sell.getMagicValue();
-				
 				float bargain = player.getBargain();
 				
 				float profit = npc.getBuyPercent(player) + bargain;
