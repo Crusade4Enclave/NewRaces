@@ -44,6 +44,7 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 
 		PlayerCharacter playerCharacter = SessionManager.getPlayerCharacter(origin);
 		ArcMineWindowChangeMsg mineWindowChangeMsg = (ArcMineWindowChangeMsg)baseMsg;
+		int newMineTime;
 
 		if (playerCharacter == null)
 			return true;
@@ -69,17 +70,19 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 		if (GuildStatusController.isInnerCouncil(playerCharacter.getGuildStatus()) == false) // is this only GL?
 			return true;
 
+		newMineTime = mineWindowChangeMsg.getTime();
+
 		//hodge podge sanity check to make sure they don't set it before early window and is not set at late window.
-		if (mineWindowChangeMsg.getTime() < MBServerStatics.MINE_EARLY_WINDOW &&
-				mineWindowChangeMsg.getTime() != MBServerStatics.MINE_LATE_WINDOW)
+		if (newMineTime < MBServerStatics.MINE_EARLY_WINDOW &&
+				newMineTime != MBServerStatics.MINE_LATE_WINDOW)
 			return true;    //invalid mine time, must be in range
 
-		if (!DbManager.GuildQueries.UPDATE_MINETIME(mineGuild.getObjectUUID(), mineWindowChangeMsg.getTime())) {
+		if (!DbManager.GuildQueries.UPDATE_MINETIME(mineGuild.getObjectUUID(), newMineTime)) {
 			Logger.error("MineWindowChange", "Failed to update mine time for guild " + mineGuild.getObjectUUID());
 			ChatManager.chatGuildError(playerCharacter, "Failed to update the mine time");
 			return true;
 		}
-		mineGuild.setMineTime(mineWindowChangeMsg.getTime());
+		mineGuild.setMineTime(newMineTime);
 		ChatManager.chatGuildInfo(playerCharacter, "Mine time updated.");
             
             return true;
