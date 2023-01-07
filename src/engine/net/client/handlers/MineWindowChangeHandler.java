@@ -97,6 +97,7 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 		}
 
 		mineGuild.setMineTime(newMineTime);
+		mineGuild.lastWooEditTime = LocalDateTime.now();
 		ChatManager.chatGuildInfo(playerCharacter, "Mine time updated.");
             
             return true;
