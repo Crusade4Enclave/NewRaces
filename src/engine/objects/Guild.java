@@ -36,11 +36,14 @@ import engine.net.client.msg.UpdateClientAlliancesMsg;
 import engine.net.client.msg.guild.GuildInfoMsg;
 import engine.server.MBServerStatics;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.pmw.tinylog.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -79,6 +82,7 @@ public class Guild extends AbstractWorldObject {
 	private String hash;
 	private boolean ownerIsNPC;
 
+	public Timestamp lastWooEditTime;
 	public HashMap<Integer,GuildAlliances> guildAlliances = new HashMap<>();
 
 	/**
@@ -176,8 +180,8 @@ public class Guild extends AbstractWorldObject {
 		this.teleportMax = rs.getInt("teleportMax");
 
 		this.mineTime = rs.getInt("mineTime");
+		this.lastWooEditTime = rs.getTimestamp("lastWooEditTime");
 		this.hash = rs.getString("hash");
-
 	}
 
 	public void setNation(Guild nation) {

@@ -28,6 +28,8 @@ import engine.objects.PlayerCharacter;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
 
+import java.time.LocalDateTime;
+
 /*
  * @Author:
  * @Summary: Processes requests to change a mine's opendate
@@ -73,15 +75,19 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 		newMineTime = mineWindowChangeMsg.getTime();
 
 		//hodge podge sanity check to make sure they don't set it before early window and is not set at late window.
+
 		if (newMineTime < MBServerStatics.MINE_EARLY_WINDOW &&
 				newMineTime != MBServerStatics.MINE_LATE_WINDOW)
 			return true;    //invalid mine time, must be in range
+
+		// Update guild mine time
 
 		if (!DbManager.GuildQueries.UPDATE_MINETIME(mineGuild.getObjectUUID(), newMineTime)) {
 			Logger.error("MineWindowChange", "Failed to update mine time for guild " + mineGuild.getObjectUUID());
 			ChatManager.chatGuildError(playerCharacter, "Failed to update the mine time");
 			return true;
 		}
+
 		mineGuild.setMineTime(newMineTime);
 		ChatManager.chatGuildInfo(playerCharacter, "Mine time updated.");
             
