@@ -265,9 +265,6 @@ public class ClientMessagePump implements NetMsgHandler {
 			case ARCMINEWINDOWAVAILABLETIME:
 				MineWindowAvailableTime((ArcMineWindowAvailableTimeMsg) msg, origin);
 				break;
-			case ARCMINEWINDOWCHANGE:
-				MineWindowChange((ArcMineWindowChangeMsg) msg, origin);
-				break;
 			case ARCOWNEDMINESLIST:
 				ListOwnedMines((ArcOwnedMinesListMsg) msg, origin);
 				break;
