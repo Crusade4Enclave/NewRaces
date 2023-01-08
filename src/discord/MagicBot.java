@@ -217,6 +217,9 @@ public class MagicBot extends ListenerAdapter {
             case "#server":
                 ServerRequestHandler.handleRequest(event, args);
                 break;
+            case "#dev":
+                DevRequestHandler.handleRequest(event, args);
+                break;
             case "#logs":
                 LogsRequestHandler.handleRequest(event, args);
                 break;
@@ -225,9 +228,6 @@ public class MagicBot extends ListenerAdapter {
                 break;
             case "#trash":
                 TrashRequestHandler.handleRequest(event, args);
-                break;
-            case "#devbuild":
-                DevRequestHandler.handleRequest(event, args);
                 break;
             default:
                 junkbot(command, args);

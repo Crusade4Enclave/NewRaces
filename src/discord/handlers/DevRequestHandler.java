@@ -37,12 +37,6 @@ public class DevRequestHandler {
         if (args.length == 2)
             buildTarget = args[1].toLowerCase().trim();
 
-
-        // only reboot or shutdown
-
-        if ("rebootshutdown".contains(serverCommand) == false)
-            return;
-
         switch (serverCommand) {
 
             case "build" :
@@ -67,7 +61,7 @@ public class DevRequestHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            MagicBot.sendResponse(event, "MagicBot has executed your " + serverCommand);
+            MagicBot.sendResponse(event, "Executed on dev: " + serverCommand + " " + buildTarget);
             Logger.info(event.getAuthor().getName() + " told dev to " + serverCommand + " " + buildTarget);
         }
     }
