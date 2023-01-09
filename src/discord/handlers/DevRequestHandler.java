@@ -58,7 +58,7 @@ public class DevRequestHandler {
 
         if (commandString.isEmpty() == false) {
 
-             processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString, commandArgument);
+             processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString + " " + commandArgument);
             try {
                 processBuilder.start();
             } catch (IOException e) {
