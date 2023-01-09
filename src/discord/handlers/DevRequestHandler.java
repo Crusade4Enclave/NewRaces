@@ -16,6 +16,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 public class DevRequestHandler {
 
@@ -52,6 +55,9 @@ public class DevRequestHandler {
             case "shutdown":
                 commandString = "./mbdevkill.sh";
                 break;
+            case "lastout":
+                MagicBot.sendResponse(event, getLastOutput());
+                return;
             default:
                 break;
         }
@@ -74,4 +80,15 @@ public class DevRequestHandler {
                                                    "Use #dev lastout to view results");
 
         }
+    private static String getLastOutput() {
+
+        String outString = null;
+        try {
+            outString = Files.lines(Paths.get("devLastOut"))
+                    .collect(Collectors.joining(System.lineSeparator()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outString;
+    }
 }
