@@ -19,7 +19,7 @@ public class DevRequestHandler {
     public static void handleRequest(MessageReceivedEvent event, String[] args) {
 
         String serverCommand;
-        String buildTarget = "";
+        String commandArgument = "";
         String execString = "";
 
         // Early exit if database unavailable or is not an admin
@@ -35,12 +35,12 @@ public class DevRequestHandler {
         serverCommand = args[0].toLowerCase().trim();
 
         if (args.length == 2)
-            buildTarget = args[1].toLowerCase().trim();
+            commandArgument = args[1].toLowerCase().trim();
 
         switch (serverCommand) {
 
             case "build" :
-                execString = "/bin/sh -c ./mbdevbuild.sh " + buildTarget;
+                execString = "/bin/sh -c ./mbdevbuild.sh ";
                 break;
             case "restart":
                 execString = "/bin/sh -c ./mbdevrestart.sh";
@@ -57,12 +57,12 @@ public class DevRequestHandler {
 
         if (execString.isEmpty() == false) {
             try {
-                Runtime.getRuntime().exec(execString);
+                Runtime.getRuntime().exec(new String[]{execString, commandArgument});
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            MagicBot.sendResponse(event, "Executed on dev: " + serverCommand + " " + buildTarget);
-            Logger.info(event.getAuthor().getName() + " told dev to " + serverCommand + " " + buildTarget);
+            MagicBot.sendResponse(event, "Executed on dev: " + serverCommand + " " + commandArgument);
+            Logger.info(event.getAuthor().getName() + " told dev to " + serverCommand + " " + commandArgument);
         }
     }
 }
