@@ -28,11 +28,6 @@ public class DevRequestHandler {
         if (MagicBot.isAdminEvent(event) == false)
             return;
 
-        // No command supplied?
-
-        if (args.length != 1)
-            return;
-
         serverCommand = args[0].toLowerCase().trim();
 
         if (args.length == 2)
