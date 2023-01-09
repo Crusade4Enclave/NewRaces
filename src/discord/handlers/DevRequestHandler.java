@@ -61,7 +61,7 @@ public class DevRequestHandler {
             return;
         }
 
-        processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString + " " + commandArgument);
+        processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString + " " + commandArgument + " > devLastOut");
         logString = String.join(" ",processBuilder.command().toArray(new String[0]));
 
         try {
