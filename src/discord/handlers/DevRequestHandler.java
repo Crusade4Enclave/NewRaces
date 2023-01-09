@@ -40,7 +40,7 @@ public class DevRequestHandler {
         switch (serverCommand) {
 
             case "build" :
-                execString = "/bin/sh -c ./mbdevbuild.sh ";
+                execString = "/bin/sh -c ./mbdevbuild.sh";
                 break;
             case "restart":
                 execString = "/bin/sh -c ./mbdevrestart.sh";
