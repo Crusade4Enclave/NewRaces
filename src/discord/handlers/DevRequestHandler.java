@@ -12,7 +12,9 @@ import discord.MagicBot;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.pmw.tinylog.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class DevRequestHandler {
 
@@ -21,6 +23,8 @@ public class DevRequestHandler {
         String serverCommand;
         String commandArgument = "";
         String commandString = "";
+        String logString = "";
+
         ProcessBuilder processBuilder;
 
         // Early exit if database unavailable or is not an admin
@@ -64,7 +68,7 @@ public class DevRequestHandler {
                 Logger.info(e.toString());
             }
 
-            MagicBot.sendResponse(event, "Executed on dev: " + serverCommand + " " + commandArgument);
-            Logger.info(event.getAuthor().getName() + " told dev to " + serverCommand + " " + commandArgument);
+            logString = String.join(" ",processBuilder.command().toArray(new String[0]));
+            MagicBot.sendResponse(event, "Executed on dev: " + logString);
         }
 }
