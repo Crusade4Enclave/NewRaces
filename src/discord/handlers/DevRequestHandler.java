@@ -20,7 +20,8 @@ public class DevRequestHandler {
 
         String serverCommand;
         String commandArgument = "";
-        String execString = "";
+        String commandString = "";
+        ProcessBuilder processBuilder;
 
         // Early exit if database unavailable or is not an admin
 
@@ -40,27 +41,30 @@ public class DevRequestHandler {
         switch (serverCommand) {
 
             case "build" :
-                execString = "mbdevbuild.sh";
+                commandString = "mbdevbuild.sh";
                 break;
             case "restart":
-                execString = "mbdevrestart.sh";
+                commandString = "mbdevrestart.sh";
                 break;
             case "debug":
-                execString = "mbdevdebug.sh";
+                commandString = "mbdevdebug.sh";
                 break;
             case "shutdown":
-                execString = "mbdevkill.sh";
+                commandString = "mbdevkill.sh";
                 break;
             default:
                 break;
         }
 
-        if (execString.isEmpty() == false) {
+        if (commandString.isEmpty() == false) {
+
+             processBuilder = new ProcessBuilder("sh", "-c", commandString, commandArgument);
             try {
-                Runtime.getRuntime().exec(new String[]{execString, commandArgument});
+                processBuilder.start();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
+
             MagicBot.sendResponse(event, "Executed on dev: " + serverCommand + " " + commandArgument);
             Logger.info(event.getAuthor().getName() + " told dev to " + serverCommand + " " + commandArgument);
         }
