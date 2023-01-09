@@ -41,16 +41,16 @@ public class DevRequestHandler {
         switch (serverCommand) {
 
             case "build" :
-                commandString = "mbdevbuild.sh";
+                commandString = "./mbdevbuild.sh";
                 break;
             case "restart":
-                commandString = "mbdevrestart.sh";
+                commandString = "./mbdevrestart.sh";
                 break;
             case "debug":
-                commandString = "mbdevdebug.sh";
+                commandString = "./mbdevdebug.sh";
                 break;
             case "shutdown":
-                commandString = "mbdevkill.sh";
+                commandString = "./mbdevkill.sh";
                 break;
             default:
                 break;
@@ -58,7 +58,7 @@ public class DevRequestHandler {
 
         if (commandString.isEmpty() == false) {
 
-             processBuilder = new ProcessBuilder("sh", "-c", commandString, commandArgument);
+             processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString, commandArgument);
             try {
                 processBuilder.start();
             } catch (IOException e) {
