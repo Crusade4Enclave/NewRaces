@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.pmw.tinylog.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -26,6 +27,7 @@ public class DevRequestHandler {
         String logString = "";
 
         ProcessBuilder processBuilder;
+        File outFile;
 
         // Early exit if database unavailable or is not an admin
 
@@ -61,14 +63,17 @@ public class DevRequestHandler {
         }
 
         processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString + " " + commandArgument);
+        outFile = new File("devLastOut");
+        logString = String.join(" ",processBuilder.command().toArray(new String[0]));
 
         try {
                 processBuilder.start();
+                processBuilder.redirectOutput(outFile);
             } catch (IOException e) {
                 Logger.info(e.toString());
             }
 
-            logString = String.join(" ",processBuilder.command().toArray(new String[0]));
-            MagicBot.sendResponse(event, "Executed on dev: " + logString);
+        MagicBot.sendResponse(event, "Executed on dev: " + logString);
+
         }
 }
