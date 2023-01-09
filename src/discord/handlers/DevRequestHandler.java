@@ -27,7 +27,6 @@ public class DevRequestHandler {
         String logString = "";
 
         ProcessBuilder processBuilder;
-        File outFile;
 
         // Early exit if database unavailable or is not an admin
 
@@ -63,22 +62,10 @@ public class DevRequestHandler {
         }
 
         processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString + " " + commandArgument);
-
-        outFile = new File("devLastOut");
-        if (outFile.exists())
-            outFile.delete();
-
-        try {
-            outFile.createNewFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         logString = String.join(" ",processBuilder.command().toArray(new String[0]));
 
         try {
                 processBuilder.start();
-                processBuilder.redirectOutput(outFile);
             } catch (IOException e) {
                 Logger.info(e.toString());
             }
