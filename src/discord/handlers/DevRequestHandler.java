@@ -42,7 +42,7 @@ public class DevRequestHandler {
             case "build" :
                 execString = "/bin/sh -c ./mbdevbuild.sh " + buildTarget;
                 break;
-            case "reboot":
+            case "restart":
                 execString = "/bin/sh -c ./mbdevrestart.sh";
                 break;
             case "debug":
