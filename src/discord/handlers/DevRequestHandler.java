@@ -70,7 +70,8 @@ public class DevRequestHandler {
                 Logger.info(e.toString());
             }
 
-        MagicBot.sendResponse(event, "Executed on dev: " + logString);
+        MagicBot.sendResponse(event, "Executed on dev: " + logString + "\n" +
+                                                   "Use #dev lastout to view results");
 
         }
 }
