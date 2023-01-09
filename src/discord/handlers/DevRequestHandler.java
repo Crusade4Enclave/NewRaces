@@ -56,17 +56,20 @@ public class DevRequestHandler {
                 break;
         }
 
-        if (commandString.isEmpty() == false) {
+        if (commandString.isEmpty()) {
+            MagicBot.sendResponse(event, "Unrecognized Dev command: " + serverCommand + " " + commandArgument);
+            return;
+        }
 
-             processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString + " " + commandArgument);
-            try {
+        processBuilder = new ProcessBuilder("/bin/sh", "-c", commandString + " " + commandArgument);
+
+        try {
                 processBuilder.start();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Logger.info(e.toString());
             }
 
             MagicBot.sendResponse(event, "Executed on dev: " + serverCommand + " " + commandArgument);
             Logger.info(event.getAuthor().getName() + " told dev to " + serverCommand + " " + commandArgument);
         }
-    }
 }
