@@ -58,6 +58,8 @@ public class DevRequestHandler {
             case "lastout":
                 MagicBot.sendResponse(event, getLastOutput());
                 return;
+            case "console":
+                commandString = "./mbdevconsole.sh";
             default:
                 break;
         }
