@@ -306,7 +306,7 @@ public class MagicBot extends ListenerAdapter {
                     "#server               reboot/shutdown are your options.\n" +
                     "#logs                 magicbot/world/login n  (tail)\n" +
                     "#flash <text>         Send flash message\n" +
-                    "#dev                  build <target>/restart/debug/shutdown\n" +
+                    "#dev                  help (list dev subcommands)\n" +
                     "#trash                <blank>/detail/flush";
         sendResponse(event, helpString);
     }

@@ -60,6 +60,16 @@ public class DevRequestHandler {
                 return;
             case "console":
                 commandString = "./mbdevconsole.sh";
+                break;
+            case "help":
+                MagicBot.sendResponse(event,
+                        "#dev build <target> (blank==master) \n" +
+                                      "#dev shutdown (Shutdown dev server)\n" +
+                                      "#dev restart (Restarts the server)\n"+
+                        "#dev debug (Restarts server in debug mode)\n" +
+                        "#dev console # (Displays # lines from console)\n" +
+                        "#dev lastout (Displays output from last command) \n");
+                return;
             default:
                 break;
         }
