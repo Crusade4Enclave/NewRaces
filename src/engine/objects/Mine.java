@@ -231,7 +231,7 @@ try{
 
 		int mineTime = (nation != null && !nation.isErrant()) ? nation.getMineTime() : MBServerStatics.MINE_EARLY_WINDOW;
 
-		LocalDateTime openDate = LocalDateTime.now().withHour(mineTime).withMinute(0).withSecond(0).withNano(0);
+		this.openDate = this.openDate.withHour(mineTime).withMinute(0).withSecond(0).withNano(0);
 
 		//Failed to Update Database, default mine time.
 
@@ -241,8 +241,6 @@ try{
 			this.openDate = openDate;
 			return;
 		}
-
-		this.openDate = openDate;
 
 	}
 
