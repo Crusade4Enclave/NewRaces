@@ -519,6 +519,11 @@ try{
 
 	public boolean handleEndMineWindow(){
 
+		// No need to end the window of a mine which never opened.
+
+		if (this.isActive == false)
+			return false;
+
 		Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
 
 		if (mineBuilding == null){
