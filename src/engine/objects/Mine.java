@@ -35,6 +35,7 @@ import org.pmw.tinylog.Logger;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -141,48 +142,17 @@ public class Mine extends AbstractGameObject {
 		this.lastClaimerID = 0;
 		this.lastClaimerSessionID = null;
 
-	java.sql.Timestamp mineTimeStamp = rs.getTimestamp("mine_openDate");
-	
-	
-	Building building = BuildingManager.getBuildingFromCache(this.buildingID);
-	
 
-	if (mineTimeStamp == null && (this.owningGuild == null || this.owningGuild.isErrant() || building.getRank() < 1)){
-		if (building != null){
-			String zoneName = building.getParentZone().getName();
-			String parentZoneName = building.getParentZone().getParent().getName();
-			Logger.info(zoneName + " in " + parentZoneName + " has a dirty mine, setting active.");
-		}
-		this.dirtyMine = true;
-		openDate = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-		return;
-	}else if (this.owningGuild.isErrant() || nation.isErrant()){
-		openDate = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-		return;
-	}else if (mineTimeStamp == null){
-	
-		this.openDate = LocalDateTime.now().withHour(mineTime).withMinute(0).withSecond(0).withNano(0);
-		
+	Timestamp mineOpenDateTime = rs.getTimestamp("mine_openDate");
+
+		if (mineOpenDateTime != null)
+			this.openDate = mineOpenDateTime.toLocalDateTime();
+
+		// Set opendate to tomorrow if window has passed
+
 		if (LocalDateTime.now().isAfter(this.openDate.plusHours(1)))
-			this.openDate = this.openDate.plusDays(1);
-		return;
-	}else{
-		this.openDate =  mineTimeStamp.toLocalDateTime().withHour(mineTime);
-		
-		if (LocalDateTime.now().isAfter(this.openDate.plusHours(1))){
-			this.openDate = this.openDate.plusDays(1);
-			return;
-		}
-	}
-	
-	//after 1 day...
-	if(this.openDate.getDayOfYear() - LocalDateTime.now().getDayOfYear() > 1){
-		this.openDate = this.openDate.withDayOfYear(LocalDateTime.now().getDayOfYear());
-		if (LocalDateTime.now().isAfter(this.openDate.plusHours(1)))
-			this.openDate = this.openDate.plusDays(1);
-		return;
-	}
-	
+			this.openDate = LocalDateTime.now().plusDays(1).withHour(this.openDate.getHour()).withMinute(0).withSecond(0).withNano(0);
+
 	}
 
     public static void SendMineAttackMessage(Building mine){
@@ -258,10 +228,6 @@ try{
 	 */
 	private void initializeMineTime(){
 
-		//Mine time has already been set at loading from the database. skip.
-
-		if (this.openDate != null)
-			return;
 
 		Guild nation = null;
 
@@ -270,7 +236,7 @@ try{
 
 		int mineTime = (nation != null && !nation.isErrant()) ? nation.getMineTime() : MBServerStatics.MINE_EARLY_WINDOW;
 
-		LocalDateTime openDate = LocalDateTime.now().withHour(mineTime).withMinute(0).withSecond(0).withNano(0);
+		this.openDate = this.openDate.withHour(mineTime).withMinute(0).withSecond(0).withNano(0);
 
 		//Failed to Update Database, default mine time.
 
@@ -280,8 +246,6 @@ try{
 			this.openDate = openDate;
 			return;
 		}
-
-		this.openDate = openDate;
 
 	}
 
@@ -559,6 +523,11 @@ try{
 	}
 
 	public boolean handleEndMineWindow(){
+
+		// No need to end the window of a mine which never opened.
+
+		if (this.isActive == false)
+			return false;
 
 		Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
 

@@ -19,6 +19,7 @@ import org.pmw.tinylog.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class dbGuildHandler extends dbHandlerBase {
@@ -114,8 +115,12 @@ public class dbGuildHandler extends dbHandlerBase {
 		return outputStr;
 	}
 
-
-
+	public boolean SET_LAST_WOO_UPDATE(Guild guild, LocalDateTime lastEditTime) {
+		prepareCallable("UPDATE `obj_guild` SET `lastWooEditTime`=? WHERE `UID`=?");
+		setLocalDateTime(1, lastEditTime);
+		setLong(2, (long) guild.getObjectUUID());
+		return (executeUpdate() > 0);
+	}
 
 	public ArrayList<Guild> GET_GUILD_ALLIES(final int id) {
 		prepareCallable("SELECT g.* FROM `obj_guild` g, `dyn_guild_allianceenemylist` l "

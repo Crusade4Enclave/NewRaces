@@ -36,7 +36,7 @@ public enum Protocol {
     ARCMINECHANGEPRODUCTION(0x1EAA993F,  ArcMineChangeProductionMsg.class, null),
     ARCMINETOWERCRESTUPDATE(0x34164D0D, null, null),
     ARCMINEWINDOWAVAILABLETIME(0x6C909DE7, ArcMineWindowAvailableTimeMsg.class, null),
-    ARCMINEWINDOWCHANGE(0x92B2148A, ArcMineWindowChangeMsg.class, null),
+    ARCMINEWINDOWCHANGE(0x92B2148A, ArcMineWindowChangeMsg.class, MineWindowChangeHandler.class),
     ARCOWNEDMINESLIST(0x59184455, ArcOwnedMinesListMsg.class, null),
     ARCPETATTACK(0x18CD61AD, PetAttackMsg.class, null), // Pet Attack
     ARCPETCMD(0x4E80E001, PetCmdMsg.class, null), // Stop ArcPetAttack, Toggle Assist, Toggle Rest

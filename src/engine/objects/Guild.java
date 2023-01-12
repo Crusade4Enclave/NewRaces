@@ -40,7 +40,10 @@ import org.pmw.tinylog.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -79,6 +82,7 @@ public class Guild extends AbstractWorldObject {
 	private String hash;
 	private boolean ownerIsNPC;
 
+	public LocalDateTime lastWooEditTime;
 	public HashMap<Integer,GuildAlliances> guildAlliances = new HashMap<>();
 
 	/**
@@ -176,8 +180,13 @@ public class Guild extends AbstractWorldObject {
 		this.teleportMax = rs.getInt("teleportMax");
 
 		this.mineTime = rs.getInt("mineTime");
-		this.hash = rs.getString("hash");
 
+		Timestamp lastWooRequest = rs.getTimestamp("lastWooEditTime");
+
+		if (lastWooRequest != null)
+			this.lastWooEditTime = lastWooRequest.toLocalDateTime();
+
+		this.hash = rs.getString("hash");
 	}
 
 	public void setNation(Guild nation) {
@@ -565,11 +574,10 @@ public class Guild extends AbstractWorldObject {
 		
 		if (this.equals(toSub))
 			return false;
-
-		switch(this.guildState){
-		case Nation:
-		case Sovereign:
-			canSub = true;
+		switch(this.guildState) {
+			case Nation:
+			case Sovereign:
+				canSub = true;
 			break;
 		default:
 			canSub = false;
@@ -583,7 +591,10 @@ public class Guild extends AbstractWorldObject {
 		default:
 			canSub = false;
 		}
-
+		City nationCap = City.getCity(nation.cityUUID);
+		if (nation.getSubGuildList().size() >= nationCap.getRank()) {
+			canSub = false;
+		}
 		return canSub;
 	}
 

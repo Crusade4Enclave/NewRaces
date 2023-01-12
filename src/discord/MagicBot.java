@@ -217,6 +217,9 @@ public class MagicBot extends ListenerAdapter {
             case "#server":
                 ServerRequestHandler.handleRequest(event, args);
                 break;
+            case "#dev":
+                DevRequestHandler.handleRequest(event, args);
+                break;
             case "#logs":
                 LogsRequestHandler.handleRequest(event, args);
                 break;
@@ -302,7 +305,8 @@ public class MagicBot extends ListenerAdapter {
                     "#setavail true/false  Toggle status of database access.\n" +
                     "#server               reboot/shutdown are your options.\n" +
                     "#logs                 magicbot/world/login n  (tail)\n" +
-                    "#flash <text>         send flash message\n" +
+                    "#flash <text>         Send flash message\n" +
+                    "#dev                  help (list dev subcommands)\n" +
                     "#trash                <blank>/detail/flush";
         sendResponse(event, helpString);
     }

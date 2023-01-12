@@ -265,9 +265,6 @@ public class ClientMessagePump implements NetMsgHandler {
 			case ARCMINEWINDOWAVAILABLETIME:
 				MineWindowAvailableTime((ArcMineWindowAvailableTimeMsg) msg, origin);
 				break;
-			case ARCMINEWINDOWCHANGE:
-				MineWindowChange((ArcMineWindowChangeMsg) msg, origin);
-				break;
 			case ARCOWNEDMINESLIST:
 				ListOwnedMines((ArcOwnedMinesListMsg) msg, origin);
 				break;
@@ -1746,10 +1743,6 @@ boolean updateCity = false;
 				
 				
 				cost = sell.getBaseValue();
-				
-				if (sell.isID())
-					cost = sell.getMagicValue();
-				
 				float bargain = player.getBargain();
 				
 				float profit = npc.getBuyPercent(player) + bargain;
