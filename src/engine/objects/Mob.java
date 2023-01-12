@@ -1324,25 +1324,6 @@ public class Mob extends AbstractIntelligenceAgent {
 		} catch (Exception e) {
 			Logger.error(e);
 		}
-
-		//send announcement if disc or godly rune
-		for(Item it : this.getInventory()) {
-			ItemBase ib = it.getItemBase();
-			if (ib.isRune()) {
-				//if disc rune send system message
-				ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.getName() + " in " + this.getParentZone().getName() + " has found the " + ib.getName() +". Are you tough enough to take it?");
-				chatMsg.setMessageType(2);
-				chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
-				DispatchMessage.dispatchMsgToAll(chatMsg);
-			}
-			if (ib.isStatRune() && ib.getName().toLowerCase().contains("of the gods")) {
-				//godly rune send system message
-				ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.getName() + " in " + this.getParentZone().getName() + " has found the " + ib.getName() +". Are you tough enough to take it?");
-				chatMsg.setMessageType(2);
-				chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
-				DispatchMessage.dispatchMsgToAll(chatMsg);
-			}
-		}
 	}
 
 	public void respawn() {
@@ -1451,7 +1432,25 @@ public class Mob extends AbstractIntelligenceAgent {
 			this.charItemManager.addItemToInventory(ml);
 		}
 
-
+//send announcement if disc or godly rune
+		for(Item it : this.getInventory()) {
+			ItemBase ib = it.getItemBase();
+			if (ib.isDiscRune()) {
+				//if disc rune send system message
+				ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.getName() + " in " + this.getParentZone().getName() + " has found the " + ib.getName() +". Are you tough enough to take it?");
+				chatMsg.setMessageType(10);
+				chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
+				DispatchMessage.dispatchMsgToAll(chatMsg);
+			}
+			if (ib.isStatRune() && ib.getName().toLowerCase().contains("of the gods")) {
+				//godly rune send system message
+				ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.getName() + " in " + this.getParentZone().getName() + " has found the " + ib.getName() +". Are you tough enough to take it?");
+				chatMsg.setMessageType(10);
+				chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
+				DispatchMessage.dispatchMsgToAll(chatMsg);
+				return;
+			}
+		}
 
 		//add special loot to mob
 	}

@@ -313,7 +313,15 @@ public class ItemBase {
 		int ID = uuid;
 		return ID > 249999 && ID < 250045;
 	}
-
+	public boolean isDiscRune(){
+		int ID = uuid;
+		if (ID > 2499 && ID < 3050) { //class, discipline runes
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 	public boolean isGlass() {
 		int ID = uuid;
 		return ID > 7000099 && ID < 7000281;
