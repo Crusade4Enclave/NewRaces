@@ -566,6 +566,7 @@ public class CharacterPower extends AbstractGameObject {
 				}
 			}
 		}
+
 		return true;
 	}
 
