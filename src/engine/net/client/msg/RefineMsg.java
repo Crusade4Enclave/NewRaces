@@ -10,13 +10,17 @@
 package engine.net.client.msg;
 
 
+import engine.gameManager.PowersManager;
 import engine.gameManager.SessionManager;
 import engine.net.*;
 import engine.net.client.ClientConnection;
 import engine.net.client.Protocol;
 import engine.objects.*;
+import engine.powers.PowersBase;
 import engine.server.MBServerStatics;
 
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RefineMsg extends ClientNetMsg {
@@ -189,6 +193,18 @@ public class RefineMsg extends ClientNetMsg {
 		//TODO verify if any skills have this as prereq
 
 		//TODO verify if any powers have this as a prereq
+		//get all players powers
+		for(CharacterPower power : pc.getPowers().values()){
+			ArrayList<PowerReq> reqs = PowerReq.getPowerReqsForRune(power.getPowerID());
+			for (PowerReq req : reqs) {
+				ConcurrentHashMap<String,CharacterSkill> playerSkills =  pc.getSkills();
+				CharacterSkill playerSkill = playerSkills.get(token);
+				int currentSkillLevel = playerSkill.getTotalSkillPercet();
+				if (token == req.getToken() && req.getLevel() == currentSkillLevel) {
+					return false;
+				}
+			}
+		}
 
 		//refine skill
 		return skill.refine(pc);
