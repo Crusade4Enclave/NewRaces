@@ -225,6 +225,11 @@ try{
 
 		Guild nation = null;
 
+		//  If errant use mine stays open.
+
+		if (this.owningGuild == null || this.owningGuild.isErrant() == true)
+			return;
+
 		if (this.owningGuild != null)
 			nation = this.owningGuild.getNation();
 
