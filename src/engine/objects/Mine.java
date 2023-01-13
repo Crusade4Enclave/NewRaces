@@ -123,13 +123,11 @@ public class Mine extends AbstractGameObject {
 			nation = Guild.getErrantGuild();
 			this.owningGuild = Guild.getErrantGuild();
 		}
-		
-		int mineTime = this.owningGuild.getMineTime();
+
 
 		if(!nation.isErrant()) {
 			this.nationName = nation.getName();
 			this.nationTag = nation.getGuildTag();
-			mineTime = nation.getMineTime();
 		} else {
 			this.nationName = "";
 			this.nationTag = GuildTag.ERRANT;
@@ -227,11 +225,26 @@ try{
 
 		//  If errant use mine stays open.
 
-		if (this.owningGuild == null || this.owningGuild.isErrant() == true)
-			return;
+		if (this.owningGuild == null || this.owningGuild.isErrant() == true) {
 
-		if (this.owningGuild != null)
-			nation = this.owningGuild.getNation();
+			// Update mesh
+
+			Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
+
+			if (mineBuilding == null){
+				Logger.debug( "Null mine building " + this.getObjectUUID() +". Unable to Load Building with UID " +this.buildingID);
+				return;
+			}
+
+			mineBuilding.healthMax = (float) 1;
+			mineBuilding.meshUUID = mineBuilding.getBlueprint().getMeshForRank(-1);
+			mineBuilding.setRank(-1);
+			mineBuilding.setCurrentHitPoints((float) 1);
+			return;
+		}
+
+
+		nation = this.owningGuild.getNation();
 
 		int mineTime = (nation != null && !nation.isErrant()) ? nation.getMineTime() : MBServerStatics.MINE_EARLY_WINDOW;
 
