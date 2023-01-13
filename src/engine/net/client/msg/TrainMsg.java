@@ -108,7 +108,7 @@ public class TrainMsg extends ClientNetMsg {
 	}
 
 	public static void train(TrainMsg msg, ClientConnection origin) throws MsgSendException {
-
+		origin.getPlayerCharacter().recalculate();
 		PlayerCharacter playerCharacter = SessionManager.getPlayerCharacter(origin);
 		Dispatch dispatch;
 
