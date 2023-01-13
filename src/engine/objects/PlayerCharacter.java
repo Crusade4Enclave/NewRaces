@@ -1302,7 +1302,6 @@ public class PlayerCharacter extends AbstractCharacter {
 		this.calculateSkills();
 		return true;
 	}
-
 	public boolean refineSpi() {
 		boolean worked = false;
 		short newSpi = (short) 0;
@@ -1354,6 +1353,58 @@ public class PlayerCharacter extends AbstractCharacter {
 								if (attrID == MBServerStatics.RUNE_SPI_MIN_NEEDED_ATTRIBUTE_ID && ((int) this.statSpiBase <= mod))
 									return false;
 						}
+				}
+			}
+		}
+
+		//insert test run for lowered focus lines with trained spells
+		boolean tester = false;
+		switch(stat){
+			case MBServerStatics.STAT_STR_ID:
+				tester = refineStr();
+				break;
+			case MBServerStatics.STAT_DEX_ID:
+				tester = refineDex();
+				break;
+			case MBServerStatics.STAT_CON_ID:
+				tester = refineCon();
+				break;
+			case MBServerStatics.STAT_INT_ID:
+				tester = refineInt(null);
+				break;
+			case MBServerStatics.STAT_SPI_ID:
+				tester = refineSpi();
+				break;
+		}
+		//loop through all skills and all powers to ensure that the refine doesn't yield a power no longer able to be cast
+		for(CharacterSkill charSkill : this.getSkills().values()) {
+			for (CharacterPower power : this.getPowers().values()) {
+				ArrayList<PowerReq> reqs = PowerReq.getPowerReqsForRune(power.getPowerID());
+				for (PowerReq req : reqs) {
+					ConcurrentHashMap<String, CharacterSkill> playerSkills = this.getSkills();
+					CharacterSkill playerSkill = playerSkills.get(charSkill.getToken());
+					int currentSkillLevel = playerSkill.getTotalSkillPercet();
+					if (charSkill.getToken() == req.getToken() && req.getLevel() > currentSkillLevel) {
+						//refund the point taken in the test
+						switch(stat){
+							case MBServerStatics.STAT_STR_ID:
+								this.addStr(1);
+								break;
+							case MBServerStatics.STAT_DEX_ID:
+								this.addDex(1);
+								break;
+							case MBServerStatics.STAT_CON_ID:
+								this.addCon(1);
+								break;
+							case MBServerStatics.STAT_INT_ID:
+								this.addInt(1);
+								break;
+							case MBServerStatics.STAT_SPI_ID:
+								this.addSpi(1);
+								break;
+						}
+						return false;
+					}
 				}
 			}
 		}
