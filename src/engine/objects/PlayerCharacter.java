@@ -172,7 +172,7 @@ public class PlayerCharacter extends AbstractCharacter {
 	private int spamCount = 0;
 
 	private boolean initialized = false;
-	
+
 	private boolean enteredWorld = false;
 
 	private boolean canBreathe = true;
@@ -191,7 +191,7 @@ public class PlayerCharacter extends AbstractCharacter {
 	public double timeLoggedIn = 0;
 
 	public boolean RUN_MAGICTREK = true;
-	
+
 	public int spellsCasted = 0;
 	public int pingCount = 0;
 	public long startPing = 0;
@@ -199,14 +199,14 @@ public class PlayerCharacter extends AbstractCharacter {
 	private boolean wasTripped75 = false;
 	private boolean wasTripped50 = false;
 	private boolean wasTripped25 = false;
-	
+
 	private float characterHeight = 0;
 	public float centerHeight = 0;
 	private boolean lastSwimming = false;
-	
+
 	private boolean isTeleporting = false;
 	public float landingAltitude = 0;
-	
+
 	public int bindBuilding = 0;
 	public FriendStatus friendStatus = FriendStatus.Available;
 
@@ -338,11 +338,11 @@ public class PlayerCharacter extends AbstractCharacter {
 	}
 
 	public void setInnerCouncil(boolean value) {
-		
+
 		// dont update if its the same.
 		if (GuildStatusController.isInnerCouncil(this.guildStatus) == value)
 			return;
-		
+
 		DbManager.PlayerCharacterQueries.SET_INNERCOUNCIL(this, value);
 		GuildStatusController.setInnerCouncil(guildStatus, value);
 	}
@@ -350,7 +350,7 @@ public class PlayerCharacter extends AbstractCharacter {
 	public void setGuildLeader(boolean value) {
 		if (GuildStatusController.isGuildLeader(this.guildStatus) == value)
 			return;
-		
+
 		GuildStatusController.setGuildLeader(guildStatus, value);
 		if (value == true){
 			this.setInnerCouncil(true);
@@ -620,19 +620,19 @@ public class PlayerCharacter extends AbstractCharacter {
 
 	private void killCleanup() {
 		this.stopMovement(this.getLoc());
-		
+
 		this.health.set(-1);
 		//remove pet
 		if (this.pet != null)
 			this.dismissPet();
-		
+
 		this.dismissNecroPets();
 		// remove flight job.
-		
+
 		this.setTakeOffTime(0);
 		this.setDesiredAltitude(0);
 		this.altitude = (float) 0;
-		
+
 	this.getCharItemManager().closeTradeWindow();
 
 		//increment live counter. This is to prevent double kills from casts
@@ -653,10 +653,10 @@ public class PlayerCharacter extends AbstractCharacter {
 		// sends a kill message to ensure the Player falls over.
 
 		this.respawnLock.writeLock().lock();
-		
+
 		try{
 			if (SessionManager.getPlayerCharacterByID(this.getObjectUUID()) == null && !this.enteredWorld){
-				WorldGrid.RemoveWorldObject(this);			
+				WorldGrid.RemoveWorldObject(this);
 				this.respawn(false, false,true);
 			}else{
 				TargetedActionMsg killmsg = new TargetedActionMsg(this, true);
@@ -667,7 +667,7 @@ public class PlayerCharacter extends AbstractCharacter {
 		}finally{
 			this.respawnLock.writeLock().unlock();
 		}
-		
+
 		// TODO damage equipped items
 		if (this.charItemManager != null)
 			this.charItemManager.damageAllGear();
@@ -724,16 +724,16 @@ public class PlayerCharacter extends AbstractCharacter {
 
 		// Recalculate everything
 
-		
+
 		this.recalculatePlayerStats(true);
 		this.setCombat(false);
 
 		// Set Health to 1/4 max
 
-	
-		
+
+
 		Corpse corpse = null;
-		
+
 		if (makeCorpse){
 			try {
 				corpse = Corpse.makeCorpse(this, enterWorld);
@@ -742,7 +742,7 @@ public class PlayerCharacter extends AbstractCharacter {
 			}
 			//if we're not making corpse, just purge inventory. used for characters dead while logged out.
 		}
-		
+
 		if (!setAlive){
 			if (corpse == null && makeCorpse) {
 				Logger.error("Corpse not created.");
@@ -754,7 +754,7 @@ public class PlayerCharacter extends AbstractCharacter {
 			}
 			return;
 		}
-		
+
 		this.setHealth((float) (healthMax * .25));
 			this.isAlive.set(true);
 
@@ -762,7 +762,7 @@ public class PlayerCharacter extends AbstractCharacter {
 		// Put player in safe mode
 		// Teleport the player to his bind loc
 		// or to a ruin as apporpriate.
-		
+
 			Building bindBuilding = BuildingManager.getBuildingFromCache(this.getBindBuildingID());
 
 			if (enterWorld) {
@@ -778,11 +778,11 @@ public class PlayerCharacter extends AbstractCharacter {
 
 		this.lastUpdateTime = System.currentTimeMillis();
 		this.lastStamUpdateTime = System.currentTimeMillis();
-		
+
 		this.update();
-		
+
 		PowersManager.applyPower(this, this, Vector3fImmutable.ZERO, -1661758934, 40, false);
-		
+
 		if (corpse == null && makeCorpse) {
 			Logger.error("Corpse not created.");
 		}
@@ -870,19 +870,19 @@ public class PlayerCharacter extends AbstractCharacter {
 
 		if (ConfigManager.serverType.equals(ServerType.LOGINSERVER))
 			return Vector3fImmutable.ZERO;
-		
+
 		Building bindBuilding = PlayerCharacter.getUpdatedBindBuilding(this);
-		
+
 		//handle rented room binds.
-		
-		
+
+
 		if (bindBuilding == null){
 			bindLocation = Enum.Ruins.getRandomRuin().getLocation();
 			return bindLocation;
 		}
-			
 
-	
+
+
 		bindLocation = BuildingManager.GetBindLocationForBuilding(bindBuilding);
 
 		if (bindLocation == null)
@@ -916,14 +916,14 @@ public class PlayerCharacter extends AbstractCharacter {
 	public boolean setPromotionClass(int value) {
 
 		PromotionClass promotionClass = PromotionClass.GetPromtionClassFromCache(value);
-		
+
 		if (promotionClass == null)
 			return false;
-		
-		
+
+
 		if (!DbManager.PlayerCharacterQueries.SET_PROMOTION_CLASS(this, value))
 			return false;
-		
+
 			this.promotionClass = promotionClass;
 
 			// Warehouse this event
@@ -964,7 +964,7 @@ public class PlayerCharacter extends AbstractCharacter {
 			return 2;
 		return 1;
 	}
-	
+
 
 	public final void toggleLFGroup() {
 		this.lfGroup = !this.lfGroup;
@@ -1302,7 +1302,6 @@ public class PlayerCharacter extends AbstractCharacter {
 		this.calculateSkills();
 		return true;
 	}
-
 	public boolean refineSpi() {
 		boolean worked = false;
 		short newSpi = (short) 0;
@@ -1357,6 +1356,7 @@ public class PlayerCharacter extends AbstractCharacter {
 				}
 			}
 		}
+		
 		return true;
 	}
 

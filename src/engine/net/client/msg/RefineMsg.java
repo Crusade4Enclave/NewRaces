@@ -168,6 +168,7 @@ public class RefineMsg extends ClientNetMsg {
 			RefinerScreenMsg refinerScreenMsg = new RefinerScreenMsg(skillPower, npc.getSellPercent(pc)); //TODO set npc cost
 			dispatch = Dispatch.borrow(pc, refinerScreenMsg);
 			DispatchMessage.dispatchMsgDispatch(dispatch, engine.Enum.DispatchChannel.SECONDARY);
+			pc.recalculate();
 		}
 	}
 
