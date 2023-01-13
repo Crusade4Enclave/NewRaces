@@ -29,6 +29,7 @@ import engine.gameManager.*;
 import engine.net.ByteBufferWriter;
 import engine.net.client.msg.ErrorPopupMsg;
 import engine.server.MBServerStatics;
+import engine.server.world.WorldServer;
 import engine.session.SessionID;
 import org.pmw.tinylog.Logger;
 
@@ -40,8 +41,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static engine.gameManager.DbManager.MineQueries;
-import static engine.gameManager.DbManager.getObject;
+import static engine.gameManager.DbManager.*;
 import static engine.math.FastMath.sqr;
 
 public class Mine extends AbstractGameObject {
@@ -510,6 +510,10 @@ try{
 		this.nationName = "";
 		this.owningGuild = null;
 		Mine.setLastChange(System.currentTimeMillis());
+
+		// Update database
+
+		DbManager.MineQueries.CHANGE_OWNER(this, 0);
 
 		// remove hirelings
 
