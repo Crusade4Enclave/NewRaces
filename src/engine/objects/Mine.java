@@ -177,10 +177,14 @@ public class Mine extends AbstractGameObject {
 		int nextMineHour = MBServerStatics.MINE_EARLY_WINDOW;;
 		LocalDateTime nextOpenDate = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
 
-		// Use the new owners Mine WOO.  If errant use Early window for this server.
+		//  If errant use mine stays open.
 
-    	if (this.owningGuild != null || this.owningGuild.isErrant() == false)
-			nextMineHour = this.owningGuild.getMineTime();
+    	if (this.owningGuild == null || this.owningGuild.isErrant() == false)
+			return;
+
+		// Use the new owners Mine WOO.
+
+		nextMineHour = this.owningGuild.getMineTime();
 
     	if ((this.openDate.getHour() == 0 || this.openDate.getHour() == 24) &&
 			(this.owningGuild.getMineTime() != 0 && this.owningGuild.getMineTime() != 24))
