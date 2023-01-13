@@ -31,6 +31,7 @@ import engine.net.client.msg.ErrorPopupMsg;
 import engine.net.client.msg.ManageCityAssetsMsg;
 import engine.net.client.msg.PetMsg;
 import engine.net.client.msg.PlaceAssetMsg;
+import engine.net.client.msg.chat.ChatSystemMsg;
 import engine.powers.EffectsBase;
 import engine.server.MBServerStatics;
 import engine.server.world.WorldServer;
@@ -1431,7 +1432,25 @@ public class Mob extends AbstractIntelligenceAgent {
 			this.charItemManager.addItemToInventory(ml);
 		}
 
-
+//send announcement if disc or godly rune
+		for(Item it : this.getInventory()) {
+			ItemBase ib = it.getItemBase();
+			if (ib.isDiscRune()) {
+				//if disc rune send system message
+				ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.getName() + " in " + this.getParentZone().getName() + " has found the " + ib.getName() +". Are you tough enough to take it?");
+				chatMsg.setMessageType(10);
+				chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
+				DispatchMessage.dispatchMsgToAll(chatMsg);
+			}
+			if (ib.isStatRune() && ib.getName().toLowerCase().contains("of the gods")) {
+				//godly rune send system message
+				ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.getName() + " in " + this.getParentZone().getName() + " has found the " + ib.getName() +". Are you tough enough to take it?");
+				chatMsg.setMessageType(10);
+				chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
+				DispatchMessage.dispatchMsgToAll(chatMsg);
+				return;
+			}
+		}
 
 		//add special loot to mob
 	}
