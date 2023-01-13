@@ -77,7 +77,6 @@ public class Mine extends AbstractGameObject {
 	public static ConcurrentHashMap<Integer, Mine> towerMap = new ConcurrentHashMap<>(MBServerStatics.CHM_INIT_CAP, MBServerStatics.CHM_LOAD, MBServerStatics.CHM_THREAD_LOW);
 
 	private static long lastChange = System.currentTimeMillis();
-	public static LocalDateTime effectiveMineDate;
 
 	/**
 	 * ResultSet Constructor
@@ -195,11 +194,7 @@ public class Mine extends AbstractGameObject {
 
 	public static void loadAllMines() {
 
-		// Set current mine effective date
 try{
-	
-
-		effectiveMineDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
 
 		//Load mine resources
 		MineProduction.addResources();

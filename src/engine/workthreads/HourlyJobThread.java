@@ -55,11 +55,6 @@ public class HourlyJobThread implements Runnable {
 			//updateMines.
 			try {
 
-				// Update mine effective date if this is a midnight window
-
-				if (LocalDateTime.now().getHour() == 0 || LocalDateTime.now().getHour() == 24)
-					Mine.effectiveMineDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
-
 				ArrayList<Mine> mines = Mine.getMines();
 				LocalDateTime now = LocalDateTime.now();
 
