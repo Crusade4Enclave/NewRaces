@@ -515,6 +515,16 @@ try{
 
 		DbManager.MineQueries.CHANGE_OWNER(this, 0);
 
+		// Update mesh
+
+		Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
+
+		if (mineBuilding == null){
+			Logger.debug( "Null mine building " + this.getObjectUUID() +". Unable to Load Building with UID " +this.buildingID);
+			return;
+		}
+		WorldGrid.updateObject(mineBuilding);
+
 		// remove hirelings
 
 		Building building = (Building) getObject(Enum.GameObjectType.Building, this.buildingID);
