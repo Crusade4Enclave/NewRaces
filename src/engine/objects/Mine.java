@@ -604,7 +604,6 @@ try{
 		}
 
 		this.setActive(false);
-		setNextMineWindow();
 		return true;
 	}
 
