@@ -524,6 +524,7 @@ try{
 			return;
 		}
 
+		mineBuilding.setOwner(null);
 		mineBuilding.refresh(false);
 
 		// remove hirelings
