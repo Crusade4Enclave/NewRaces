@@ -179,7 +179,7 @@ public class Mine extends AbstractGameObject {
 
 		//  If errant use mine stays open.
 
-    	if (this.owningGuild == null || this.owningGuild.isErrant() == false)
+    	if (this.owningGuild == null || this.owningGuild.isErrant() == true)
 			return;
 
 		// Use the new owners Mine WOO.
