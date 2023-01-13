@@ -577,7 +577,7 @@ try{
 		PlayerCharacter claimer = PlayerCharacter.getFromCache(this.lastClaimerID);
 
 		if (!validClaimer(claimer)){
-			LocalDateTime resetTime = LocalDateTime.now().withDayOfMonth(LocalDateTime.now().getDayOfMonth()).withHour(LocalDateTime.now().getHour()).withMinute(0).withSecond(0).withNano(0);
+			LocalDateTime resetTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
 			this.openDate = resetTime;
 			return false;
 		}
@@ -591,7 +591,7 @@ try{
 		//			return false;
 
 		if (this.owningGuild == null || this.owningGuild.isErrant() || this.owningGuild.getNation().isErrant()){
-			LocalDateTime resetTime = LocalDateTime.now().withDayOfMonth(LocalDateTime.now().getDayOfMonth()).withHour(LocalDateTime.now().getHour()).withMinute(0).withSecond(0).withNano(0);
+			LocalDateTime resetTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
 			this.openDate = resetTime;
 			return false;
 		}
