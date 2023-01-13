@@ -179,23 +179,23 @@ public class Mine extends AbstractGameObject {
     }
 
     private void setNextMineWindow() {
-    	
-    	//default time, 9 pm est
-    	int mineHour = 21;
-    	
+
+		int nextMineHour = MBServerStatics.MINE_EARLY_WINDOW;;
+		LocalDateTime nextOpenDate = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
+
+		// Use the new owners Mine WOO.  If errant use Early window for this server.
+
     	if (this.owningGuild != null || this.owningGuild.isErrant() == false)
-    		mineHour = this.owningGuild.getNation().getMineTime();
-    	int days = 1;
-    	
-    	//midnight hours
-    	if (this.openDate.getHour() != 0 && this.openDate.getHour() != 24 && (this.openDate.getDayOfMonth() == LocalDateTime.now().getDayOfMonth()))
-    		if (mineHour == 0 || mineHour == 24)
-    			days = 2;
-    	
-    	LocalDateTime newTime = this.openDate.plusDays(days).withHour(mineHour).withMinute(0).withSecond(0).withNano(0);
-    	
-    	DbManager.MineQueries.CHANGE_MINE_TIME(this, newTime);
-		this.openDate = newTime;
+			nextMineHour = this.owningGuild.getMineTime();
+
+    	if ((this.openDate.getHour() == 0 || this.openDate.getHour() == 24) &&
+			(this.owningGuild.getMineTime() != 0 && this.owningGuild.getMineTime() != 24))
+			nextOpenDate = nextOpenDate.withHour(nextMineHour);
+		else
+			nextOpenDate = nextOpenDate.withHour(nextMineHour).plusDays(1);
+
+    	DbManager.MineQueries.CHANGE_MINE_TIME(this, nextOpenDate);
+		this.openDate = nextOpenDate;
 	}
 
 	public static void loadAllMines() {
@@ -576,16 +576,9 @@ try{
 		Guild nation = this.owningGuild.getNation();
 		this.nationName = nation.getName();
 		this.nationTag = nation.getGuildTag();
-		
-		LocalDateTime guildDate = LocalDateTime.now().withHour(this.owningGuild.getMineTime()).withMinute(0).withSecond(0).withNano(0);
-		
-		if (this.openDate.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())
-		if (this.owningGuild.getMineTime() == 0 || this.owningGuild.getMineTime() == 24)
-			guildDate = guildDate.plusDays(1);
-		
-		guildDate = guildDate.withHour(this.owningGuild.getMineTime()).withMinute(0).withSecond(0).withNano(0);
-		this.openDate = guildDate;
-		Mine.setLastChange(System.currentTimeMillis());
+
+		setNextMineWindow();
+		setLastChange(System.currentTimeMillis());
 
 		if (mineBuilding.getRank() < 1){
 
