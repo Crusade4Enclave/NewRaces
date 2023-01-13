@@ -560,7 +560,7 @@ try{
 		Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
 
 		if (mineBuilding == null){
-			Logger.debug( "Failed to Activate Mine with UID " + this.getObjectUUID() +". Unable to Load Building with UID " +this.buildingID);
+			Logger.debug( "Null mine building for Mine " + this.getObjectUUID() +" Building " +this.buildingID);
 			return false;
 		}
 
