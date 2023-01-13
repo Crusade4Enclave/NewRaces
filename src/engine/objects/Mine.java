@@ -523,7 +523,8 @@ try{
 			Logger.debug( "Null mine building " + this.getObjectUUID() +". Unable to Load Building with UID " +this.buildingID);
 			return;
 		}
-		WorldGrid.updateObject(mineBuilding);
+
+		mineBuilding.refresh(false);
 
 		// remove hirelings
 
