@@ -148,11 +148,6 @@ public class Mine extends AbstractGameObject {
 		if (mineOpenDateTime != null)
 			this.openDate = mineOpenDateTime.toLocalDateTime();
 
-		// Set opendate to tomorrow if window has passed
-
-		if (LocalDateTime.now().isAfter(this.openDate.plusHours(1)))
-			this.openDate = LocalDateTime.now().plusDays(1).withHour(this.openDate.getHour()).withMinute(0).withSecond(0).withNano(0);
-
 	}
 
     public static void SendMineAttackMessage(Building mine){
