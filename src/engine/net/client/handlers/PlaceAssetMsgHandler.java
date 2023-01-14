@@ -398,8 +398,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		HashSet<AbstractWorldObject> awoList = WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
 
-
-
 		for (AbstractWorldObject awo : awoList) {
 			Building building = (Building)awo;
 
@@ -416,7 +414,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			if (building.getGuild().isErrant())
 				continue;
 
-
 			if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 				continue;
 
@@ -430,7 +427,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 				numAttackerBuildings++;
 
-
 		}
 
 		// Validate bane limits on siege assets
@@ -441,12 +437,11 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 				return true;
 			}
 
+		if (serverCity.getBane() != null)
 		if ((player.getGuild().equals(serverCity.getGuild())) &&
 				(numDefenderBuildings >= serverCity.getTOL().getRank())) {
 			return true;
 		}
-
-
 
 		// passes validation: can assign auto-protection to war asset
 
@@ -455,14 +450,8 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 				if (player.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 					return true;
 
-
-
-
-
-
 		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
 		// No bane placed.  We're done!
-
 
 		return true;
 	}
