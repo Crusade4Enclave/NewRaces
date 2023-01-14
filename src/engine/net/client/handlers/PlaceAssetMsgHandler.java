@@ -308,8 +308,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		Building siegeBuilding;
 		PlacementInfo buildingList;
 		City serverCity;
-		int numAttackerBuildings = 0;
-		int numDefenderBuildings = 0;
 
 		// Retrieve the building details we're placing
 
@@ -359,8 +357,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 					serverCity = player.getGuild().getOwnedCity();
 		}
 
-
-
 		if ((serverCity != null) &&
 				(serverCity.getBane() != null)) {
 
@@ -377,81 +373,22 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		}
 
 		// cant place siege equipment off city zone.
-
-
+		
 		// Create the siege Building
 
 		siegeBuilding = createStructure(player, msg.getFirstPlacementInfo(), serverZone);
-		if (serverCity == null)
-			return true;
+		
 		// Oops something went really wrong
 
 		if (siegeBuilding == null)
 			return false;
 
-
-		if (serverCity.getBane() == null)
+		// If there is a bane placed, we limit placement to  2x the stone rank's worth of attacker assets
+		// and 1x the tree rank for defenders
+		
+		if (validateSiegeLimits(player, origin, serverCity.getBane()) == false)
 			return true;
-
-		// If there is an bane placed, we protect 2x the stone rank's worth of attacker assets
-
-		// and 1x the tree rank's worth of assets automatically
-
-		HashSet<AbstractWorldObject> awoList = WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
-
-		for (AbstractWorldObject awo : awoList) {
-			Building building = (Building)awo;
-
-			if (building.getBlueprint() != null)
-				if (!building.getBlueprint().isSiegeEquip())
-					continue;
-
-			if (!building.getLoc().isInsideCircle(serverCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
-				continue;
-
-			if (building.getGuild() == null)
-				continue;
-
-			if (building.getGuild().isErrant())
-				continue;
-
-			if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-				continue;
-
-			// Only count auto protected buildings
-			if (building.getProtectionState() != ProtectionState.PROTECTED)
-				continue;
-
-			if (building.getGuild().equals(serverCity.getGuild()))
-				numDefenderBuildings++;
-			else if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-				numAttackerBuildings++;
-
-			// Validate bane limits on siege assets
-
-			int maxAttackerAssets = serverCity.getBane().getStone().getRank() * 2;
-			int maxDefenderAssets = serverCity.getRank();
-
-			if(player.getGuild().equals(serverCity.getGuild())){
-				//defender attempting to place asset
-				if(numDefenderBuildings >= maxDefenderAssets){
-					PlaceAssetMsg.sendPlaceAssetError(origin,62, "");
-					return true;
-				}
-			}
-			else if(player.getGuild().equals(serverCity.getBane().getStone().getGuild())){
-				//attacker attempting to place asset
-				if(numAttackerBuildings >= maxAttackerAssets){
-					PlaceAssetMsg.sendPlaceAssetError(origin,61, "");
-					return true;
-				}
-			}
-			else{
-				//third party attempting to place asset, early exit
-				return true;
-			}
-		}
-
+		
 		// passes validation: can assign auto-protection to war asset
 
 		if (serverCity.getBane() != null)
@@ -460,12 +397,80 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 					return true;
 
 		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
+		
 		// No bane placed.  We're done!
-
-
+		
 		return true;
 	}
 
+	private  boolean validateSiegeLimits(PlayerCharacter playerCharacter, ClientConnection origin, Bane bane) {
+
+		City serverCity = bane.getCity();
+		HashSet<AbstractWorldObject> awoList;
+		
+		int maxAttackerAssets = serverCity.getBane().getStone().getRank() * 2;
+		int maxDefenderAssets = serverCity.getRank();
+		int numDefenderBuildings = 0;
+		int numAttackerBuildings = 0;
+		
+		// Count bow for attackers and defenders
+
+		awoList =  WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
+
+		for (AbstractWorldObject awo : awoList) {
+			Building building = (Building) awo;
+
+		if (building.getBlueprint() != null)
+			if (!building.getBlueprint().isSiegeEquip())
+				continue;
+
+		if (!building.getLoc().isInsideCircle(serverCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
+			continue;
+
+		if (building.getGuild() == null)
+			continue;
+
+		if (building.getGuild().isErrant())
+			continue;
+
+		if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
+			continue;
+
+		// Only count auto protected buildings
+		if (building.getProtectionState() != ProtectionState.PROTECTED)
+			continue;
+
+		if (building.getGuild().equals(serverCity.getGuild()))
+			numDefenderBuildings++;
+		
+		if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
+			numAttackerBuildings++;
+	
+			// Validate bane limits on siege assets
+
+			if (playerCharacter.getGuild().equals(serverCity.getGuild())) {
+				//defender attempting to place asset
+				if (numDefenderBuildings >= maxDefenderAssets) {
+					PlaceAssetMsg.sendPlaceAssetError(origin, 62, "");
+					return false;
+				}
+			}
+			
+			if (playerCharacter.getGuild().equals(serverCity.getBane().getStone().getGuild())) {
+				//attacker attempting to place asset
+				if (numAttackerBuildings >= maxAttackerAssets) {
+					PlaceAssetMsg.sendPlaceAssetError(origin, 61, "");
+					return false;
+				}
+			}
+			
+		}
+		// Passed validation
+		
+		return  true;
+	}
+	
+			
 	private boolean placeTreeOfLife(PlayerCharacter playerCharacter, ClientConnection origin, PlaceAssetMsg msg) {
 
 		Realm serverRealm;
