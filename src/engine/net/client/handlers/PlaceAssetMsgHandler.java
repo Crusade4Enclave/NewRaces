@@ -335,42 +335,30 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		serverCity = ZoneManager.getCityAtLocation(buildingList.getLoc());
 
 		//no city found
-		//check if attacker city.
-		if (serverCity == null){
-			Bane bane = Bane.getBaneByAttackerGuild(player.getGuild());
-			City attackerCity = null;
-			if (bane != null)
-				attackerCity = bane.getCity();
 
-			if (attackerCity != null)
-				if (buildingList.getLoc().isInsideCircle(attackerCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
-					serverCity = attackerCity;
-		}
-		//no city found for attacker city,
-		//check if defender city
-
-		if (serverCity == null){
-			if (player.getGuild().getOwnedCity() != null)
-				if (buildingList.getLoc().isInsideCircle(player.getGuild().getOwnedCity().getLoc(), Enum.CityBoundsType.SIEGE.extents))
-					serverCity = player.getGuild().getOwnedCity();
+		if (serverCity == null) {
+			PlaceAssetMsg.sendPlaceAssetError(origin, 41, ""); // Cannot place outisde a guild zone
+			return false;
 		}
 
-		if ((serverCity != null) &&
-				(serverCity.getBane() != null)) {
+		// No bane no bow
 
-			// Set the server zone to the city zone in order to account for being inside
-			// the siege bounds buffer area
+		if (serverCity.getBane() == null) {
+			PlaceAssetMsg.sendPlaceAssetError(origin, 66, ""); // There is no bane circle to support this building of war
+			return false;
+		}
 
-			serverZone = serverCity.getParent();
 
-			if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild()) == false)
+		// Set the server zone to the city zone in order to account for being inside
+		// the siege bounds buffer area
+
+		serverZone = serverCity.getParent();
+
+		if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild()) == false)
 					&& (player.getGuild().equals(serverCity.getGuild()) == false)) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 54, ""); // Must belong to attacker or defender
-				return false;
+			PlaceAssetMsg.sendPlaceAssetError(origin, 54, ""); // Must belong to attacker or defender
+			return false;
 			}
-		}
-
-		// cant place siege equipment off city zone.
 
 		// If there is a bane placed, we limit placement to  2x the stone rank's worth of attacker assets
 		// and 1x the tree rank for defenders
@@ -413,27 +401,29 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		for (AbstractWorldObject awo : awoList) {
 			Building building = (Building) awo;
 
-		if (building.getBlueprint() != null)
-			if (!building.getBlueprint().isSiegeEquip())
+			if (building.getBlueprint() != null)
+				if (!building.getBlueprint().isSiegeEquip())
+					continue;
+
+			if (!building.getLoc().isInsideCircle(serverCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
 				continue;
 
-		if (!building.getLoc().isInsideCircle(serverCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
-			continue;
+			if (building.getGuild() == null)
+				continue;
 
-		if (building.getGuild() == null)
-			continue;
+			if (building.getGuild().isErrant())
+				continue;
 
-		if (building.getGuild().isErrant())
-			continue;
+			if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
+				continue;
 
-		if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-			continue;
+			if (building.getGuild().equals(serverCity.getGuild()))
+				defenderBuildings.add(building);
 
-		if (building.getGuild().equals(serverCity.getGuild()))
-			defenderBuildings.add(building);
-		
-		if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-			attackerBuildings.add(building);
+			if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
+				attackerBuildings.add(building);
+
+		}
 			// Validate bane limits on siege assets
 
 			if (playerCharacter.getGuild().equals(serverCity.getGuild())) {
@@ -451,8 +441,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 					return false;
 				}
 			}
-			
-		}
+
 		// Passed validation
 		
 		return  true;
