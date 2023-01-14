@@ -405,11 +405,11 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		City serverCity = bane.getCity();
 		HashSet<AbstractWorldObject> awoList;
-		
+		HashSet<AbstractWorldObject> attackerBuildings = new HashSet<>();
+		HashSet<AbstractWorldObject> defenderBuildings = new HashSet<>();
+		;
 		int maxAttackerAssets = serverCity.getBane().getStone().getRank() * 2;
 		int maxDefenderAssets = serverCity.getRank();
-		int numDefenderBuildings = 0;
-		int numAttackerBuildings = 0;
 		
 		// Count bow for attackers and defenders
 
@@ -439,16 +439,15 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			continue;
 
 		if (building.getGuild().equals(serverCity.getGuild()))
-			numDefenderBuildings++;
+			defenderBuildings.add(building);
 		
 		if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-			numAttackerBuildings++;
-	
+			attackerBuildings.add(building);
 			// Validate bane limits on siege assets
 
 			if (playerCharacter.getGuild().equals(serverCity.getGuild())) {
 				//defender attempting to place asset
-				if (numDefenderBuildings >= maxDefenderAssets) {
+				if (defenderBuildings.size() >= maxDefenderAssets) {
 					PlaceAssetMsg.sendPlaceAssetError(origin, 62, "");
 					return false;
 				}
@@ -456,7 +455,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			
 			if (playerCharacter.getGuild().equals(serverCity.getBane().getStone().getGuild())) {
 				//attacker attempting to place asset
-				if (numAttackerBuildings >= maxAttackerAssets) {
+				if (attackerBuildings.size() >= maxAttackerAssets) {
 					PlaceAssetMsg.sendPlaceAssetError(origin, 61, "");
 					return false;
 				}
