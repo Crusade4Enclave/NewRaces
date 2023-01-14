@@ -23,6 +23,7 @@ import engine.objects.*;
 import engine.server.MBServerStatics;
 import org.joda.time.DateTime;
 import org.pmw.tinylog.Logger;
+import sun.util.calendar.ZoneInfo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -122,7 +123,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		}
 
 		// Let's now attempt to place the building
-
 		buildingCreated = false;
 
 		// Many buildings have particular validation and
@@ -394,11 +394,10 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			return true;
 
 		// If there is an bane placed, we protect 2x the stone rank's worth of attacker assets
+
 		// and 1x the tree rank's worth of assets automatically
 
 		HashSet<AbstractWorldObject> awoList = WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
-
-
 
 		for (AbstractWorldObject awo : awoList) {
 			Building building = (Building)awo;
@@ -426,25 +425,41 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 			if (building.getGuild().equals(serverCity.getGuild()))
 				numDefenderBuildings++;
-			else
-			if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
+			else if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 				numAttackerBuildings++;
 
+// Validate bane limits on siege assets
+			//if (serverCity.getBane() != null)
+			//	if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild())) &&
+			//			(numAttackerBuildings >= serverCity.getBane().getStone().getRank() * 2)) {
+			//		return true;
+			//	}
 
-		}
-
-		// Validate bane limits on siege assets
-
-		if (serverCity.getBane() != null)
-			if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild())) &&
-					(numAttackerBuildings >= serverCity.getBane().getStone().getRank() * 2)) {
+			//if ((player.getGuild().equals(serverCity.getGuild())) &&
+			//		(numDefenderBuildings >= serverCity.getTOL().getRank())) {
+			//	return true;
+			//}
+			int maxAttackerAssets = serverCity.getBane().getStone().getRank() * 2;
+			int maxDefenderAssets = serverCity.getRank();
+			if(player.getGuild() == serverCity.getGuild()){
+				//defender attempting to place asset
+				if(numDefenderBuildings == maxDefenderAssets){
+					return true;
+				}
+			}
+			else if(player.getGuild() == serverCity.getBane().getStone().getGuild()){
+				//attacker attempting to place asset
+				if(numAttackerBuildings == maxAttackerAssets){
+					return true;
+				}
+			}
+			else{
+				//third party attempting to place asset, early exit
 				return true;
 			}
-
-		if ((player.getGuild().equals(serverCity.getGuild())) &&
-				(numDefenderBuildings >= serverCity.getTOL().getRank())) {
-			return true;
 		}
+
+
 
 
 
