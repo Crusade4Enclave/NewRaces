@@ -371,7 +371,13 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		}
 
 		// cant place siege equipment off city zone.
-		
+
+		// If there is a bane placed, we limit placement to  2x the stone rank's worth of attacker assets
+		// and 1x the tree rank for defenders
+
+		if (validateSiegeLimits(player, origin, serverCity.getBane()) == false)
+			return true;
+
 		// Create the siege Building
 
 		siegeBuilding = createStructure(player, msg.getFirstPlacementInfo(), serverZone);
@@ -380,19 +386,8 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		if (siegeBuilding == null)
 			return false;
-
-		// If there is a bane placed, we limit placement to  2x the stone rank's worth of attacker assets
-		// and 1x the tree rank for defenders
-		
-		if (validateSiegeLimits(player, origin, serverCity.getBane()) == false)
-			return true;
 		
 		// passes validation: can assign auto-protection to war asset
-
-		if (serverCity.getBane() != null)
-			if (serverCity.isLocationOnCityGrid(siegeBuilding.getBounds()))
-				if (player.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-					return true;
 
 		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
 		
@@ -432,10 +427,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			continue;
 
 		if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-			continue;
-
-		// Only count auto protected buildings
-		if (building.getProtectionState() != ProtectionState.PROTECTED)
 			continue;
 
 		if (building.getGuild().equals(serverCity.getGuild()))
