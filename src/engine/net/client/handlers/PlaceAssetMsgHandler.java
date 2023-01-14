@@ -415,7 +415,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			if (building.getGuild().isErrant())
 				continue;
 
-
 			if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 				continue;
 
@@ -428,28 +427,22 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			else if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 				numAttackerBuildings++;
 
-// Validate bane limits on siege assets
-			//if (serverCity.getBane() != null)
-			//	if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild())) &&
-			//			(numAttackerBuildings >= serverCity.getBane().getStone().getRank() * 2)) {
-			//		return true;
-			//	}
+			// Validate bane limits on siege assets
 
-			//if ((player.getGuild().equals(serverCity.getGuild())) &&
-			//		(numDefenderBuildings >= serverCity.getTOL().getRank())) {
-			//	return true;
-			//}
 			int maxAttackerAssets = serverCity.getBane().getStone().getRank() * 2;
 			int maxDefenderAssets = serverCity.getRank();
-			if(player.getGuild() == serverCity.getGuild()){
+
+			if(player.getGuild().equals(serverCity.getGuild())){
 				//defender attempting to place asset
-				if(numDefenderBuildings == maxDefenderAssets){
+				if(numDefenderBuildings >= maxDefenderAssets){
+					PlaceAssetMsg.sendPlaceAssetError(origin,62, "");
 					return true;
 				}
 			}
-			else if(player.getGuild() == serverCity.getBane().getStone().getGuild()){
+			else if(player.getGuild().equals(serverCity.getBane().getStone().getGuild())){
 				//attacker attempting to place asset
-				if(numAttackerBuildings == maxAttackerAssets){
+				if(numAttackerBuildings >= maxAttackerAssets){
+					PlaceAssetMsg.sendPlaceAssetError(origin,61, "");
 					return true;
 				}
 			}
@@ -459,21 +452,12 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			}
 		}
 
-
-
-
-
 		// passes validation: can assign auto-protection to war asset
 
 		if (serverCity.getBane() != null)
 			if (serverCity.isLocationOnCityGrid(siegeBuilding.getBounds()))
 				if (player.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 					return true;
-
-
-
-
-
 
 		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
 		// No bane placed.  We're done!
