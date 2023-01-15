@@ -275,8 +275,9 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Early exit if something went horribly wrong
 
-		if (cityObject == null)
-			return false;
+		if (cityObject == null){
+			PlaceAssetMsg.sendPlaceAssetError(origin, 52, "");
+			return false;}
 
 		// Method checks validation conditions arising when placing
 		// buildings.  Player must be on a city grid, must be
@@ -337,7 +338,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		//no city found
 
 		if (serverCity == null) {
-			PlaceAssetMsg.sendPlaceAssetError(origin, 41, ""); // Cannot place outisde a guild zone
+			PlaceAssetMsg.sendPlaceAssetError(origin, 52, ""); // Cannot place outisde a guild zone
 			return false;
 		}
 
@@ -1232,17 +1233,17 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		if(Blueprint.getBlueprint(placementInfo.getBlueprintUUID()).isSiegeEquip() == false)
 		{
 			if (serverZone.isPlayerCity() == false) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				PlaceAssetMsg.sendPlaceAssetError(origin, 52, player.getName());
 				return false;
 			}
 			City city = ZoneManager.getCityAtLocation(placementInfo.getLoc());
 
 			if (player.getGuild().equals(city.getGuild()) == false) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				PlaceAssetMsg.sendPlaceAssetError(origin, 40, player.getName());
 				return false;
 			}
 			if (city.isLocationOnCityGrid(placementInfo.getLoc()) == false) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				PlaceAssetMsg.sendPlaceAssetError(origin, 41, player.getName());
 				return false;
 			}
 		}
@@ -1252,7 +1253,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 			if(city == null)
 			{
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				PlaceAssetMsg.sendPlaceAssetError(origin, 52, player.getName());
 				return false;
 			}
 			Bane bane = city.getBane();
@@ -1272,38 +1273,38 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 				if(bane == null)
 				{
 					//bane was null
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					PlaceAssetMsg.sendPlaceAssetError(origin, 66, player.getName());
 					return false;
 				}
 				if(city == null)
 				{
 					//city was null
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					PlaceAssetMsg.sendPlaceAssetError(origin, 67, player.getName());
 					return false;
 				}
 				//check if player is from siege guild
 				if(player.getGuild().equals(bane.getOwner().getGuild()) == false)
 				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					PlaceAssetMsg.sendPlaceAssetError(origin, 54, player.getName());
 					return false;
 				}
 
 				//check if player is GL or IC of the bane guild
 				if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
 				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					PlaceAssetMsg.sendPlaceAssetError(origin, 71, player.getName());
 					return false;
 				}
 
 				//cannot place on grid until bane is live
 				if(bane.getSiegePhase() != SiegePhase.WAR && city.isLocationOnCityGrid(placementInfo.getLoc()) == true)
 				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					PlaceAssetMsg.sendPlaceAssetError(origin, 71, player.getName());
 					return false;
 				}
 				if(city.isLocationWithinSiegeBounds(placementInfo.getLoc()) == false && city.isLocationOnCityZone(placementInfo.getLoc()) == false)
 				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+					PlaceAssetMsg.sendPlaceAssetError(origin, 66, player.getName());
 					return false;
 				}
 			}
@@ -1421,7 +1422,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// City assets must be placed on the city grid
 
 		if (!city.isLocationOnCityGrid(buildingInfo.getLoc())) {
-			PlaceAssetMsg.sendPlaceAssetError(origin, 1, "Assset must be placed on a City Grid");
+			PlaceAssetMsg.sendPlaceAssetError(origin, 52, "");
 			return false;
 		}
 
