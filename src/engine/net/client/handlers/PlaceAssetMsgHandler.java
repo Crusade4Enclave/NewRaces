@@ -330,7 +330,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// No valid player city found
 
-		if (serverCity == null || serverZone.isPlayerCity() == false) {
+		if (serverCity == null || serverCity.getParent().isPlayerCity() == false) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 52, ""); // Cannot place outisde a guild zone
 			return false;
 		}
