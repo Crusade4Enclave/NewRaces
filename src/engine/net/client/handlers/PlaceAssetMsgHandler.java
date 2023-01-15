@@ -25,6 +25,7 @@ import org.joda.time.DateTime;
 import org.pmw.tinylog.Logger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -200,7 +201,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		playerCharacter.setLastContract(msg.getContractID());
 
-		// Remove the appropiate deed.
+		// Remove the appropriate deed.
 		if (buildingCreated == true)
 			if (contract != null) {
 				playerCharacter.getCharItemManager().delete(contract);
@@ -472,12 +473,13 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		Realm serverRealm;
 		Zone serverZone;
 		ArrayList<AbstractGameObject> cityObjects; // MySql result set
+		HashMap<GameObjectType, AbstractGameObject> cityObjectMap = new HashMap<>();
 		PlacementInfo treeInfo;
-		Building treeObject = null;
-		City cityObject = null;
-		Zone cityZone = null;
 		Guild playerNation;
 		PlacementInfo treePlacement = msg.getFirstPlacementInfo();
+		Building treeObject;
+		City cityObject;
+		Zone zoneObject;
 
 		// Setup working variables we'll need
 
@@ -523,59 +525,49 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// Assign our worker variables after figuring out what
 		// is what in the result set.
 
-		for (AbstractGameObject gameObject : cityObjects) {
+		for (AbstractGameObject gameObject : cityObjects)
+			cityObjectMap.put(gameObject.getObjectType(), gameObject);
 
-			switch (gameObject.getObjectType()) {
-				case Building:
-					treeObject = (Building) gameObject;
-					treeObject.runAfterLoad();
-					break;
-				case City:
-					cityObject = (City) gameObject;
-					break;
-				case Zone:
-					cityZone = (Zone) gameObject;
-					break;
-				default:
-					// log some error here? *** Refactor
-			}
-		}
+		treeObject = (Building) cityObjectMap.get(GameObjectType.Building);
+		treeObject.runAfterLoad();;
+		cityObject = (City) cityObjectMap.get(GameObjectType.City);
+		zoneObject = (Zone) cityObjectMap.get(GameObjectType.Zone);
 
-		//?? your not allowed to plant a tree if ur not an errant guild.
+		// not allowed to plant a tree if ur not an errant guild.
 		// Desub from any previous nation.
 		// This should be done automatically in a method inside Guild *** Refactor
-		// Player is now a Soverign guild, configure them as such.
+		// Player is now a Sovereign guild, configure them as such.
 
 		playerCharacter.getGuild().setNation(playerCharacter.getGuild());
 		playerNation = playerCharacter.getGuild();
 		playerNation.setGuildState(GuildState.Sovereign);
 
 		// Link the zone with the city and then add
-		// to the appropritae hash tables and cache
+		// to the appropriate hash tables and cache
 
-		cityZone.setPlayerCity(true);
+		zoneObject.setPlayerCity(true);
 
-		if (cityZone.getParent() != null)
-			cityZone.getParent().addNode(cityZone); //add as child to parent
+		if (zoneObject.getParent() != null)
+			zoneObject.getParent().addNode(zoneObject); //add as child to parent
 
-		ZoneManager.addZone(cityZone.getObjectUUID(), cityZone);
-		ZoneManager.addPlayerCityZone(cityZone);
-		serverZone.addNode(cityZone);
+		ZoneManager.addZone(zoneObject.getObjectUUID(), zoneObject);
+		ZoneManager.addPlayerCityZone(zoneObject);
+		serverZone.addNode(zoneObject);
 
-		cityZone.generateWorldAltitude();
+		zoneObject.generateWorldAltitude();
 
-		cityObject.setParent(cityZone);
+		cityObject.setParent(zoneObject);
 		cityObject.setObjectTypeMask(MBServerStatics.MASK_CITY); // *** Refactor : should have it already
 		//Link the tree of life with the new zone
 
 		treeObject.setObjectTypeMask(MBServerStatics.MASK_BUILDING);
-		treeObject.setParentZone(cityZone);
+		treeObject.setParentZone(zoneObject);
 		MaintenanceManager.setMaintDateTime(treeObject, LocalDateTime.now().plusDays(7));
 
 		// Update guild binds and tags
 		//load the new city on the clients
 
-		CityZoneMsg czm = new CityZoneMsg(1, treeObject.getLoc().x, treeObject.getLoc().y, treeObject.getLoc().z, cityObject.getCityName(), cityZone, Enum.CityBoundsType.ZONE.extents, Enum.CityBoundsType.ZONE.extents);
+		CityZoneMsg czm = new CityZoneMsg(1, treeObject.getLoc().x, treeObject.getLoc().y, treeObject.getLoc().z, cityObject.getCityName(), zoneObject, Enum.CityBoundsType.ZONE.extents, Enum.CityBoundsType.ZONE.extents);
 		DispatchMessage.dispatchMsgToAll(czm);
 
 		GuildManager.updateAllGuildBinds(playerNation, cityObject);
@@ -698,7 +690,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		cityObject = City.getCity(serverZone.getPlayerCityUUID());
 
-		// Cannot place shrine in abanadoned city.  Shrines must be owned
+		// Cannot place shrine in abandoned city.  Shrines must be owned
 		// by the tol owner not the person placing them.
 
 		if (cityObject.getTOL().getOwnerUUID() == 0) {
@@ -767,7 +759,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		cityObject = City.getCity(serverZone.getPlayerCityUUID());
 
-		// Cannot place barracks in abanadoned city.
+		// Cannot place barracks in abandoned city.
 
 		if (cityObject.getTOL().getOwnerUUID() == 0) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 42, "");  //Tree cannot support anymore shrines
@@ -1036,11 +1028,11 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		blueprint = Blueprint.getBlueprint(buildingInfo.getBlueprintUUID());
 
 		if (blueprint == null) {
-			Logger.error("CreateStucture: DB returned null blueprint.");
+			Logger.error("CreateStructure: DB returned null blueprint.");
 			return null;
 		}
 
-		// All seige buildings build in 15 minutes
+		// All siege buildings build in 15 minutes
 		if ((blueprint.getBuildingGroup().equals(BuildingGroup.SIEGETENT))
 				|| (blueprint.getBuildingGroup().equals(BuildingGroup.BULWARK)))
 			completionDate = DateTime.now().plusMinutes(15);
@@ -1061,7 +1053,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Make sure we have a valid mesh
 		if (newMesh == null) {
-			Logger.error("CreateStucture: DB returned null object.");
+			Logger.error("CreateStructure: DB returned null object.");
 			return null;
 		}
 
@@ -1179,7 +1171,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Make sure we have a valid mesh
 		if (newMesh == null) {
-			Logger.error("CreateStucture: DB returned null object.");
+			Logger.error("CreateStructure: DB returned null object.");
 			return false;
 		}
 
@@ -1362,7 +1354,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 	private static boolean validateCityBuildingPlacement(Zone serverZone, PlaceAssetMsg msg, ClientConnection origin, PlayerCharacter player, PlacementInfo buildingInfo) {
 
-		// Peform shared common validation first
+		// Perform shared common validation first
 
 		if (validateBuildingPlacement(serverZone, msg, origin, player, buildingInfo) == false)
 			return false;
@@ -1370,7 +1362,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// Must be a player city
 
 		if (serverZone.isPlayerCity() == false) {
-			PlaceAssetMsg.sendPlaceAssetError(origin, 41, player.getName()); // Cannot place outisde a guild zone
+			PlaceAssetMsg.sendPlaceAssetError(origin, 41, player.getName()); // Cannot place outside a guild zone
 			return false;
 		}
 
