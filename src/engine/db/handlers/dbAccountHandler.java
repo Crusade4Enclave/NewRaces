@@ -47,11 +47,23 @@ public class dbAccountHandler extends dbHandlerBase {
 		return ac;
 	}
 
+	public void WRITE_ADMIN_LOG(String adminName, String logEntry) {
+
+		prepareCallable("INSERT INTO dyn_admin_log(`DateTime`, `Account`, `Event`)"
+				+ " VALUES (?, ?, ?)");
+		setTimeStamp(1, System.currentTimeMillis());
+		setString(2, adminName);
+		setString(3, logEntry);
+		executeUpdate();
+
+	}
+
 	public void SET_TRASH(String machineID) {
 
 		prepareCallable("INSERT INTO dyn_trash(`machineID`, `count`)"
 				+ " VALUES (?, 1) ON DUPLICATE KEY UPDATE `count` = `count` + 1;");
 
+		setTimeStamp(4, System.currentTimeMillis());
 		setString(1, machineID);
 		executeUpdate();
 

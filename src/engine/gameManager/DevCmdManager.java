@@ -204,6 +204,7 @@ public enum DevCmdManager {
 				+ ") '";
 		logString += cmd + ' ' + argString + '\'';
 		Logger.info( logString);
+		DbManager.AccountQueries.WRITE_ADMIN_LOG(pcName, cmd + " " + argString);
 
 		// execute command;
 		try {
