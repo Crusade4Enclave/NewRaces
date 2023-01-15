@@ -365,7 +365,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// and 1x the tree rank for defenders
 
 		if (validateSiegeLimits(player, origin, serverCity.getBane()) == false)
-			return true;
+			return false;
 
 		// Create the siege Building
 
