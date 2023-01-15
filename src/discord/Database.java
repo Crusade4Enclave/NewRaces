@@ -15,14 +15,12 @@ import org.pmw.tinylog.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Database {
 
-    public String sqlURI;
     public static Boolean online;
-
-    // Load and instance the JDBC Driver
 
     static {
         try {
@@ -30,10 +28,13 @@ public class Database {
         } catch (InstantiationException | ClassNotFoundException | IllegalAccessException e) {
             // TODO Auto-generated catch block
             Logger.error(e.toString());
-            ;
             online = false;
         }
     }
+
+    // Load and instance the JDBC Driver
+
+    public String sqlURI;
 
     public void configureDatabase() {
 
@@ -41,7 +42,7 @@ public class Database {
 
         sqlURI = "jdbc:mysql://";
         sqlURI += ConfigManager.MB_DATABASE_ADDRESS.getValue() + ':' + ConfigManager.MB_DATABASE_PORT.getValue();
-        sqlURI += '/' + (String) ConfigManager.MB_DATABASE_NAME.getValue() + '?';
+        sqlURI += '/' + ConfigManager.MB_DATABASE_NAME.getValue() + '?';
         sqlURI += "useServerPrepStmts=true";
         sqlURI += "&cachePrepStmts=false";
         sqlURI += "&cacheCallableStmts=true";
@@ -66,8 +67,7 @@ public class Database {
 
         } catch (SQLException e) {
             Logger.error(e.toString());
-            ;
-            this.online = false;
+            online = false;
             return false;
         }
     }
@@ -88,8 +88,7 @@ public class Database {
 
         } catch (SQLException e) {
             Logger.error(e.toString());
-            ;
-            this.online = false;
+            online = false;
             return false;
         }
     }
@@ -111,7 +110,7 @@ public class Database {
 
         } catch (SQLException e) {
             Logger.error(e.toString());
-            this.online = false;
+            online = false;
             return false;
         }
     }
@@ -157,7 +156,7 @@ public class Database {
 
         } catch (SQLException e) {
             Logger.error(e.toString());
-            this.online = false;
+            online = false;
         }
 
         return discordAccounts;
@@ -188,7 +187,7 @@ public class Database {
         } catch (SQLException e) {
             Logger.error(e.toString());
 
-            this.online = false;
+            online = false;
         }
         return outString;
     }
@@ -209,27 +208,28 @@ public class Database {
             ResultSet rs = trashQuery.executeQuery();
 
             while (rs.next()) {
-                outString +=  rs.getString("characterName");
+                outString += rs.getString("characterName");
                 counter++;
 
                 if (counter > 2) {
                     outString += "\n";
-                    counter = 0; }
-                else
+                    counter = 0;
+                } else
                     outString += "     ";
 
             }
         } catch (SQLException e) {
             Logger.error(e.toString());
 
-            this.online = false;
+            online = false;
         }
 
         if (outString.length() > 1500)
-        return outString.substring(0, 1500);
-         else
-        return outString;
+            return outString.substring(0, 1500);
+        else
+            return outString;
     }
+
     public int getTrashCount() {
 
         int trashCount = 0;
@@ -251,13 +251,41 @@ public class Database {
         } catch (SQLException e) {
             Logger.error(e.toString());
 
-            this.online = false;
+            online = false;
         }
 
         return trashCount;
     }
 
-        public String getTrashFile() {
+    public HashMap<Integer, String> getAdminEvents() {
+
+        HashMap<Integer, String> outMap = new HashMap<>();
+        String queryString = "SELECT * from dyn_admin_log where `SentFlag` = 0";
+
+        try (Connection connection = DriverManager.getConnection(sqlURI, ConfigManager.MB_DATABASE_USER.getValue(),
+                ConfigManager.MB_DATABASE_PASS.getValue())) {
+
+            // Discord Admin Log lookup of unreported events
+
+            PreparedStatement adminLogQuery = connection.prepareStatement(queryString);
+            ResultSet rs = adminLogQuery.executeQuery();
+            String workString;
+
+            while (rs.next()) {
+                workString = "___Admin Event___\n" +
+                        "Character: " + rs.getString("charName") + "\n" +
+                        "Event: " + rs.getString("eventString");
+
+                outMap.put(rs.getInt("entry"), workString);
+            }
+        } catch (SQLException e) {
+            Logger.error(e.toString());
+        }
+
+        return outMap;
+    }
+
+    public String getTrashFile() {
 
         String outString = "machineID : count\n";
         String queryString = "SELECT * FROM dyn_trash;";
@@ -278,7 +306,7 @@ public class Database {
         } catch (SQLException e) {
             Logger.error(e.toString());
 
-            this.online = false;
+            online = false;
         }
         return outString;
     }
@@ -332,8 +360,7 @@ public class Database {
 
         } catch (SQLException e) {
             Logger.error(e.toString());
-            ;
-            this.online = false;
+            online = false;
         }
 
         return discordAccounts;
@@ -355,7 +382,7 @@ public class Database {
 
         } catch (SQLException e) {
             Logger.error(e.toString());
-            this.online = false;
+            online = false;
         }
 
         return popString;
@@ -374,7 +401,7 @@ public class Database {
 
         } catch (SQLException e) {
             Logger.error(e.toString());
-            this.online = false;
+            online = false;
         }
     }
 }
