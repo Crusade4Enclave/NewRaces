@@ -115,7 +115,8 @@ public class LoginToGameServerMsgHandler extends AbstractClientMsgHandler {
 		// Log Admin Login Event
 
 		if (pc.getAccount().status.equals(Enum.AccountStatus.ADMIN))
-			DbManager.AccountQueries.WRITE_ADMIN_LOG(pc.getCombinedName(), "ADMIN LOGIN EVENT");
+			DbManager.AccountQueries.WRITE_ADMIN_LOG(pc.getCombinedName(), "ADMIN LOGIN");
+
 		DbManager.AccountQueries.SET_ACCOUNT_LOGIN(sessionInfo.getAccount(), sessionInfo.getPlayerCharacter().getName(), origin.getClientIpAddress(), sessionInfo.getMachineID());
 		return true;
 	}

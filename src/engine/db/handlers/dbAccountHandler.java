@@ -49,7 +49,7 @@ public class dbAccountHandler extends dbHandlerBase {
 
 	public void WRITE_ADMIN_LOG(String adminName, String logEntry) {
 
-		prepareCallable("INSERT INTO dyn_admin_log(`DateTime`, `Account`, `Event`)"
+		prepareCallable("INSERT INTO dyn_admin_log(`dateTime`, `charName`, `eventString`)"
 				+ " VALUES (?, ?, ?)");
 		setTimeStamp(1, System.currentTimeMillis());
 		setString(2, adminName);
