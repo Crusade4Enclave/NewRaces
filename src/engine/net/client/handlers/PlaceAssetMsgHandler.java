@@ -307,6 +307,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		Building siegeBuilding;
 		PlacementInfo buildingList;
 		City serverCity;
+		Bane bane;
 
 		// Retrieve the building details we're placing
 
@@ -324,36 +325,30 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			return false;
 		}
 
-		// Checks validation conditions arising when placing
-		// generic structures.
-
-		if (validateBuildingPlacement(serverZone, msg, origin, player, buildingList) == false)
-			return false;
-
-		// If there is a bane placed, only the attackers and defenders can
-		// place siege assets
-
 		serverCity = ZoneManager.getCityAtLocation(buildingList.getLoc());
 
-		//no city found
+		// No valid player city found
 
-		if (serverCity == null) {
+		if (serverCity == null || serverZone.isPlayerCity() == false) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 52, ""); // Cannot place outisde a guild zone
 			return false;
 		}
 
 		// No bane no bow
 
-		if (serverCity.getBane() == null) {
+		bane = serverCity.getBane();
+
+		if (bane == null) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 66, ""); // There is no bane circle to support this building of war
 			return false;
 		}
-
 
 		// Set the server zone to the city zone in order to account for being inside
 		// the siege bounds buffer area
 
 		serverZone = serverCity.getParent();
+
+		// Must belong to either attacker or defenders.
 
 		if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild()) == false)
 					&& (player.getGuild().equals(serverCity.getGuild()) == false)) {
@@ -361,7 +356,25 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			return false;
 			}
 
-		// If there is a bane placed, we limit placement to  2x the stone rank's worth of attacker assets
+		// Player must be  GL or IC of the bane guild to place bow.
+
+		if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false
+				&& GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
+		{
+			PlaceAssetMsg.sendPlaceAssetError(origin, 10, player.getName());  // You must be a guild leader to place this asset
+			return false;
+		}
+
+		//cannot place on grid until bane is live
+
+		if(bane.getSiegePhase() != SiegePhase.WAR &&
+				serverCity.isLocationOnCityGrid(buildingList.getLoc()) == true)
+		{
+			PlaceAssetMsg.sendPlaceAssetError(origin, 53, player.getName()); // Buildings of war cannot be placed around a city grid unless there is an active bane
+			return false;
+		}
+
+		// If there is a bane placed, we limit bow placement to 2x the stone rank's worth of attacker assets
 		// and 1x the tree rank for defenders
 
 		if (validateSiegeLimits(player, origin, serverCity.getBane()) == false)
@@ -379,8 +392,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// passes validation: can assign auto-protection to war asset
 
 		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
-		
-		// No bane placed.  We're done!
 		
 		return true;
 	}
@@ -1230,85 +1241,23 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		RealmType currentRealm;
 
-		if(Blueprint.getBlueprint(placementInfo.getBlueprintUUID()).isSiegeEquip() == false)
-		{
 			if (serverZone.isPlayerCity() == false) {
 				PlaceAssetMsg.sendPlaceAssetError(origin, 52, player.getName());
 				return false;
 			}
+
 			City city = ZoneManager.getCityAtLocation(placementInfo.getLoc());
 
 			if (player.getGuild().equals(city.getGuild()) == false) {
 				PlaceAssetMsg.sendPlaceAssetError(origin, 40, player.getName());
 				return false;
 			}
+
 			if (city.isLocationOnCityGrid(placementInfo.getLoc()) == false) {
 				PlaceAssetMsg.sendPlaceAssetError(origin, 41, player.getName());
 				return false;
 			}
-		}
-		else
-		{
-			City city = ZoneManager.getCityAtLocation(placementInfo.getLoc());
 
-			if(city == null)
-			{
-				PlaceAssetMsg.sendPlaceAssetError(origin, 52, player.getName());
-				return false;
-			}
-			Bane bane = city.getBane();
-			//check if player is owner/IC of tree or bane
-			if (player.getGuild().equals(city.getGuild()) == true)
-			{
-				//is from owners guild
-				if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-			}
-			else
-			{
-				//is not from owners guild
-				if(bane == null)
-				{
-					//bane was null
-					PlaceAssetMsg.sendPlaceAssetError(origin, 66, player.getName());
-					return false;
-				}
-				if(city == null)
-				{
-					//city was null
-					PlaceAssetMsg.sendPlaceAssetError(origin, 67, player.getName());
-					return false;
-				}
-				//check if player is from siege guild
-				if(player.getGuild().equals(bane.getOwner().getGuild()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 54, player.getName());
-					return false;
-				}
-
-				//check if player is GL or IC of the bane guild
-				if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 71, player.getName());
-					return false;
-				}
-
-				//cannot place on grid until bane is live
-				if(bane.getSiegePhase() != SiegePhase.WAR && city.isLocationOnCityGrid(placementInfo.getLoc()) == true)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 71, player.getName());
-					return false;
-				}
-				if(city.isLocationWithinSiegeBounds(placementInfo.getLoc()) == false && city.isLocationOnCityZone(placementInfo.getLoc()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 66, player.getName());
-					return false;
-				}
-			}
-		}
 		// Retrieve the building details we're placing
 
 		if (serverZone.isNPCCity() == true) {
