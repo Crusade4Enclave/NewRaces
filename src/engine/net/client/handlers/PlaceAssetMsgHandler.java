@@ -380,6 +380,13 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		if (validateSiegeLimits(player, origin, serverCity.getBane()) == false)
 			return false;
 
+		// Collision check (Removes rubble side effect)
+
+		if (placementCollisionCheck(serverZone, origin, buildingList)){
+			PlaceAssetMsg.sendPlaceAssetError(origin, 3, ""); // Conflict between proposed assets
+			return false;
+		}
+
 		// Create the siege Building
 
 		siegeBuilding = createStructure(player, msg.getFirstPlacementInfo(), serverZone);
@@ -1311,6 +1318,15 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			return false;
 		}
 
+		if (placementCollisionCheck(serverZone, origin, placementInfo)){
+			PlaceAssetMsg.sendPlaceAssetError(origin, 3, ""); // Conflict between proposed assets
+			return false;
+		}
+
+		return true;
+	}
+
+	private static boolean placementCollisionCheck(Zone serverZone, ClientConnection origin, PlacementInfo placementInfo) {
 		// Overlap check
 
 		for (Building building : serverZone.zoneBuildingSet) {
@@ -1338,11 +1354,10 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 
 				PlaceAssetMsg.sendPlaceAssetError(origin, 3, "");  // Conflict between proposed assets
-				return false;
+				return true;
 			}
 		}
-
-		return true;
+		return false;
 	}
 
 	private static boolean validateCityBuildingPlacement(Zone serverZone, PlaceAssetMsg msg, ClientConnection origin, PlayerCharacter player, PlacementInfo buildingInfo) {
