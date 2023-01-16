@@ -29,6 +29,9 @@ import org.pmw.tinylog.writers.RollingFileWriter;
 import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static discord.ChatChannel.ADMINLOG;
@@ -120,9 +123,17 @@ public class MagicBot extends ListenerAdapter {
 
         ChatChannel.Init();
 
-        Logger.info("***MAGICBOT IS RUNNING***");
+        // Background thread to send Admin Events
+        Runnable adminLogRunnable = new Runnable() {
+            public void run() {
+                SendAdminLogUpdates();
+            }
+        };
 
-        SendAdminLogUpdates();
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        exec.scheduleAtFixedRate(adminLogRunnable , 0, 1, TimeUnit.MINUTES);
+
+        Logger.info("***MAGICBOT IS RUNNING***");
 
     }
 
@@ -384,7 +395,7 @@ public class MagicBot extends ListenerAdapter {
 
             // Set event as read
             database.setAdminEventAsRead(adminEvent);
-/*            String outString =
+            String outString =
                     "```\n" + "Hello Players \n\n" +
                             adminEvents.get(adminEvent) + "\n\n" +
                             RobotSpeak.getRobotSpeak() + "\n```";
@@ -392,8 +403,6 @@ public class MagicBot extends ListenerAdapter {
             if (ADMINLOG.textChannel.canTalk())
                 ADMINLOG.textChannel.sendMessage(outString).queue();
 
- */
-            Logger.info(adminEvents.get(adminEvent));
         }
     }
 }
