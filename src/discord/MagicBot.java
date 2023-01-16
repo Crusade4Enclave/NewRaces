@@ -182,22 +182,22 @@ public class MagicBot extends ListenerAdapter {
                 PasswordChangeHandler.handleRequest(event, args);
                 break;
             case "#changelog":
-                ChangeLogHandler.handleRequest(event, args);
+                ChatChannelHandler.handleRequest(ChatChannel.CHANGELOG, event, args);
                 break;
             case "#general":
-                GeneralChannelHandler.handleRequest(event, args);
+                ChatChannelHandler.handleRequest(ChatChannel.GENERAL, event, args);
                 break;
             case "#politics":
-                PoliticalChannelHandler.handleRequest(event, args);
+                ChatChannelHandler.handleRequest(ChatChannel.POLITICAL, event, args);
                 break;
             case "#announce":
-                AnnounceChannelHandler.handleRequest(event, args);
+                ChatChannelHandler.handleRequest(ChatChannel.ANNOUNCE, event, args);
                 break;
             case "#bug":
-                ForToFixChannelHandler.handleRequest(event, args);
+                ChatChannelHandler.handleRequest(ChatChannel.FORTOFIX, event, args);
                 break;
             case "#recruit":
-                RecruitChannelHandler.handleRequest(event, args);
+                ChatChannelHandler.handleRequest(ChatChannel.RECRUIT, event, args);
                 break;
             case "#lookup":
                 LookupRequestHandler.handleRequest(event, args);
