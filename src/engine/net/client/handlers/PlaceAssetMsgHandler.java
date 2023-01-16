@@ -23,9 +23,9 @@ import engine.objects.*;
 import engine.server.MBServerStatics;
 import org.joda.time.DateTime;
 import org.pmw.tinylog.Logger;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -122,7 +122,6 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		}
 
 		// Let's now attempt to place the building
-
 		buildingCreated = false;
 
 		// Many buildings have particular validation and
@@ -202,7 +201,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		playerCharacter.setLastContract(msg.getContractID());
 
-		// Remove the appropiate deed.
+		// Remove the appropriate deed.
 		if (buildingCreated == true)
 			if (contract != null) {
 				playerCharacter.getCharItemManager().delete(contract);
@@ -277,8 +276,9 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Early exit if something went horribly wrong
 
-		if (cityObject == null)
-			return false;
+		if (cityObject == null){
+			PlaceAssetMsg.sendPlaceAssetError(origin, 52, "");
+			return false;}
 
 		// Method checks validation conditions arising when placing
 		// buildings.  Player must be on a city grid, must be
@@ -308,8 +308,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		Building siegeBuilding;
 		PlacementInfo buildingList;
 		City serverCity;
-		int numAttackerBuildings = 0;
-		int numDefenderBuildings = 0;
+		Bane bane;
 
 		// Retrieve the building details we're placing
 
@@ -327,79 +326,100 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			return false;
 		}
 
-		// Checks validation conditions arising when placing
-		// generic structures.
-
-		if (validateBuildingPlacement(serverZone, msg, origin, player, buildingList) == false)
-			return false;
-
-		// If there is a bane placed, only the attackers and defenders can
-		// place siege assets
-
 		serverCity = ZoneManager.getCityAtLocation(buildingList.getLoc());
 
-		//no city found
-		//check if attacker city.
-		if (serverCity == null){
-			Bane bane = Bane.getBaneByAttackerGuild(player.getGuild());
-			City attackerCity = null;
-			if (bane != null)
-				attackerCity = bane.getCity();
+		// No valid player city found
 
-			if (attackerCity != null)
-				if (buildingList.getLoc().isInsideCircle(attackerCity.getLoc(), Enum.CityBoundsType.SIEGE.extents))
-					serverCity = attackerCity;
-		}
-		//no city found for attacker city,
-		//check if defender city
-
-		if (serverCity == null){
-			if (player.getGuild().getOwnedCity() != null)
-				if (buildingList.getLoc().isInsideCircle(player.getGuild().getOwnedCity().getLoc(), Enum.CityBoundsType.SIEGE.extents))
-					serverCity = player.getGuild().getOwnedCity();
+		if (serverCity == null || serverCity.getParent().isPlayerCity() == false) {
+			PlaceAssetMsg.sendPlaceAssetError(origin, 52, ""); // Cannot place outisde a guild zone
+			return false;
 		}
 
+		// No bane no bow
 
+		bane = serverCity.getBane();
 
-		if ((serverCity != null) &&
-				(serverCity.getBane() != null)) {
+		if (bane == null) {
+			PlaceAssetMsg.sendPlaceAssetError(origin, 66, ""); // There is no bane circle to support this building of war
+			return false;
+		}
 
-			// Set the server zone to the city zone in order to account for being inside
-			// the siege bounds buffer area
+		// Set the server zone to the city zone in order to account for being inside
+		// the siege bounds buffer area
 
-			serverZone = serverCity.getParent();
+		serverZone = serverCity.getParent();
 
-			if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild()) == false)
+		// Must belong to either attacker or defenders.
+
+		if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild()) == false)
 					&& (player.getGuild().equals(serverCity.getGuild()) == false)) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 54, ""); // Must belong to attacker or defender
-				return false;
+			PlaceAssetMsg.sendPlaceAssetError(origin, 54, ""); // Must belong to attacker or defender
+			return false;
 			}
+
+		// Player must be  GL or IC of the bane guild to place bow.
+
+		if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false
+				&& GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
+		{
+			PlaceAssetMsg.sendPlaceAssetError(origin, 10, player.getName());  // You must be a guild leader to place this asset
+			return false;
 		}
 
-		// cant place siege equipment off city zone.
+		//cannot place on grid until bane is live
 
+		if(bane.getSiegePhase() != SiegePhase.WAR &&
+				serverCity.isLocationOnCityGrid(buildingList.getLoc()) == true)
+		{
+			PlaceAssetMsg.sendPlaceAssetError(origin, 53, player.getName()); // Buildings of war cannot be placed around a city grid unless there is an active bane
+			return false;
+		}
+
+		// If there is a bane placed, we limit bow placement to 2x the stone rank's worth of attacker assets
+		// and 1x the tree rank for defenders
+
+		if (validateSiegeLimits(player, origin, serverCity.getBane()) == false)
+			return false;
+
+		// Collision check (Removes rubble side effect)
+
+		if (placementCollisionCheck(serverZone, origin, buildingList)){
+			PlaceAssetMsg.sendPlaceAssetError(origin, 3, ""); // Conflict between proposed assets
+			return false;
+		}
 
 		// Create the siege Building
 
 		siegeBuilding = createStructure(player, msg.getFirstPlacementInfo(), serverZone);
-		if (serverCity == null)
-			return true;
+		
 		// Oops something went really wrong
 
 		if (siegeBuilding == null)
 			return false;
+		
+		// passes validation: can assign auto-protection to war asset
 
+		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
+		
+		return true;
+	}
 
-		if (serverCity.getBane() == null)
-			return true;
+	private  boolean validateSiegeLimits(PlayerCharacter playerCharacter, ClientConnection origin, Bane bane) {
 
-		// If there is an bane placed, we protect 2x the stone rank's worth of attacker assets
-		// and 1x the tree rank's worth of assets automatically
+		City serverCity = bane.getCity();
+		HashSet<AbstractWorldObject> awoList;
+		HashSet<AbstractWorldObject> attackerBuildings = new HashSet<>();
+		HashSet<AbstractWorldObject> defenderBuildings = new HashSet<>();
+		;
+		int maxAttackerAssets = serverCity.getBane().getStone().getRank() * 2;
+		int maxDefenderAssets = serverCity.getRank();
+		
+		// Count bow for attackers and defenders
 
-		HashSet<AbstractWorldObject> awoList = WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
+		awoList =  WorldGrid.getObjectsInRangePartial(serverCity, 1000, MBServerStatics.MASK_BUILDING);
 
 		for (AbstractWorldObject awo : awoList) {
-			Building building = (Building)awo;
+			Building building = (Building) awo;
 
 			if (building.getBlueprint() != null)
 				if (!building.getBlueprint().isSiegeEquip())
@@ -417,56 +437,49 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
 				continue;
 
-			// Only count auto protected buildings
-			if (building.getProtectionState() != ProtectionState.PROTECTED)
-				continue;
-
 			if (building.getGuild().equals(serverCity.getGuild()))
-				numDefenderBuildings++;
-			else
+				defenderBuildings.add(building);
+
 			if (building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-				numAttackerBuildings++;
+				attackerBuildings.add(building);
 
 		}
+			// Validate bane limits on siege assets
 
-		// Validate bane limits on siege assets
-
-		if (serverCity.getBane() != null)
-			if ((player.getGuild().equals(serverCity.getBane().getOwner().getGuild())) &&
-					(numAttackerBuildings >= serverCity.getBane().getStone().getRank() * 2)) {
-				return true;
+			if (playerCharacter.getGuild().equals(serverCity.getGuild())) {
+				//defender attempting to place asset
+				if (defenderBuildings.size() >= maxDefenderAssets) {
+					PlaceAssetMsg.sendPlaceAssetError(origin, 62, "");
+					return false;
+				}
+			}
+			
+			if (playerCharacter.getGuild().equals(serverCity.getBane().getStone().getGuild())) {
+				//attacker attempting to place asset
+				if (attackerBuildings.size() >= maxAttackerAssets) {
+					PlaceAssetMsg.sendPlaceAssetError(origin, 61, "");
+					return false;
+				}
 			}
 
-		if (serverCity.getBane() != null)
-		if ((player.getGuild().equals(serverCity.getGuild())) &&
-				(numDefenderBuildings >= serverCity.getTOL().getRank())) {
-			return true;
-		}
-
-		// passes validation: can assign auto-protection to war asset
-
-		if (serverCity.getBane() != null)
-			if (serverCity.isLocationOnCityGrid(siegeBuilding.getBounds()))
-				if (player.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
-					return true;
-
-		siegeBuilding.setProtectionState(ProtectionState.PROTECTED);
-		// No bane placed.  We're done!
-
-		return true;
+		// Passed validation
+		
+		return  true;
 	}
-
+	
+			
 	private boolean placeTreeOfLife(PlayerCharacter playerCharacter, ClientConnection origin, PlaceAssetMsg msg) {
 
 		Realm serverRealm;
 		Zone serverZone;
 		ArrayList<AbstractGameObject> cityObjects; // MySql result set
+		HashMap<GameObjectType, AbstractGameObject> cityObjectMap = new HashMap<>();
 		PlacementInfo treeInfo;
-		Building treeObject = null;
-		City cityObject = null;
-		Zone cityZone = null;
 		Guild playerNation;
 		PlacementInfo treePlacement = msg.getFirstPlacementInfo();
+		Building treeObject;
+		City cityObject;
+		Zone zoneObject;
 
 		// Setup working variables we'll need
 
@@ -512,59 +525,49 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// Assign our worker variables after figuring out what
 		// is what in the result set.
 
-		for (AbstractGameObject gameObject : cityObjects) {
+		for (AbstractGameObject gameObject : cityObjects)
+			cityObjectMap.put(gameObject.getObjectType(), gameObject);
 
-			switch (gameObject.getObjectType()) {
-				case Building:
-					treeObject = (Building) gameObject;
-					treeObject.runAfterLoad();
-					break;
-				case City:
-					cityObject = (City) gameObject;
-					break;
-				case Zone:
-					cityZone = (Zone) gameObject;
-					break;
-				default:
-					// log some error here? *** Refactor
-			}
-		}
+		treeObject = (Building) cityObjectMap.get(GameObjectType.Building);
+		treeObject.runAfterLoad();;
+		cityObject = (City) cityObjectMap.get(GameObjectType.City);
+		zoneObject = (Zone) cityObjectMap.get(GameObjectType.Zone);
 
-		//?? your not allowed to plant a tree if ur not an errant guild.
+		// not allowed to plant a tree if ur not an errant guild.
 		// Desub from any previous nation.
 		// This should be done automatically in a method inside Guild *** Refactor
-		// Player is now a Soverign guild, configure them as such.
+		// Player is now a Sovereign guild, configure them as such.
 
 		playerCharacter.getGuild().setNation(playerCharacter.getGuild());
 		playerNation = playerCharacter.getGuild();
 		playerNation.setGuildState(GuildState.Sovereign);
 
 		// Link the zone with the city and then add
-		// to the appropritae hash tables and cache
+		// to the appropriate hash tables and cache
 
-		cityZone.setPlayerCity(true);
+		zoneObject.setPlayerCity(true);
 
-		if (cityZone.getParent() != null)
-			cityZone.getParent().addNode(cityZone); //add as child to parent
+		if (zoneObject.getParent() != null)
+			zoneObject.getParent().addNode(zoneObject); //add as child to parent
 
-		ZoneManager.addZone(cityZone.getObjectUUID(), cityZone);
-		ZoneManager.addPlayerCityZone(cityZone);
-		serverZone.addNode(cityZone);
+		ZoneManager.addZone(zoneObject.getObjectUUID(), zoneObject);
+		ZoneManager.addPlayerCityZone(zoneObject);
+		serverZone.addNode(zoneObject);
 
-		cityZone.generateWorldAltitude();
+		zoneObject.generateWorldAltitude();
 
-		cityObject.setParent(cityZone);
+		cityObject.setParent(zoneObject);
 		cityObject.setObjectTypeMask(MBServerStatics.MASK_CITY); // *** Refactor : should have it already
 		//Link the tree of life with the new zone
 
 		treeObject.setObjectTypeMask(MBServerStatics.MASK_BUILDING);
-		treeObject.setParentZone(cityZone);
+		treeObject.setParentZone(zoneObject);
 		MaintenanceManager.setMaintDateTime(treeObject, LocalDateTime.now().plusDays(7));
 
 		// Update guild binds and tags
 		//load the new city on the clients
 
-		CityZoneMsg czm = new CityZoneMsg(1, treeObject.getLoc().x, treeObject.getLoc().y, treeObject.getLoc().z, cityObject.getCityName(), cityZone, Enum.CityBoundsType.ZONE.extents, Enum.CityBoundsType.ZONE.extents);
+		CityZoneMsg czm = new CityZoneMsg(1, treeObject.getLoc().x, treeObject.getLoc().y, treeObject.getLoc().z, cityObject.getCityName(), zoneObject, Enum.CityBoundsType.ZONE.extents, Enum.CityBoundsType.ZONE.extents);
 		DispatchMessage.dispatchMsgToAll(czm);
 
 		GuildManager.updateAllGuildBinds(playerNation, cityObject);
@@ -687,7 +690,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		cityObject = City.getCity(serverZone.getPlayerCityUUID());
 
-		// Cannot place shrine in abanadoned city.  Shrines must be owned
+		// Cannot place shrine in abandoned city.  Shrines must be owned
 		// by the tol owner not the person placing them.
 
 		if (cityObject.getTOL().getOwnerUUID() == 0) {
@@ -756,7 +759,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		cityObject = City.getCity(serverZone.getPlayerCityUUID());
 
-		// Cannot place barracks in abanadoned city.
+		// Cannot place barracks in abandoned city.
 
 		if (cityObject.getTOL().getOwnerUUID() == 0) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 42, "");  //Tree cannot support anymore shrines
@@ -1025,11 +1028,11 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		blueprint = Blueprint.getBlueprint(buildingInfo.getBlueprintUUID());
 
 		if (blueprint == null) {
-			Logger.error("CreateStucture: DB returned null blueprint.");
+			Logger.error("CreateStructure: DB returned null blueprint.");
 			return null;
 		}
 
-		// All seige buildings build in 15 minutes
+		// All siege buildings build in 15 minutes
 		if ((blueprint.getBuildingGroup().equals(BuildingGroup.SIEGETENT))
 				|| (blueprint.getBuildingGroup().equals(BuildingGroup.BULWARK)))
 			completionDate = DateTime.now().plusMinutes(15);
@@ -1050,7 +1053,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Make sure we have a valid mesh
 		if (newMesh == null) {
-			Logger.error("CreateStucture: DB returned null object.");
+			Logger.error("CreateStructure: DB returned null object.");
 			return null;
 		}
 
@@ -1168,7 +1171,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Make sure we have a valid mesh
 		if (newMesh == null) {
-			Logger.error("CreateStucture: DB returned null object.");
+			Logger.error("CreateStructure: DB returned null object.");
 			return false;
 		}
 
@@ -1237,85 +1240,23 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		RealmType currentRealm;
 
-		if(Blueprint.getBlueprint(placementInfo.getBlueprintUUID()).isSiegeEquip() == false)
-		{
 			if (serverZone.isPlayerCity() == false) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				PlaceAssetMsg.sendPlaceAssetError(origin, 52, player.getName());
 				return false;
 			}
+
 			City city = ZoneManager.getCityAtLocation(placementInfo.getLoc());
 
 			if (player.getGuild().equals(city.getGuild()) == false) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				PlaceAssetMsg.sendPlaceAssetError(origin, 40, player.getName());
 				return false;
 			}
+
 			if (city.isLocationOnCityGrid(placementInfo.getLoc()) == false) {
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
+				PlaceAssetMsg.sendPlaceAssetError(origin, 41, player.getName());
 				return false;
 			}
-		}
-		else
-		{
-			City city = ZoneManager.getCityAtLocation(placementInfo.getLoc());
 
-			if(city == null)
-			{
-				PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-				return false;
-			}
-			Bane bane = city.getBane();
-			//check if player is owner/IC of tree or bane
-			if (player.getGuild().equals(city.getGuild()) == true)
-			{
-				//is from owners guild
-				if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-			}
-			else
-			{
-				//is not from owners guild
-				if(bane == null)
-				{
-					//bane was null
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-				if(city == null)
-				{
-					//city was null
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-				//check if player is from siege guild
-				if(player.getGuild().equals(bane.getOwner().getGuild()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-
-				//check if player is GL or IC of the bane guild
-				if(GuildStatusController.isGuildLeader(player.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(player.getGuildStatus()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-
-				//cannot place on grid until bane is live
-				if(bane.getSiegePhase() != SiegePhase.WAR && city.isLocationOnCityGrid(placementInfo.getLoc()) == true)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-				if(city.isLocationWithinSiegeBounds(placementInfo.getLoc()) == false && city.isLocationOnCityZone(placementInfo.getLoc()) == false)
-				{
-					PlaceAssetMsg.sendPlaceAssetError(origin, 57, player.getName());
-					return false;
-				}
-			}
-		}
 		// Retrieve the building details we're placing
 
 		if (serverZone.isNPCCity() == true) {
@@ -1369,6 +1310,15 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			return false;
 		}
 
+		if (placementCollisionCheck(serverZone, origin, placementInfo)){
+			PlaceAssetMsg.sendPlaceAssetError(origin, 3, ""); // Conflict between proposed assets
+			return false;
+		}
+
+		return true;
+	}
+
+	private static boolean placementCollisionCheck(Zone serverZone, ClientConnection origin, PlacementInfo placementInfo) {
 		// Overlap check
 
 		for (Building building : serverZone.zoneBuildingSet) {
@@ -1396,16 +1346,15 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 
 				PlaceAssetMsg.sendPlaceAssetError(origin, 3, "");  // Conflict between proposed assets
-				return false;
+				return true;
 			}
 		}
-
-		return true;
+		return false;
 	}
 
 	private static boolean validateCityBuildingPlacement(Zone serverZone, PlaceAssetMsg msg, ClientConnection origin, PlayerCharacter player, PlacementInfo buildingInfo) {
 
-		// Peform shared common validation first
+		// Perform shared common validation first
 
 		if (validateBuildingPlacement(serverZone, msg, origin, player, buildingInfo) == false)
 			return false;
@@ -1413,7 +1362,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// Must be a player city
 
 		if (serverZone.isPlayerCity() == false) {
-			PlaceAssetMsg.sendPlaceAssetError(origin, 41, player.getName()); // Cannot place outisde a guild zone
+			PlaceAssetMsg.sendPlaceAssetError(origin, 41, player.getName()); // Cannot place outside a guild zone
 			return false;
 		}
 
@@ -1429,7 +1378,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 		// City assets must be placed on the city grid
 
 		if (!city.isLocationOnCityGrid(buildingInfo.getLoc())) {
-			PlaceAssetMsg.sendPlaceAssetError(origin, 1, "Assset must be placed on a City Grid");
+			PlaceAssetMsg.sendPlaceAssetError(origin, 52, "");
 			return false;
 		}
 
