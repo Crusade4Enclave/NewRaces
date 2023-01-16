@@ -19,7 +19,8 @@ public enum ChatChannel {
     POLITICAL("MB_MAGICBOT_POLITICAL"),
     GENERAL("MB_MAGICBOT_GENERAL"),
     FORTOFIX("MB_MAGICBOT_FORTOFIX"),
-    RECRUIT("MB_MAGICBOT_RECRUIT");
+    RECRUIT("MB_MAGICBOT_RECRUIT"),
+    ADMINLOG("MB_MAGICBOT_ADMINLOG");
 
     public final String configName;
     public  long channelID;
