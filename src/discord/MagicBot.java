@@ -31,6 +31,9 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static discord.ChatChannel.ADMINLOG;
+import static discord.ChatChannel.SEPTIC;
+
 /*
 *  MagicBot is many things to Magicbane...
 *
@@ -58,8 +61,8 @@ public class MagicBot extends ListenerAdapter {
     public static Database database;
     public static final Pattern accountNameRegex = Pattern.compile("^[\\p{Alnum}]{6,20}$");
     public static final Pattern passwordRegex = Pattern.compile("^[\\p{Alnum}]{6,20}$");
-    public static  long discordServerID;
-    public static  long discordRoleID;
+    public static long discordServerID;
+    public static long discordRoleID;
 
     public static Guild magicbaneDiscord;
     public static Role memberRole;
@@ -119,11 +122,7 @@ public class MagicBot extends ListenerAdapter {
 
         Logger.info("***MAGICBOT IS RUNNING***");
 
-        HashMap<Integer, String> adminEvents = database.getAdminEvents();
-
-        for (String adminEvent : adminEvents.values()) {
-            Logger.info(adminEvent);
-        }
+        SendAdminLogUpdates();
 
     }
 
@@ -363,7 +362,8 @@ public class MagicBot extends ListenerAdapter {
         Writer fileWriter;
 
         if (inString == null)
-            return;;
+            return;
+        ;
 
         outString = command + String.join(" ", inString);
         outString += "\n";
@@ -374,6 +374,20 @@ public class MagicBot extends ListenerAdapter {
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void SendAdminLogUpdates() {
+        HashMap<Integer, String> adminEvents = database.getAdminEvents();
+
+        for (String adminEvent : adminEvents.values()) {
+            String outString =
+                    "```\n" + "Hello Players \n\n" +
+                            adminEvent + "\n\n" +
+                            RobotSpeak.getRobotSpeak() + "\n```";
+
+            if (ADMINLOG.textChannel.canTalk())
+                ADMINLOG.textChannel.sendMessage(outString).queue();
         }
     }
 }
