@@ -380,14 +380,20 @@ public class MagicBot extends ListenerAdapter {
     private static void SendAdminLogUpdates() {
         HashMap<Integer, String> adminEvents = database.getAdminEvents();
 
-        for (String adminEvent : adminEvents.values()) {
-            String outString =
+        for (int adminEvent : adminEvents.keySet()) {
+
+            // Set event as read
+            database.setAdminEventAsRead(adminEvent);
+/*            String outString =
                     "```\n" + "Hello Players \n\n" +
-                            adminEvent + "\n\n" +
+                            adminEvents.get(adminEvent) + "\n\n" +
                             RobotSpeak.getRobotSpeak() + "\n```";
 
             if (ADMINLOG.textChannel.canTalk())
                 ADMINLOG.textChannel.sendMessage(outString).queue();
+
+ */
+            Logger.info(adminEvents.get(adminEvent));
         }
     }
 }

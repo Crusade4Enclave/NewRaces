@@ -257,6 +257,29 @@ public class Database {
         return trashCount;
     }
 
+    public void setAdminEventAsRead(int adminEvent) {
+
+        String queryString = "UPDATE dyn_admin_log SET `SentFlag` = 1 WHERE `entry` = ? ";
+
+        try (Connection connection = DriverManager.getConnection(sqlURI, ConfigManager.MB_DATABASE_USER.getValue(),
+                ConfigManager.MB_DATABASE_PASS.getValue())) {
+
+            PreparedStatement updateAdminEvent = connection.prepareCall(queryString);
+
+            updateAdminEvent.setInt(1, adminEvent);
+
+            updateAdminEvent.executeUpdate();
+            updateAdminEvent.close();
+            return;
+
+        } catch (SQLException e) {
+            Logger.error(e.toString());
+            online = false;
+            return;
+        }
+
+    }
+
     public HashMap<Integer, String> getAdminEvents() {
 
         HashMap<Integer, String> outMap = new HashMap<>();
