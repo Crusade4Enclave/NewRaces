@@ -28,10 +28,7 @@ import org.pmw.tinylog.writers.RollingFileWriter;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /*
@@ -96,8 +93,8 @@ public class MagicBot extends ListenerAdapter {
         database = new Database();
         database.configureDatabase();
 
-        // Use authentication token issued to MagicBot application to
-        // connect to Discord.  Bot is pre-invited to the Magicbane server.
+        // Authentication token issued to MagicBot application to connect
+        // to Discord is stored in config.  Bot is pre-invited to the Magicbane server.
 
         // Configure and create JDA discord instance
 
@@ -121,6 +118,13 @@ public class MagicBot extends ListenerAdapter {
         ChatChannel.Init();
 
         Logger.info("***MAGICBOT IS RUNNING***");
+
+        HashMap<Integer, String> adminEvents = database.getAdminEvents();
+
+        for (String adminEvent : adminEvents.values()) {
+            Logger.info(adminEvent);
+        }
+
     }
 
     @Override
