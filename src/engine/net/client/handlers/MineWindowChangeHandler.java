@@ -46,13 +46,13 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 	protected boolean _handleNetMsg(ClientNetMsg baseMsg, ClientConnection origin) throws MsgSendException {
 
 		PlayerCharacter playerCharacter = SessionManager.getPlayerCharacter(origin);
-		ArcMineWindowChangeMsg mineWindowChangeMsg = (ArcMineWindowChangeMsg)baseMsg;
+		ArcMineWindowChangeMsg mineWindowChangeMsg = (ArcMineWindowChangeMsg) baseMsg;
 		int newMineTime;
 
 		if (playerCharacter == null)
 			return true;
 
-		Building treeOfLife =  BuildingManager.getBuildingFromCache(mineWindowChangeMsg.getBuildingID());
+		Building treeOfLife = BuildingManager.getBuildingFromCache(mineWindowChangeMsg.getBuildingID());
 
 		if (treeOfLife == null)
 			return true;
@@ -64,7 +64,8 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 			return true;
 
 		Guild mineGuild = treeOfLife.getGuild();
-		if (mineGuild == null)
+
+		if (mineGuild.isErrant())
 			return true;
 
 		if (!Guild.sameGuild(mineGuild, playerCharacter.getGuild()))
@@ -85,8 +86,15 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 		//hodge podge sanity check to make sure they don't set it before early window and is not set at late window.
 
 		if (newMineTime < MBServerStatics.MINE_EARLY_WINDOW &&
-				newMineTime != MBServerStatics.MINE_LATE_WINDOW)
-			return true;    //invalid mine time, must be in range
+				newMineTime != MBServerStatics.MINE_LATE_WINDOW) {
+			ErrorPopupMsg.sendErrorMsg(playerCharacter, "Mine time is outside the NA Woo window.");
+			return true;
+	}
+
+		if (newMineTime <= LocalDateTime.now().getHour()) {
+			ErrorPopupMsg.sendErrorMsg(playerCharacter, "You must first wait for that mine window to close.");
+			return true;
+		}
 
 		// Update guild mine time
 
