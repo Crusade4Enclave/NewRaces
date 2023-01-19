@@ -28,11 +28,14 @@ public class ClaimMinePowerAction extends AbstractPowerAction {
 
 	@Override
 	protected void _startAction(AbstractCharacter source, AbstractWorldObject awo, Vector3fImmutable targetLoc, int trains, ActionsBase ab, PowersBase pb) {
+
 		if (source == null || awo == null)
 			return;
 
 		if (!(source.getObjectType().equals(Enum.GameObjectType.PlayerCharacter)))
 			return;
+
+		PlayerCharacter playerCharacter = (PlayerCharacter) source;
 
 		if (!(awo.getObjectType().equals(Enum.GameObjectType.Building)))
 			return;
@@ -47,7 +50,7 @@ public class ClaimMinePowerAction extends AbstractPowerAction {
 		if (mine == null)
 			return;
 
-		if (mine.claimMine((PlayerCharacter) source) == true)
+		if (mine.claimMine(playerCharacter) == true)
 			ChatManager.sendSystemMessage( (PlayerCharacter) source, "You successfully claimed this mine..");
 		else
 			ChatManager.sendSystemMessage( (PlayerCharacter) source, "Your attempt for to claim this mine failed.");

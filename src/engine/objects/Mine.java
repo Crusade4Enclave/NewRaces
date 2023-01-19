@@ -548,19 +548,7 @@ public class Mine extends AbstractGameObject {
         if (!updateGuildOwner(claimer))
             return false;
 
-        // Not the Same session for this character?
-        // Claimers may not relog or they lose claim.
-
-        if (this.lastClaimer != null) {
-
-            if (SessionManager.getSession(lastClaimer).getSessionID() !=
-                    this.lastClaimerSessionID) {
-                this.lastClaimer = null;
-                this.lastClaimerSessionID = null;
-                Mine.setLastChange(System.currentTimeMillis());
-                return false;
-            }
-        }
+        this.lastClaimer = claimer;
 
         // Successful claim
         return true;
