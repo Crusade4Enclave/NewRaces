@@ -103,16 +103,22 @@ public class Mine extends AbstractGameObject {
         this.owningGuild = Guild.getGuild(ownerUID);
         Guild nation = null;
 
-        if (!this.owningGuild.isErrant()) {
-            this.guildName = this.owningGuild.getName();
-            this.guildTag = this.owningGuild.getGuildTag();
-            nation = this.owningGuild.getNation();
+        if (this.owningGuild.isErrant()) {
+            this.guildName = "";
+            this.guildTag = GuildTag.ERRANT;
+            nation = Guild.getErrantGuild();
+            this.owningGuild = Guild.getErrantGuild();
             this.setActive(true);
         } else {
             this.guildName = "";
             this.guildTag = GuildTag.ERRANT;
             nation = Guild.getErrantGuild();
             this.owningGuild = Guild.getErrantGuild();
+            this.setActive(false);
+
+            this.guildName = this.owningGuild.getName();
+            this.guildTag = this.owningGuild.getGuildTag();
+            nation = this.owningGuild.getNation();
             this.setActive(false);
         }
 
