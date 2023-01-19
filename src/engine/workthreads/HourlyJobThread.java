@@ -105,7 +105,7 @@ public class HourlyJobThread implements Runnable {
 
 					// Open Errant Mines
 
-					if (mine.getOwningGuild() == null) {
+					if (mine.getOwningGuild().isErrant()) {
 						mine.handleStartMineWindow();
 						Mine.setLastChange(System.currentTimeMillis());
 						continue;

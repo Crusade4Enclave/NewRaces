@@ -288,7 +288,7 @@ try{
 		// Adjust the serialized mine time based upon whether
 		// the Guild's mine window has passed or not.
 
-		if (mineOwnerGuild != null) {
+		if (mineOwnerGuild.isErrant() == false) {
 
 			int guildWOO = mineOwnerGuild.getMineTime();
 			LocalDateTime guildMineTime = mineTime.withHour(guildWOO);
