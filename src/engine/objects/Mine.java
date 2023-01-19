@@ -511,6 +511,8 @@ public class Mine extends AbstractGameObject {
         DataWarehouse.pushToWarehouse(mineRecord);
 
         mineBuilding.setRank(mineBuilding.getRank());
+		this.lastClaimerSessionID = null;
+		this.lastClaimer = null;
         this.setActive(false);
         return true;
     }
