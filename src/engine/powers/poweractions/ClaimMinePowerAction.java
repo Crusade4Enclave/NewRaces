@@ -10,6 +10,7 @@
 package engine.powers.poweractions;
 
 import engine.Enum;
+import engine.gameManager.ChatManager;
 import engine.math.Vector3fImmutable;
 import engine.objects.*;
 import engine.powers.ActionsBase;
@@ -46,7 +47,8 @@ public class ClaimMinePowerAction extends AbstractPowerAction {
 		if (mine == null)
 			return;
 
-		mine.claimMine((PlayerCharacter) source);
+		if (mine.claimMine((PlayerCharacter) source) == false)
+			ChatManager.sendSystemMessage( (PlayerCharacter) source, "Your attempt for to claim this mine failed.");
 	}
 
 	@Override
