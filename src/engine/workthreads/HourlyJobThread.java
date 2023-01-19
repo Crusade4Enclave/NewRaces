@@ -52,44 +52,11 @@ public class HourlyJobThread implements Runnable {
 				Logger.error( e.toString());
 			}
 
-			//updateMines.
-			try {
+		// Open or Close mines for the current mine window.
 
-				ArrayList<Mine> mines = Mine.getMines();
+		processMineWindow();
 
-				for (Mine mine : mines) {
-					try {
-
-						// Open Errant Mines
-
-						if (mine.getOwningGuild() == null) {
-							mine.handleStartMineWindow();
-							Mine.setLastChange(System.currentTimeMillis());
-							continue;
-						}
-
-						// Open Mines with a current guild hour
-
-						if (mine.getOwningGuild().getMineTime() ==
-						    LocalDateTime.now().getHour()) {
-							mine.handleStartMineWindow();
-							Mine.setLastChange(System.currentTimeMillis());
-							continue;
-						}
-
-						// Close all other mines
-						 if (mine.handleEndMineWindow())
-								Mine.setLastChange(System.currentTimeMillis());
-
-					} catch (Exception e) {
-						Logger.error ("mineID: " + mine.getObjectUUID(), e.toString());
-					}
-				}
-			} catch (Exception e) {
-				Logger.error( e.toString());
-			}
-
-			for (Mine mine : Mine.getMines()) {
+		for (Mine mine : Mine.getMines()) {
 
 				try {
 					mine.depositMineResources();
@@ -125,5 +92,44 @@ public class HourlyJobThread implements Runnable {
 			Logger.info( SimulationManager.getPopulationString());
 			Logger.info( MessageDispatcher.getNetstatString());
 			Logger.info(PurgeOprhans.recordsDeleted.toString() + "orphaned items deleted");
+	}
+
+	public static void processMineWindow() {
+
+		try {
+
+			ArrayList<Mine> mines = Mine.getMines();
+
+			for (Mine mine : mines) {
+				try {
+
+					// Open Errant Mines
+
+					if (mine.getOwningGuild() == null) {
+						mine.handleStartMineWindow();
+						Mine.setLastChange(System.currentTimeMillis());
+						continue;
+					}
+
+					// Open Mines with a current guild hour
+
+					if (mine.getOwningGuild().getMineTime() ==
+						LocalDateTime.now().getHour()) {
+						mine.handleStartMineWindow();
+						Mine.setLastChange(System.currentTimeMillis());
+						continue;
+					}
+
+					// Close all other mines
+					 if (mine.handleEndMineWindow())
+							Mine.setLastChange(System.currentTimeMillis());
+
+				} catch (Exception e) {
+					Logger.error ("mineID: " + mine.getObjectUUID(), e.toString());
+				}
+			}
+		} catch (Exception e) {
+			Logger.error( e.toString());
+		}
 	}
 }

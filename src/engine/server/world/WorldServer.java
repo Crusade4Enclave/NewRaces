@@ -389,8 +389,11 @@ public class WorldServer {
 		}
 
 		Logger.info("Loading Mine data.");
-		//DbManager.MineQueries.syncMineWindowsWithToday();
 		Mine.loadAllMines();
+
+		// Open/Close mines for the current window
+		Logger.info("Processing mine window.");
+		HourlyJobThread.processMineWindow();
 
 		Logger.info("Loading Shrine data.");
 		DbManager.ShrineQueries.LOAD_ALL_SHRINES();
