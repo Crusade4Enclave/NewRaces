@@ -25,7 +25,6 @@ import engine.gameManager.*;
 import engine.job.JobContainer;
 import engine.job.JobScheduler;
 import engine.jobs.LogoutCharacterJob;
-import engine.jobs.MineActiveJob;
 import engine.loot.LootManager;
 import engine.net.Dispatch;
 import engine.net.DispatchMessage;
@@ -435,11 +434,6 @@ public class WorldServer {
 
 		if (ZoneManager.getHotZone() != null)
 			WorldServer.setLastHZChange(System.currentTimeMillis());
-
-		//Start Mines.
-
-		MineActiveJob maj = new MineActiveJob();
-		maj.run();
 
 		Logger.info("Starting Mobile AI FSM");
 		MobileFSMManager.getInstance();

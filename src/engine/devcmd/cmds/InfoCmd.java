@@ -201,11 +201,6 @@ public class InfoCmd extends AbstractDevCmd {
 						output+= newline;
 						output+= "Production type: " +mine.getProduction().name();
 
-						output+= newline;
-                        output+= "Open Date: "+ ( mine.openDate).toString();
-
-						output+= newline;
-                        output+= "Open Date: "+ (mine.openDate).toString();
 					}
 				}
 				output += newline;

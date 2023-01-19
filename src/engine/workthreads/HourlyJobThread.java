@@ -56,10 +56,11 @@ public class HourlyJobThread implements Runnable {
 			try {
 
 				ArrayList<Mine> mines = Mine.getMines();
-				LocalDateTime now = LocalDateTime.now();
 
 				for (Mine mine : mines) {
 					try {
+
+						// Open Errant Mines
 
 						if (mine.getOwningGuild() == null) {
 							mine.handleStartMineWindow();
@@ -67,17 +68,19 @@ public class HourlyJobThread implements Runnable {
 							continue;
 						}
 
-						//handle claimed mines
-                        LocalDateTime mineWindow = mine.openDate.withMinute(0).withSecond(0).withNano(0);
+						// Open Mines with a current guild hour
 
-						if (mineWindow != null && now.plusMinutes(1).isAfter(mineWindow))
-							if (!mine.getIsActive()) {
-								mine.handleStartMineWindow();
+						if (mine.getOwningGuild().getMineTime() ==
+						    LocalDateTime.now().getHour()) {
+							mine.handleStartMineWindow();
+							Mine.setLastChange(System.currentTimeMillis());
+							continue;
+						}
+
+						// Close all other mines
+						 if (mine.handleEndMineWindow())
 								Mine.setLastChange(System.currentTimeMillis());
 
-							}
-							else if (mine.handleEndMineWindow())
-								Mine.setLastChange(System.currentTimeMillis());
 					} catch (Exception e) {
 						Logger.error ("mineID: " + mine.getObjectUUID(), e.toString());
 					}

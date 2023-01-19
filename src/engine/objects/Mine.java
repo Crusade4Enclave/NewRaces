@@ -59,7 +59,6 @@ public class Mine extends AbstractGameObject {
 	private int buildingID;
 	private Zone parentZone;
 	private MineProduction mineType;
-	public LocalDateTime openDate;
 
 	public boolean dirtyMine = false;
 	//flags 1: never been claimed (make active).
@@ -139,12 +138,6 @@ public class Mine extends AbstractGameObject {
 		this.lastClaimerID = 0;
 		this.lastClaimerSessionID = null;
 
-
-	Timestamp mineOpenDateTime = rs.getTimestamp("mine_openDate");
-
-		if (mineOpenDateTime != null)
-			this.openDate = mineOpenDateTime.toLocalDateTime();
-
 	}
 
     public static void SendMineAttackMessage(Building mine){
@@ -170,30 +163,6 @@ public class Mine extends AbstractGameObject {
         ChatManager.chatNationInfo(mine.getGuild().getNation(), mine.getName() + " in " + mine.getParentZone().getParent().getName() + " is Under attack!");
     }
 
-    private void setNextMineWindow() {
-
-		int nextMineHour = MBServerStatics.MINE_EARLY_WINDOW;;
-		LocalDateTime nextOpenDate = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-
-		//  If errant use mine stays open.
-
-    	if (this.owningGuild == null || this.owningGuild.isErrant() == true)
-			return;
-
-		// Use the new owners Mine WOO.
-
-		nextMineHour = this.owningGuild.getMineTime();
-
-    	if ((this.openDate.getHour() == 0 || this.openDate.getHour() == 24) &&
-			(this.owningGuild.getMineTime() != 0 && this.owningGuild.getMineTime() != 24))
-			nextOpenDate = nextOpenDate.withHour(nextMineHour);
-		else
-			nextOpenDate = nextOpenDate.withHour(nextMineHour).plusDays(1);
-
-    	DbManager.MineQueries.CHANGE_MINE_TIME(this, nextOpenDate);
-		this.openDate = nextOpenDate;
-	}
-
 	public static void loadAllMines() {
 
 try{
@@ -207,7 +176,6 @@ try{
 		for (Mine mine : serverMines) {
 			Mine.mineMap.put(mine, mine.buildingID);
 			Mine.towerMap.put(mine.buildingID, mine);
-			mine.initializeMineTime();
 		}
 		
 }catch (Exception e){
@@ -218,48 +186,6 @@ try{
 	/*
 	 * Getters
 	 */
-	private void initializeMineTime(){
-
-
-		Guild nation = null;
-
-		//  If errant use mine stays open.
-
-		if (this.owningGuild == null || this.owningGuild.isErrant() == true) {
-
-			// Update mesh
-
-			Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
-
-			if (mineBuilding == null){
-				Logger.debug( "Null mine building " + this.getObjectUUID() +". Unable to Load Building with UID " +this.buildingID);
-				return;
-			}
-
-			mineBuilding.healthMax = (float) 1;
-			mineBuilding.meshUUID = mineBuilding.getBlueprint().getMeshForRank(-1);
-			mineBuilding.setRank(-1);
-			mineBuilding.setCurrentHitPoints((float) 1);
-			return;
-		}
-
-
-		nation = this.owningGuild.getNation();
-
-		int mineTime = (nation != null && !nation.isErrant()) ? nation.getMineTime() : MBServerStatics.MINE_EARLY_WINDOW;
-
-		this.openDate = this.openDate.withHour(mineTime).withMinute(0).withSecond(0).withNano(0);
-
-		//Failed to Update Database, default mine time.
-
-		if (!MineQueries.CHANGE_MINE_TIME(this, openDate)){
-			Logger.info("Mine with UUID " + this.getObjectUUID() + " failed to set Mine Window. Defaulting to Earliest.");
-			openDate = openDate.withHour(MBServerStatics.MINE_EARLY_WINDOW).withMinute(0).withSecond(0).withNano(0);
-			this.openDate = openDate;
-			return;
-		}
-
-	}
 
 	public boolean changeProductionType(Resource resource){
 		if (!this.validForMine(resource))
@@ -354,11 +280,27 @@ try{
 		writer.putInt(mine.getModifiedProductionAmount()); //TODO calculate range penalty here
 		writer.putInt(3600); //window in seconds
 
-		LocalDateTime mw = mine.openDate;
+		// Errant mines are currently open.   Set time to now.
 
-		writer.putLocalDateTime(mw);
-		mw = mw.plusHours(1);
-		writer.putLocalDateTime(mw);
+		LocalDateTime mineTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
+		Guild mineOwnerGuild = mine.getOwningGuild();
+
+		// Adjust the serialized mine time based upon whether
+		// the Guild's mine window has passed or not.
+
+		if (mineOwnerGuild != null) {
+
+			int guildWOO = mineOwnerGuild.getMineTime();
+			LocalDateTime guildMineTime = mineTime.withHour(guildWOO);
+
+			if (mineTime.isAfter(guildMineTime))
+				mineTime = guildMineTime.plusDays(1);
+			else
+				mineTime = guildMineTime;
+		}
+
+		writer.putLocalDateTime(mineTime);
+		writer.putLocalDateTime(mineTime.plusHours(1));
 		writer.put(mine.isActive ? (byte) 0x01 : (byte) 0x00);
 
 		writer.putFloat(mine.latitude);
@@ -570,18 +512,13 @@ try{
 			if (this.dirtyMine && this.lastClaimerID == 0 && (this.owningGuild == null || this.owningGuild.isErrant()))
 				return false;
 			this.setActive(false);
-			setNextMineWindow();
 			return true;
 		}
 
 		PlayerCharacter claimer = PlayerCharacter.getFromCache(this.lastClaimerID);
 
-		if (!validClaimer(claimer)){
-			LocalDateTime resetTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-			this.openDate = resetTime;
+		if (!validClaimer(claimer))
 			return false;
-		}
-			
 
 		//		//verify the player hasn't logged out since claim
 
@@ -590,12 +527,8 @@ try{
 		//		if (!SessionManager.getSession(claimer).getSessionID().equals(this.lastClaimerSessionID))
 		//			return false;
 
-		if (this.owningGuild == null || this.owningGuild.isErrant() || this.owningGuild.getNation().isErrant()){
-			LocalDateTime resetTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-			this.openDate = resetTime;
+		if (this.owningGuild == null || this.owningGuild.isErrant() || this.owningGuild.getNation().isErrant())
 			return false;
-		}
-	
 
 		//Update ownership to map
 
@@ -605,7 +538,6 @@ try{
 		this.nationName = nation.getName();
 		this.nationTag = nation.getGuildTag();
 
-		setNextMineWindow();
 		setLastChange(System.currentTimeMillis());
 
 		if (mineBuilding.getRank() < 1){
