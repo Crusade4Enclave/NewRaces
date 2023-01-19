@@ -24,7 +24,9 @@ import engine.db.archive.DataWarehouse;
 import engine.db.archive.MineRecord;
 import engine.gameManager.*;
 import engine.net.ByteBufferWriter;
+import engine.net.DispatchMessage;
 import engine.net.client.msg.ErrorPopupMsg;
+import engine.net.client.msg.chat.ChatSystemMsg;
 import engine.server.MBServerStatics;
 import engine.session.SessionID;
 import org.pmw.tinylog.Logger;
@@ -512,7 +514,11 @@ public class Mine extends AbstractGameObject {
 
         mineBuilding.rebuildMine();
         WorldGrid.updateObject(mineBuilding);
-        ChatManager.chatSystemChannel(this.lastClaimer.getName() + " has claimed the mine in " + this.parentZone.getParent().getName() + " for " + this.owningGuild.getName() + ". The mine is no longer active.");
+
+        ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.lastClaimer.getName() + " has claimed the mine in " + this.parentZone.getParent().getName() + " for " + this.owningGuild.getName() + ". The mine is no longer active.");
+        chatMsg.setMessageType(10);
+        chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
+        DispatchMessage.dispatchMsgToAll(chatMsg);
 
         // Warehouse this claim event
 
