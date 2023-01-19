@@ -214,7 +214,7 @@ public class LoginServer {
         Race.loadAllRaces();
 
         Logger.info("Initializing Errant Guild");
-        Guild.CreateErrantGuild();
+        Guild.getErrantGuild();
 
         Logger.info("Loading All Guilds");
         DbManager.GuildQueries.GET_ALL_GUILDS();

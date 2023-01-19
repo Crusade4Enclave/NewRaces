@@ -269,7 +269,7 @@ public class WorldServer {
 		ItemProductionManager.ITEMPRODUCTIONMANAGER.startMessagePump();
 
 		Logger.info("Initializing Errant Guild");
-		Guild.CreateErrantGuild();
+		Guild.getErrantGuild();
 
 		Logger.info("Initializing PowersManager.");
 		// activate powers manager

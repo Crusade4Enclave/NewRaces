@@ -51,7 +51,6 @@ public class Guild extends AbstractWorldObject {
 
 	private final String name;
 	private Guild nation;
-	private static Guild g;
 	private final GuildTag guildTag;
 	// TODO add these to database
 	private String motto = "";
@@ -406,23 +405,8 @@ public class Guild extends AbstractWorldObject {
 	/*
 	 * Utils
 	 */
-	
-
-	public static Guild getErrantGuild() {
-		return g;
-	}
-	
-	public static void CreateErrantGuild(){
-		
-			g = new Guild( "None", Guild.getErrantNation(), 0,
-					"Anarchy", GuildTag.ERRANT, 0);
-			g.getObjectType();
-		
-	}
 
 	public boolean isErrant() {
-		if (this.getObjectUUID() == Guild.g.getObjectUUID())
-			return true;
         return this.getObjectUUID() == Guild.errant.getObjectUUID();
     }
 
@@ -738,6 +722,11 @@ Guild.serializeForClientMsg(guild,writer, null, false);
 	}
 
 	private static Guild errant;
+
+	public static Guild getErrantGuild() {
+
+		return Guild.getErrantNation();
+	}
 
 	public static Guild getErrantNation() {
 		if (Guild.errant == null)
