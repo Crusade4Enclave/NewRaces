@@ -107,11 +107,13 @@ public class Mine extends AbstractGameObject {
             this.guildName = this.owningGuild.getName();
             this.guildTag = this.owningGuild.getGuildTag();
             nation = this.owningGuild.getNation();
+            this.setActive(true);
         } else {
             this.guildName = "";
             this.guildTag = GuildTag.ERRANT;
             nation = Guild.getErrantGuild();
             this.owningGuild = Guild.getErrantGuild();
+            this.setActive(false);
         }
 
         if (!nation.isErrant()) {
@@ -122,7 +124,6 @@ public class Mine extends AbstractGameObject {
             this.nationTag = GuildTag.ERRANT;
         }
 
-        this.setActive(false);
         this.production = Resource.valueOf(rs.getString("mine_resource"));
 
         this.lastClaimerSessionID = null;
