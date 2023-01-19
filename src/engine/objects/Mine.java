@@ -269,15 +269,17 @@ public class Mine extends AbstractGameObject {
         writer.putInt(mine.getModifiedProductionAmount()); //TODO calculate range penalty here
         writer.putInt(3600); //window in seconds
 
-        // Errant mines are currently open.   Set time to now.
+        // Errant mines are currently open.  Set time to now.
 
         LocalDateTime mineOpenTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
         Guild mineOwnerGuild = mine.getOwningGuild();
 
         // Adjust the serialized mine time based upon whether
         // the Guild's mine window has passed or not.
+		// If a mine is active serialize current datetime irrespective
+		// of any claim
 
-        if (mineOwnerGuild.isErrant() == false) {
+        if (mineOwnerGuild.isErrant() == false && mine.isActive == false) {
 
             int guildWOO = mineOwnerGuild.getMineTime();
             LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
@@ -287,11 +289,6 @@ public class Mine extends AbstractGameObject {
             else
                 mineOpenTime = guildMineTime;
 
-			// If a mine is active serialize current datetime irrespective
-			// of any claim
-
-			if (mine.isActive == true)
-				mineOpenTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
         }
 
 
