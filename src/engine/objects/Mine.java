@@ -60,7 +60,6 @@ public class Mine extends AbstractGameObject {
 	private Zone parentZone;
 	private MineProduction mineType;
 
-	public boolean dirtyMine = false;
 	//flags 1: never been claimed (make active).
 
 
@@ -491,7 +490,7 @@ try{
 		if (mineBuilding.getRank() > 0) {
 			//never knocked down, let's just move on.
 			//hasn't been claimed since server start.
-			if (this.dirtyMine && this.lastClaimerID == 0 && (this.owningGuild == null || this.owningGuild.isErrant()))
+			if (this.lastClaimerID == 0 && (this.owningGuild == null || this.owningGuild.isErrant()))
 				return false;
 			this.setActive(false);
 			return true;
@@ -529,8 +528,6 @@ try{
 				updateGuildOwner(null);
 				return false;
 			}
-			
-			this.dirtyMine = false;
 
 			mineBuilding.rebuildMine();
 			WorldGrid.updateObject(mineBuilding);
