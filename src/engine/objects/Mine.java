@@ -286,7 +286,14 @@ public class Mine extends AbstractGameObject {
                 mineOpenTime = guildMineTime.plusDays(1);
             else
                 mineOpenTime = guildMineTime;
+
+			// If a mine is active serialize current datetime irrespective
+			// of any claim
+
+			if (mine.isActive == true)
+				mineOpenTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
         }
+
 
         writer.putLocalDateTime(mineOpenTime);
         writer.putLocalDateTime(mineOpenTime.plusHours(1));
