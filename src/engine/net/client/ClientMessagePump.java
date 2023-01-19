@@ -1457,42 +1457,6 @@ boolean updateCity = false;
 
 	}
 
-	private static void MineWindowChange(ArcMineWindowChangeMsg msg, ClientConnection origin) {
-
-		Building tol = (Building) BuildingManager.getBuildingFromCache(msg.getBuildingID());
-		//hodge podge sanity check to make sure they dont set it before early window and is not set at late window.
-		if (msg.getTime() < MBServerStatics.MINE_EARLY_WINDOW && msg.getTime() != MBServerStatics.MINE_LATE_WINDOW)
-			return;    //invalid mine time, must be in range
-		if (tol == null)
-			return;
-
-		if (tol.getBlueprintUUID() == 0)
-			return;
-
-		if (tol.getBlueprint().getBuildingGroup() != BuildingGroup.TOL)
-			return;
-
-		PlayerCharacter pc = SessionManager.getPlayerCharacter(origin);
-		if (pc == null)
-			return;
-
-		Guild tolG = tol.getGuild();
-		if (tolG == null)
-			return;
-		if (!Guild.sameGuild(tolG, pc.getGuild()))
-			return; //must be same guild
-		if (GuildStatusController.isInnerCouncil(pc.getGuildStatus()) == false) // is this only GL?
-			return;
-
-		if (!DbManager.GuildQueries.UPDATE_MINETIME(tolG.getObjectUUID(), msg.getTime())) {
-			Logger.error("MineWindowChange", "Failed to update mine time for guild " + tolG.getObjectUUID());
-			ChatManager.chatGuildError(pc, "Failed to update the mine time");
-			return;
-		}
-		tolG.setMineTime(msg.getTime());
-		ChatManager.chatGuildInfo(pc, "Mine time updated.");
-	}
-
 	private static void ListOwnedMines(ArcOwnedMinesListMsg msg, ClientConnection origin) {
 
 		PlayerCharacter pc = SessionManager.getPlayerCharacter(origin);
