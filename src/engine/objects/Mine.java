@@ -36,8 +36,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static engine.gameManager.DbManager.MineQueries;
-import static engine.gameManager.DbManager.getObject;
+import static engine.gameManager.DbManager.*;
 import static engine.math.FastMath.sqr;
 
 public class Mine extends AbstractGameObject {
