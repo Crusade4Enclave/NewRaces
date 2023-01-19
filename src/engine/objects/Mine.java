@@ -285,7 +285,7 @@ public class Mine extends AbstractGameObject {
 
         if (mineOwnerGuild.isErrant() == false && mine.isActive == false) {
 
-            int guildWOO = mineOwnerGuild.getMineTime();
+            int guildWOO = mineOwnerGuild.getNation().getMineTime();
             LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
 
             if (mineOpenTime.isAfter(guildMineTime))
@@ -294,7 +294,6 @@ public class Mine extends AbstractGameObject {
                 mineOpenTime = guildMineTime;
 
         }
-
 
         writer.putLocalDateTime(mineOpenTime);
         writer.putLocalDateTime(mineOpenTime.plusHours(1));
