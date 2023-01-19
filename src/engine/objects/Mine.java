@@ -48,8 +48,8 @@ public class Mine extends AbstractGameObject {
     private float longitude;
     private float altitude;
     private Guild owningGuild;
-    private PlayerCharacter lastClaimer;
-    private SessionID lastClaimerSessionID;
+    public PlayerCharacter lastClaimer;
+    public SessionID lastClaimerSessionID;
 
     private int flags;
     private int buildingID;
@@ -488,11 +488,13 @@ public class Mine extends AbstractGameObject {
 
         // This mine does not have a valid claimer
         // we will therefore set it to errant
+        // and keep the window open.
 
         if (!validClaimer(this.lastClaimer)) {
             this.lastClaimerSessionID = null;
             this.lastClaimer = null;
             this.updateGuildOwner(null);
+            this.setActive(true);
             return false;
         }
 
