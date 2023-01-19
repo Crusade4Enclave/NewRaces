@@ -390,6 +390,9 @@ public class Mine extends AbstractGameObject {
         if (playerGuild.isErrant())
             return false;
 
+        if (playerGuild.getNation().isErrant())
+            return false;
+
         if (SessionManager.getPlayerCharacterByID(playerCharacter.getObjectUUID()) == null)
             return false;
 
