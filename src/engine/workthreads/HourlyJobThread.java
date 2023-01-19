@@ -102,11 +102,8 @@ public class HourlyJobThread implements Runnable {
 
 			for (Mine mine : mines) {
 				try {
-					int foo;
-					// Open Errant Mines
 
-					if (mine.getBuildingID() == 1250)
-						foo = 1;
+					// Open Errant Mines
 
 					if (mine.getOwningGuild().isErrant()) {
 						mine.handleStartMineWindow();

@@ -100,9 +100,6 @@ public class Mine extends AbstractGameObject {
             this.zoneName = "Unknown Mine";
         }
 
-        if (ownerUID == 0)
-            ownerUID = ownerUID - 1 + 1;
-
         this.owningGuild = Guild.getGuild(ownerUID);
         Guild nation = null;
 
