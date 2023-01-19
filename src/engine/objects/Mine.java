@@ -384,75 +384,57 @@ try{
 		Logger.info(this.zoneName + "'s Mine is now Active!");
 	}
 
-	public static boolean validClaimer(PlayerCharacter pc) {
+	public static boolean validClaimer(PlayerCharacter playerCharacter) {
+
+		Guild playerGuild;
+
 		//verify the player exists
-		if (pc == null)
+
+		if (playerCharacter == null)
 			return false;
 
 		//verify the player is in valid guild
-		Guild g = pc.getGuild();
-		if (g == null) {
-			ChatManager.chatSystemError(pc, "Mine can only be claimed by a guild.");
-			return false;
-		} else if (g.isErrant()) {
-			ChatManager.chatSystemError(pc, "Guild cannot be Errant to claim..");
-			return false;
-		}
 
-		//verify the player is in nation
-		Guild n = g.getNation();
-		if (n.isErrant()) {
-			ChatManager.chatSystemError(pc, "Must have a Nation");
-			return false;
-		}
+		playerGuild = playerCharacter.getGuild();
 
-		
-		if (SessionManager.getPlayerCharacterByID(pc.getObjectUUID()) == null){
+		if (playerGuild.isErrant())
 			return false;
-		}
+
+		if (SessionManager.getPlayerCharacterByID(playerCharacter.getObjectUUID()) == null)
+			return false;
+
 		//Get a count of nation mines, can't go over capital tol rank.
-		City capital = n.getOwnedCity();
-		City guildCity = g.getOwnedCity();
-		if (guildCity == null){
-			ChatManager.chatSystemError(pc, "Guild must own city to claim.");
-			return false;
-		}
-		if (capital == null) {
-			ChatManager.chatSystemError(pc, "Guild must own city to claim.");
-			return false;
-		}
+		City capital = playerGuild.getOwnedCity();
+		City guildCity = playerGuild.getOwnedCity();
 
-		if (guildCity.getWarehouse() == null){
-			ChatManager.chatSystemError(pc, "City must own warehouse for to claim.");
+		if (guildCity == null)
 			return false;
-		}
+
+		if (capital == null)
+			return false;
+
+		if (guildCity.getWarehouse() == null)
+			return false;
 
 		Building tol = capital.getTOL();
 
-		if (tol == null) {
-			ChatManager.chatSystemError(pc, "Tree of life not found for city.");
+		if (tol == null)
 			return false;
-		}
 		
 		int rank = tol.getRank();
 
-		if (rank < 1) {
-			ChatManager.chatSystemError(pc, "Tree of life is not yet sprouted.");
+		if (rank < 1)
 			return false;
-		}
 
 		int mineCnt = 0;
 
-		mineCnt += Mine.getMinesForGuild(n.getObjectUUID()).size();
-		for (Guild guild: n.getSubGuildList()){
+		mineCnt += Mine.getMinesForGuild(playerGuild.getObjectUUID()).size();
+
+		for (Guild guild: playerGuild.getSubGuildList())
 			mineCnt += Mine.getMinesForGuild(guild.getObjectUUID()).size();
-		}
 
-
-		if (mineCnt > rank) {
-			ChatManager.chatSystemError(pc, "Your Nation can only hold " + tol.getRank() + " mines. Your Nation already has" + mineCnt);
+		if (mineCnt > rank)
 			return false;
-		}
 
 		return true;
 	}
