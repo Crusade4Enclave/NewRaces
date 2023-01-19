@@ -488,6 +488,7 @@ public class Mine extends AbstractGameObject {
         if (!validClaimer(this.lastClaimer)) {
             this.lastClaimerSessionID = null;
             this.lastClaimer = null;
+            this.updateGuildOwner(null);
             return false;
         }
 
