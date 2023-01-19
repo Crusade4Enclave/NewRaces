@@ -1491,7 +1491,7 @@ boolean updateCity = false;
 			return;
 
 		//make sure mine belongs to guild
-		if (mine.getOwningGuild() == null || mine.getOwningGuild().getObjectUUID() != sourcePlayer.getGuild().getObjectUUID())
+		if (mine.getOwningGuild().isErrant() || mine.getOwningGuild().getObjectUUID() != sourcePlayer.getGuild().getObjectUUID())
 			return;
 
 		//make sure valid resource

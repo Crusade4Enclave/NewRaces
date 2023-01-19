@@ -391,10 +391,6 @@ public class WorldServer {
 		Logger.info("Loading Mine data.");
 		Mine.loadAllMines();
 
-		// Open/Close mines for the current window
-		Logger.info("Processing mine window.");
-		HourlyJobThread.processMineWindow();
-
 		Logger.info("Loading Shrine data.");
 		DbManager.ShrineQueries.LOAD_ALL_SHRINES();
 
@@ -471,6 +467,10 @@ public class WorldServer {
 		// Disabled but kept in case of emergency
 		Logger.info("Starting Orphan Item Purge");
 		PurgeOprhans.startPurgeThread();
+
+		// Open/Close mines for the current window
+		Logger.info("Processing mine window.");
+		HourlyJobThread.processMineWindow();
 
 		// Calculate bootstrap time and rest boot time to current time.
 		java.time.Duration bootDuration = java.time.Duration.between(LocalDateTime.now(), bootTime);
