@@ -36,16 +36,17 @@ public class ClaimMinePowerAction extends AbstractPowerAction {
 		if (!(awo.getObjectType().equals(Enum.GameObjectType.Building)))
 			return;
 
-		Building b = (Building)awo;
+		Building mineBuilding = (Building)awo;
 
-		if (b.getRank() > 0)
+		if (mineBuilding.getRank() > 0)
 			return;
 
-		Mine m = Mine.getMineFromTower(b.getObjectUUID());
-		if (m == null)
+		Mine mine = Mine.getMineFromTower(mineBuilding.getObjectUUID());
+
+		if (mine == null)
 			return;
 
-		m.claimMine((PlayerCharacter) source);
+		mine.claimMine((PlayerCharacter) source);
 	}
 
 	@Override

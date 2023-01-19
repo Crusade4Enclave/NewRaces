@@ -53,8 +53,9 @@ public class Mine extends AbstractGameObject {
 	private float longitude;
 	private float altitude;
 	private Guild owningGuild;
-	private int lastClaimerID;
+	private PlayerCharacter lastClaimer;
 	private SessionID lastClaimerSessionID;
+
 	private int flags;
 	private int buildingID;
 	private Zone parentZone;
@@ -106,8 +107,6 @@ public class Mine extends AbstractGameObject {
 			this.altitude = 0;
 			this.zoneName = "Unknown Mine";
 		}
-		
-
 
 		this.owningGuild = Guild.getGuild(ownerUID);
 		Guild nation = null;
@@ -122,19 +121,17 @@ public class Mine extends AbstractGameObject {
 			this.owningGuild = Guild.getErrantGuild();
 		}
 
-
 		if(!nation.isErrant()) {
 			this.nationName = nation.getName();
 			this.nationTag = nation.getGuildTag();
 		} else {
 			this.nationName = "";
 			this.nationTag = GuildTag.ERRANT;
-			
 		}
+
 		this.setActive(false);
 		this.production = Resource.valueOf(rs.getString("mine_resource"));
 
-		this.lastClaimerID = 0;
 		this.lastClaimerSessionID = null;
 
 	}
@@ -371,13 +368,6 @@ try{
 
 	public void handleStartMineWindow() {
 
-		// Do not open errant mines until after woo
-
-		//		if  ((this.getOwningGuild() == null) &&
-		//				(this.getOpenDate().isAfter(DateTime.now())))
-		//			return;
-
-		this.lastClaimerID = 0;
 		this.setActive(true);
 		ChatManager.chatSystemChannel(this.zoneName + "'s Mine is now Active!");
 		Logger.info(this.zoneName + "'s Mine is now Active!");
@@ -490,23 +480,12 @@ try{
 		if (mineBuilding.getRank() > 0) {
 			//never knocked down, let's just move on.
 			//hasn't been claimed since server start.
-			if (this.lastClaimerID == 0 && (this.owningGuild == null || this.owningGuild.isErrant()))
-				return false;
 			this.setActive(false);
 			return true;
 		}
 
-		PlayerCharacter claimer = PlayerCharacter.getFromCache(this.lastClaimerID);
-
-		if (!validClaimer(claimer))
+		if (!validClaimer(this.lastClaimer))
 			return false;
-
-		//		//verify the player hasn't logged out since claim
-
-		//		if (SessionManager.getSession(claimer) == null)
-		//			return false;
-		//		if (!SessionManager.getSession(claimer).getSessionID().equals(this.lastClaimerSessionID))
-		//			return false;
 
 		if (this.owningGuild == null || this.owningGuild.isErrant() || this.owningGuild.getNation().isErrant())
 			return false;
@@ -523,19 +502,19 @@ try{
 
 		if (mineBuilding.getRank() < 1){
 
-			if (claimer == null){
-				this.lastClaimerID = 0;
+			if (this.lastClaimer == null){
+				this.lastClaimerSessionID = null;
 				updateGuildOwner(null);
 				return false;
 			}
 
 			mineBuilding.rebuildMine();
 			WorldGrid.updateObject(mineBuilding);
-			ChatManager.chatSystemChannel(claimer.getName() + " has claimed the mine in " + this.parentZone.getParent().getName() + " for " + this.owningGuild.getName() + ". The mine is no longer active.");
+			ChatManager.chatSystemChannel(this.lastClaimer.getName() + " has claimed the mine in " + this.parentZone.getParent().getName() + " for " + this.owningGuild.getName() + ". The mine is no longer active.");
 
 			// Warehouse this claim event
 
-			MineRecord mineRecord = MineRecord.borrow(this, claimer, Enum.RecordEventType.CAPTURE);
+			MineRecord mineRecord = MineRecord.borrow(this, this.lastClaimer, Enum.RecordEventType.CAPTURE);
 			DataWarehouse.pushToWarehouse(mineRecord);
 
 		}else{
@@ -546,7 +525,7 @@ try{
 		return true;
 	}
 
-	public boolean claimMine(PlayerCharacter claimer){
+	public boolean claimMine(PlayerCharacter claimer) {
 
 		if (claimer == null)
 			return false;
@@ -562,10 +541,24 @@ try{
 		if (!updateGuildOwner(claimer))
 			return false;
 
-		this.lastClaimerID = claimer.getObjectUUID();
-		Mine.setLastChange(System.currentTimeMillis());
+		// Not the Same session for this character?
+		// Claimers may not relog or they lose claim.
+
+		if (this.lastClaimer != null) {
+
+			if (SessionManager.getSession(lastClaimer).getSessionID() !=
+					this.lastClaimerSessionID) {
+				this.lastClaimer = null;
+				this.lastClaimerSessionID = null;
+				Mine.setLastChange(System.currentTimeMillis());
+				return false;
+			}
+		}
+
+		// Successful claim
 		return true;
 	}
+
 	public boolean depositMineResources(){
 
 		if (this.owningGuild == null)
