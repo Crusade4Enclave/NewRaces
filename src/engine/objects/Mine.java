@@ -282,7 +282,7 @@ try{
 
 		// Errant mines are currently open.   Set time to now.
 
-		LocalDateTime mineTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
+		LocalDateTime mineOpenTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
 		Guild mineOwnerGuild = mine.getOwningGuild();
 
 		// Adjust the serialized mine time based upon whether
@@ -291,16 +291,16 @@ try{
 		if (mineOwnerGuild.isErrant() == false) {
 
 			int guildWOO = mineOwnerGuild.getMineTime();
-			LocalDateTime guildMineTime = mineTime.withHour(guildWOO);
+			LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
 
-			if (mineTime.isAfter(guildMineTime))
-				mineTime = guildMineTime.plusDays(1);
+			if (mineOpenTime.isAfter(guildMineTime))
+				mineOpenTime = guildMineTime.plusDays(1);
 			else
-				mineTime = guildMineTime;
+				mineOpenTime = guildMineTime;
 		}
 
-		writer.putLocalDateTime(mineTime);
-		writer.putLocalDateTime(mineTime.plusHours(1));
+		writer.putLocalDateTime(mineOpenTime);
+		writer.putLocalDateTime(mineOpenTime.plusHours(1));
 		writer.put(mine.isActive ? (byte) 0x01 : (byte) 0x00);
 
 		writer.putFloat(mine.latitude);
