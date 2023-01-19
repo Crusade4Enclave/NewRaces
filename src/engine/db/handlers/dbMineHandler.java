@@ -66,13 +66,6 @@ public class dbMineHandler extends dbHandlerBase {
 		return (executeUpdate() > 0);
 	}
 
-	public boolean CHANGE_MINE_TIME(Mine mine, LocalDateTime mineOpenTime) {
-		prepareCallable("UPDATE `obj_mine` SET `mine_openDate`=? WHERE `UID`=?");
-		setLocalDateTime(1, mineOpenTime);
-		setLong(2, (long) mine.getObjectUUID());
-		return (executeUpdate() > 0);
-	}
-
 	public boolean SET_FLAGS(Mine mine, int newFlags) {
 		prepareCallable("UPDATE `obj_mine` SET `flags`=? WHERE `UID`=?");
 		setInt(1, newFlags);
