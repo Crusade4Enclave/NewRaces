@@ -633,7 +633,11 @@ public class PlayerCharacter extends AbstractCharacter {
 		this.setDesiredAltitude(0);
 		this.altitude = (float) 0;
 
-	this.getCharItemManager().closeTradeWindow();
+		// Release Mine Claims
+
+		Mine.releaseMineClaims(this);
+
+		this.getCharItemManager().closeTradeWindow();
 
 		//increment live counter. This is to prevent double kills from casts
 		this.liveCounter++;
