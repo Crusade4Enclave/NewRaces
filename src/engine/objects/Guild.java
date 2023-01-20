@@ -725,18 +725,12 @@ Guild.serializeForClientMsg(guild,writer, null, false);
 
 	public static Guild getErrantGuild() {
 
-		return Guild.getErrantNation();
-	}
-
-	public static Guild getErrantNation() {
 		if (Guild.errant == null)
 			Guild.errant = new Guild("None", null, 10, "Despot Rule", GuildTag.ERRANT, 0);
+
 		return Guild.errant;
 	}
 
-	/*
-	 * Game Object Manager
-	 */
 	public static Guild getGuild(final int objectUUID) {
 
 		if (objectUUID == 0)

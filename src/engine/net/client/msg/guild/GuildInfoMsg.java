@@ -373,7 +373,7 @@ class GuildInfoMessageType5 extends GuildInfoMessageType {
 		if(pc != null && g != null && g.getObjectUUID() != 0) {
 			Guild n = g.getNation();
 			if(n == null) {
-				n = Guild.getErrantNation();
+				n = Guild.getErrantGuild();
 			}
 			
 			writer.putInt(ago.getObjectType().ordinal());
@@ -412,7 +412,7 @@ class GuildInfoMessageType5 extends GuildInfoMessageType {
 			writer.putInt(GuildStatusController.getTitle(pc.getGuildStatus()));	//Title
 			writer.putInt(g.getCharter());
 
-			if(g.getNation().equals(Guild.getErrantNation()))
+			if(g.getNation().equals(Guild.getErrantGuild()))
 				writer.putString("Errant");
 			else
 				writer.putString("City");
