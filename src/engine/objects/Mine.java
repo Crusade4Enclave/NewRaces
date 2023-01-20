@@ -417,8 +417,10 @@ public class Mine extends AbstractGameObject {
         if (guildCity == null)
             return false;
 
-        if (guildCity.getWarehouse() == null)
+        if (guildCity.getWarehouse() == null) {
+            ErrorPopupMsg.sendErrorMsg(playerCharacter, "No Warehouse exists for this claim.");
             return false;
+        }
 
         Building nationCapitolTOL = nationCapitol.getTOL();
 
