@@ -20,9 +20,9 @@ import engine.objects.PlayerCharacter;
 /**
  *
  */
-public class SetActivateMineCmd extends AbstractDevCmd {
+public class MineActiveCmd extends AbstractDevCmd {
 
-	public SetActivateMineCmd() {
+	public MineActiveCmd() {
         super("mineactive");
     }
 
