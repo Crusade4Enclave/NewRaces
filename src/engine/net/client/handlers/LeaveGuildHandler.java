@@ -20,6 +20,7 @@ import engine.net.client.msg.ClientNetMsg;
 import engine.net.client.msg.guild.LeaveGuildMsg;
 import engine.objects.Guild;
 import engine.objects.GuildStatusController;
+import engine.objects.Mine;
 import engine.objects.PlayerCharacter;
 
 public class LeaveGuildHandler extends AbstractClientMsgHandler {
@@ -35,35 +36,39 @@ public class LeaveGuildHandler extends AbstractClientMsgHandler {
 
 		// get PlayerCharacter of person leaving invite
 
-		PlayerCharacter sourcePlayer = SessionManager.getPlayerCharacter(origin);
+		PlayerCharacter playerCharacter = SessionManager.getPlayerCharacter(origin);
 
-		if (sourcePlayer == null)
+		if (playerCharacter == null)
 			return true;
 
 		// Guild leader can't leave guild. must pass GL or disband
 
-		if (GuildStatusController.isGuildLeader(sourcePlayer.getGuildStatus())) {
+		if (GuildStatusController.isGuildLeader(playerCharacter.getGuildStatus())) {
 			msg.setMessage("You must switch leadership of your guild before leaving!");
-			dispatch = Dispatch.borrow(sourcePlayer, msg);
+			dispatch = Dispatch.borrow(playerCharacter, msg);
 			DispatchMessage.dispatchMsgDispatch(dispatch, engine.Enum.DispatchChannel.SECONDARY);
 			return true;
 		}
 
+		// Release all mine claims
+
+		Mine.releaseMineClaims(playerCharacter);
+
 		// get old Guild
-		Guild oldGuild = sourcePlayer.getGuild();
+		Guild oldGuild = playerCharacter.getGuild();
 
 		if (oldGuild == null || oldGuild.isErrant()) {
 			return true;
 		}
 
 		// Send left guild message to rest of guild
-		ChatManager.chatGuildInfo(oldGuild, sourcePlayer.getFirstName() + " has left the guild.");
+		ChatManager.chatGuildInfo(oldGuild, playerCharacter.getFirstName() + " has left the guild.");
 
-		oldGuild.removePlayer(sourcePlayer, GuildHistoryType.LEAVE);
+		oldGuild.removePlayer(playerCharacter, GuildHistoryType.LEAVE);
 
 		// Send message back to client
 		msg.setMessage("You have left the guild.");
-		dispatch = Dispatch.borrow(sourcePlayer, msg);
+		dispatch = Dispatch.borrow(playerCharacter, msg);
 		DispatchMessage.dispatchMsgDispatch(dispatch, engine.Enum.DispatchChannel.SECONDARY);
 
 		return true;
