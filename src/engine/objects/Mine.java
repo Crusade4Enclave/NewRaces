@@ -28,7 +28,6 @@ import engine.net.DispatchMessage;
 import engine.net.client.msg.ErrorPopupMsg;
 import engine.net.client.msg.chat.ChatSystemMsg;
 import engine.server.MBServerStatics;
-import engine.session.SessionID;
 import org.pmw.tinylog.Logger;
 
 import java.net.UnknownHostException;
@@ -47,13 +46,12 @@ public class Mine extends AbstractGameObject {
     private Resource production;
     private boolean isActive = false;
 
-    public boolean wasClaimed = false;
     private float latitude;
     private float longitude;
     private float altitude;
     private Guild owningGuild;
     public PlayerCharacter lastClaimer;
-
+    public boolean wasClaimed = false;
     private int flags;
     private int buildingID;
     private Zone parentZone;
@@ -287,15 +285,11 @@ public class Mine extends AbstractGameObject {
             int guildWOO = mineOwnerGuild.getNation().getMineTime();
             LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
 
-            if (mineOpenTime.isAfter(guildMineTime))
+            if (mineOpenTime.isAfter(guildMineTime) || mine.wasClaimed == true)
                 mineOpenTime = guildMineTime.plusDays(1);
             else
                 mineOpenTime = guildMineTime;
 
-            // Mines can only open once per cycle
-
-            if (mine.wasClaimed == true)
-                mineOpenTime = guildMineTime.plusDays(1);
         }
 
         writer.putLocalDateTime(mineOpenTime);
@@ -395,31 +389,38 @@ public class Mine extends AbstractGameObject {
         if (playerGuild.getNation().isErrant())
             return false;
 
-        if (SessionManager.getPlayerCharacterByID(playerCharacter.getObjectUUID()) == null)
-            return false;
-
         //Get a count of nation mines, can't go over capital tol rank.
-        City capital = playerGuild.getOwnedCity();
+        City nationCapitol = playerGuild.getNation().getOwnedCity();
         City guildCity = playerGuild.getOwnedCity();
 
-        if (guildCity == null)
+        if (nationCapitol == null)
             return false;
 
-        if (capital == null)
+        if (guildCity == null)
             return false;
 
         if (guildCity.getWarehouse() == null)
             return false;
 
-        Building tol = capital.getTOL();
+        Building nationCapitolTOL = nationCapitol.getTOL();
 
-        if (tol == null)
+        if (nationCapitolTOL == null)
             return false;
 
-        int rank = tol.getRank();
+        int treeRank = nationCapitolTOL.getRank();
 
-        if (rank < 1)
+        if (treeRank < 1)
             return false;
+
+        if (guildUnderMineLimit(playerGuild.getNation(), treeRank) == false){
+            ErrorPopupMsg.sendErrorMsg(playerCharacter, "Your nation cannot support another mine.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean guildUnderMineLimit(Guild playerGuild, int tolRank) {
 
         int mineCnt = 0;
 
@@ -428,7 +429,7 @@ public class Mine extends AbstractGameObject {
         for (Guild guild : playerGuild.getSubGuildList())
             mineCnt += Mine.getMinesForGuild(guild.getObjectUUID()).size();
 
-        if (mineCnt > rank)
+        if (mineCnt > tolRank)
             return false;
 
         return true;
