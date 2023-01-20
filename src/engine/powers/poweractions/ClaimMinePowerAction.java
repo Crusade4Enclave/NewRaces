@@ -50,6 +50,10 @@ public class ClaimMinePowerAction extends AbstractPowerAction {
 		if (mine == null)
 			return;
 
+		// Release prior claims
+
+		Mine.releaseMineClaims(playerCharacter);
+
 		if (mine.claimMine(playerCharacter) == true)
 			ChatManager.sendSystemMessage( (PlayerCharacter) source, "You successfully claimed this mine..");
 	}

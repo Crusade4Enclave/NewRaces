@@ -128,6 +128,17 @@ public class Mine extends AbstractGameObject {
 
     }
 
+    public static void releaseMineClaims(PlayerCharacter playerCharacter) {
+
+        for (Mine mine : Mine.getMines()) {
+
+            if (mine.lastClaimer.equals(playerCharacter)) {
+                mine.lastClaimer = null;
+                mine.updateGuildOwner(null);
+            }
+
+        }
+    }
     public static void SendMineAttackMessage(Building mine) {
 
         if (mine.getBlueprint() == null)
@@ -561,7 +572,6 @@ public class Mine extends AbstractGameObject {
 
         return true;
     }
-
     public boolean depositMineResources() {
 
         if (this.owningGuild.isErrant())
@@ -664,7 +674,6 @@ public class Mine extends AbstractGameObject {
             }
         }
         return (int) totalModded;
-
     }
 
 }
