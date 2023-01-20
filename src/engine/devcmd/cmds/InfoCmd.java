@@ -195,6 +195,8 @@ public class InfoCmd extends AbstractDevCmd {
 						output+= newline;
 						output+= "Mine active: " + mine.getIsActive();
 						output+= newline;
+						output+= "Was claimed: " + mine.wasClaimed;
+						output+= newline;
 						output+= "Mine Type: "+mine.getMineType().name;
 						output+= newline;
 						output+= "Expansion : " + mine.isExpansion();
