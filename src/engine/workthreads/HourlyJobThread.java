@@ -103,11 +103,18 @@ public class HourlyJobThread implements Runnable {
 			for (Mine mine : mines) {
 				try {
 
-					// Mines can only be claimed once a cycle
+					// Mines can only be claimed once a cycle.
+					// The cycle resets at 01:00hrs after the
+					// Last mine window closes.
 
-					if (mine.wasClaimed == true)
-						continue;;
+					if (mine.wasClaimed == true) {
 
+						if (LocalDateTime.now().getHour() == 01)
+							mine.wasClaimed = false;
+
+						continue;
+
+					}
 					// Open Errant Mines
 
 					if (mine.getOwningGuild().isErrant()) {
