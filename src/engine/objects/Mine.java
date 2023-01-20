@@ -287,12 +287,15 @@ public class Mine extends AbstractGameObject {
             int guildWOO = mineOwnerGuild.getNation().getMineTime();
             LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
 
-            if (mineOpenTime.isAfter(guildMineTime) || mine.wasClaimed == true)
+            if (mineOpenTime.isAfter(guildMineTime))
                 mineOpenTime = guildMineTime.plusDays(1);
             else
                 mineOpenTime = guildMineTime;
 
-            // Mines
+            // Mines can only open once per cycle
+
+            if (mine.wasClaimed == true)
+                mineOpenTime = guildMineTime.plusDays(1);
         }
 
         writer.putLocalDateTime(mineOpenTime);
