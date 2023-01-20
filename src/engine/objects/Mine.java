@@ -273,16 +273,19 @@ public class Mine extends AbstractGameObject {
         // Errant mines are currently open.  Set time to now.
 
         LocalDateTime mineOpenTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-        Guild mineOwnerGuild = mine.getOwningGuild();
+        
+        // Mine times are those of the nation not individual guild.
+        
+        Guild mineNatonGuild = mine.getOwningGuild().getNation();
 
         // Adjust the serialized mine time based upon whether
         // the Guild's mine window has passed or not and if it was claimed.
 		// If a mine is active serialize current datetime irrespective
 		// of any claim.
 
-        if (mineOwnerGuild.isErrant() == false && mine.isActive == false) {
+        if (mineNatonGuild.isErrant() == false && mine.isActive == false) {
 
-            int guildWOO = mineOwnerGuild.getNation().getMineTime();
+            int guildWOO = mineNatonGuild.getNation().getMineTime();
             LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
 
             if (mineOpenTime.isAfter(guildMineTime) || mine.wasClaimed == true)
