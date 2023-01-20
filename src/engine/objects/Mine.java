@@ -51,7 +51,6 @@ public class Mine extends AbstractGameObject {
     private float altitude;
     private Guild owningGuild;
     public PlayerCharacter lastClaimer;
-    public SessionID lastClaimerSessionID;
 
     private int flags;
     private int buildingID;
@@ -125,8 +124,7 @@ public class Mine extends AbstractGameObject {
         }
 
         this.production = Resource.valueOf(rs.getString("mine_resource"));
-
-        this.lastClaimerSessionID = null;
+        this.lastClaimer = null;
 
     }
 
@@ -484,7 +482,6 @@ public class Mine extends AbstractGameObject {
             //never knocked down, let's just move on.
             //hasn't been claimed since server start.
             this.setActive(false);
-            this.lastClaimerSessionID = null;
             this.lastClaimer = null;
             return true;
         }
@@ -494,7 +491,6 @@ public class Mine extends AbstractGameObject {
         // and keep the window open.
 
         if (!validClaimer(this.lastClaimer)) {
-            this.lastClaimerSessionID = null;
             this.lastClaimer = null;
             this.updateGuildOwner(null);
             this.setActive(true);
@@ -528,7 +524,6 @@ public class Mine extends AbstractGameObject {
         DataWarehouse.pushToWarehouse(mineRecord);
 
         mineBuilding.setRank(mineBuilding.getRank());
-		this.lastClaimerSessionID = null;
 		this.lastClaimer = null;
         this.setActive(false);
         return true;
@@ -550,9 +545,10 @@ public class Mine extends AbstractGameObject {
         if (!updateGuildOwner(claimer))
             return false;
 
+        // Successful claim
+
         this.lastClaimer = claimer;
 
-        // Successful claim
         return true;
     }
 
@@ -571,19 +567,19 @@ public class Mine extends AbstractGameObject {
         return this.owningGuild.getOwnedCity().getWarehouse().depositFromMine(this, resourceIB, this.getModifiedProductionAmount());
     }
 
-    public boolean updateGuildOwner(PlayerCharacter pc) {
+    public boolean updateGuildOwner(PlayerCharacter playerCharacter) {
 
         Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
 
         //should never return null, but let's check just in case.
 
         if (mineBuilding == null) {
-            ChatManager.chatSystemError(pc, "Unable to find mine tower.");
+            ChatManager.chatSystemError(playerCharacter, "Unable to find mine tower.");
             Logger.debug("Failed to Update Mine with UID " + this.getObjectUUID() + ". Unable to Load Building with UID " + this.buildingID);
             return false;
         }
 
-        if (pc == null) {
+        if (playerCharacter == null) {
             this.owningGuild = Guild.getErrantGuild();
             this.guildName = "None";
             this.guildTag = GuildTag.ERRANT;
@@ -595,40 +591,23 @@ public class Mine extends AbstractGameObject {
             return true;
         }
 
-        if (SessionManager.getSession(pc) != null) {
-            this.lastClaimerSessionID = SessionManager.getSession(pc).getSessionID();
-        } else {
-            Logger.error("Failed to find session for player " + pc.getObjectUUID());
-
-            return false;
-        }
-
-        Guild guild = pc.getGuild();
+        Guild guild = playerCharacter.getGuild();
 
         if (guild.getOwnedCity() == null)
             return false;
 
         if (!MineQueries.CHANGE_OWNER(this, guild.getObjectUUID())) {
             Logger.debug("Database failed to Change Ownership of Mine with UID " + this.getObjectUUID());
-            ChatManager.chatSystemError(pc, "Failed to claim Mine.");
+            ChatManager.chatSystemError(playerCharacter, "Failed to claim Mine.");
             return false;
         }
 
-
-        //All tests passed.
-
         //update mine.
         this.owningGuild = guild;
-        //		this.guildName = this.owningGuild.getName();
-        //		this.guildTag = this.owningGuild.getGuildTag();
-        //
-        //		//nation will never return null, read getNation()
-        //		Guild nation = this.owningGuild.getNation();
-        //		this.nationName = nation.getName();
-        //		this.nationTag = nation.getGuildTag();
 
         //Update Building.
         PlayerCharacter guildLeader = (PlayerCharacter) Guild.GetGL(this.owningGuild);
+
         if (guildLeader != null)
             mineBuilding.setOwner(guildLeader);
         WorldGrid.updateObject(mineBuilding);
