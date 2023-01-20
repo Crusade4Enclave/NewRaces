@@ -265,7 +265,6 @@ public class Mine extends AbstractGameObject {
         writer.putInt(mine.getObjectType().ordinal());
         writer.putInt(mine.getObjectUUID());
         writer.putInt(mine.getObjectUUID()); //actually a hash of mine
-        //		writer.putInt(0x215C92BB); //this.unknown1);
         writer.putString(mine.mineType.name);
         writer.putString(mine.zoneName);
         writer.putInt(mine.production.hash);
@@ -279,20 +278,21 @@ public class Mine extends AbstractGameObject {
         Guild mineOwnerGuild = mine.getOwningGuild();
 
         // Adjust the serialized mine time based upon whether
-        // the Guild's mine window has passed or not.
+        // the Guild's mine window has passed or not and if it was claimed.
 		// If a mine is active serialize current datetime irrespective
-		// of any claim
+		// of any claim.
 
         if (mineOwnerGuild.isErrant() == false && mine.isActive == false) {
 
             int guildWOO = mineOwnerGuild.getNation().getMineTime();
             LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
 
-            if (mineOpenTime.isAfter(guildMineTime))
+            if (mineOpenTime.isAfter(guildMineTime) || mine.wasClaimed == true)
                 mineOpenTime = guildMineTime.plusDays(1);
             else
                 mineOpenTime = guildMineTime;
 
+            // Mines
         }
 
         writer.putLocalDateTime(mineOpenTime);

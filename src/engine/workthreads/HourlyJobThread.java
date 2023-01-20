@@ -113,8 +113,8 @@ public class HourlyJobThread implements Runnable {
 							mine.wasClaimed = false;
 
 						continue;
-
 					}
+
 					// Open Errant Mines
 
 					if (mine.getOwningGuild().isErrant()) {
@@ -132,7 +132,8 @@ public class HourlyJobThread implements Runnable {
 						continue;
 					}
 
-					// Close all other mines
+					// Close all remaining mines
+
 					 if (mine.handleEndMineWindow())
 							Mine.setLastChange(System.currentTimeMillis());
 
