@@ -76,6 +76,11 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 
 		newMineTime = mineWindowChangeMsg.getTime();
 
+		// Sanity check for possible slider value
+
+		if (newMineTime == 24)
+			newMineTime = 0;
+
 		// Enforce 15hr restriction between WOO edits
 
 		if (LocalDateTime.now().isBefore(mineGuild.lastWooEditTime.plusHours(14))) {
