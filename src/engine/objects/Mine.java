@@ -46,6 +46,8 @@ public class Mine extends AbstractGameObject {
     private String zoneName;
     private Resource production;
     private boolean isActive = false;
+
+    public boolean wasClaimed = false;
     private float latitude;
     private float longitude;
     private float altitude;
@@ -526,6 +528,7 @@ public class Mine extends AbstractGameObject {
         mineBuilding.setRank(mineBuilding.getRank());
 		this.lastClaimer = null;
         this.setActive(false);
+        this.wasClaimed = true;
         return true;
     }
 

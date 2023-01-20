@@ -103,6 +103,11 @@ public class HourlyJobThread implements Runnable {
 			for (Mine mine : mines) {
 				try {
 
+					// Mines can only be claimed once a cycle
+
+					if (mine.wasClaimed == true)
+						continue;;
+
 					// Open Errant Mines
 
 					if (mine.getOwningGuild().isErrant()) {
