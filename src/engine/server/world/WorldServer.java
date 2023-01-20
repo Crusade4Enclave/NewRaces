@@ -623,49 +623,53 @@ public class WorldServer {
 			return;
 		}
 
-		PlayerCharacter pc = SessionManager.getPlayerCharacter(
+		PlayerCharacter playerCharacter = SessionManager.getPlayerCharacter(
 				origin);
 
-		if (pc == null)
+		if (playerCharacter == null)
 			// TODO log this
 			return;
 
 		//cancel any trade
-		if (pc.getCharItemManager() != null)
-			pc.getCharItemManager().endTrade(true);
+		if (playerCharacter.getCharItemManager() != null)
+			playerCharacter.getCharItemManager().endTrade(true);
+
+		// Release any mine claims
+
+		Mine.releaseMineClaims(playerCharacter);
 
 		// logout
 		long delta = MBServerStatics.LOGOUT_TIMER_MS;
 
-		if (System.currentTimeMillis() - pc.getTimeStamp("LastCombatPlayer") < 60000) {
+		if (System.currentTimeMillis() - playerCharacter.getTimeStamp("LastCombatPlayer") < 60000) {
 			delta = 60000;
 
 		}
-		pc.stopMovement(pc.getLoc());
+		playerCharacter.stopMovement(playerCharacter.getLoc());
 		UpdateStateMsg updateStateMsg = new UpdateStateMsg();
-		updateStateMsg.setPlayer(pc);
+		updateStateMsg.setPlayer(playerCharacter);
 	
 		updateStateMsg.setActivity(5);
-		DispatchMessage.dispatchMsgToInterestArea(pc, updateStateMsg, DispatchChannel.PRIMARY, MBServerStatics.CHARACTER_LOAD_RANGE, false, false);
+		DispatchMessage.dispatchMsgToInterestArea(playerCharacter, updateStateMsg, DispatchChannel.PRIMARY, MBServerStatics.CHARACTER_LOAD_RANGE, false, false);
 		
-		if (pc.getRegion() != null)
-			if (PlayerCharacter.CanBindToBuilding(pc, pc.getRegion().parentBuildingID))
-				pc.bindBuilding = pc.getRegion().parentBuildingID;
+		if (playerCharacter.getRegion() != null)
+			if (PlayerCharacter.CanBindToBuilding(playerCharacter, playerCharacter.getRegion().parentBuildingID))
+				playerCharacter.bindBuilding = playerCharacter.getRegion().parentBuildingID;
 			else
-				pc.bindBuilding = 0;
+				playerCharacter.bindBuilding = 0;
 		
-		pc.getLoadedObjects().clear();
-		pc.getLoadedStaticObjects().clear();
+		playerCharacter.getLoadedObjects().clear();
+		playerCharacter.getLoadedStaticObjects().clear();
 
-		LogoutCharacterJob logoutJob = new LogoutCharacterJob(pc, this);
+		LogoutCharacterJob logoutJob = new LogoutCharacterJob(playerCharacter, this);
 		JobContainer jc = JobScheduler.getInstance().scheduleJob(logoutJob,
 				System.currentTimeMillis() + delta);
-		pc.getTimers().put("Logout", jc);
-		pc.getTimestamps().put("logout", System.currentTimeMillis());
+		playerCharacter.getTimers().put("Logout", jc);
+		playerCharacter.getTimestamps().put("logout", System.currentTimeMillis());
 		
 		//send update to friends that you are logged off.
 
-		PlayerFriends.SendFriendsStatus(pc,false);
+		PlayerFriends.SendFriendsStatus(playerCharacter,false);
 
 	}
 
