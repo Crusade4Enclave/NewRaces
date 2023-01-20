@@ -130,12 +130,16 @@ public class Mine extends AbstractGameObject {
 
     public static void releaseMineClaims(PlayerCharacter playerCharacter) {
 
+        if (playerCharacter == null)
+            return;
+
         for (Mine mine : Mine.getMines()) {
 
-            if (mine.lastClaimer.equals(playerCharacter)) {
-                mine.lastClaimer = null;
-                mine.updateGuildOwner(null);
-            }
+            if (mine.lastClaimer != null)
+                if (mine.lastClaimer.equals(playerCharacter)) {
+                    mine.lastClaimer = null;
+                    mine.updateGuildOwner(null);
+                }
 
         }
     }
