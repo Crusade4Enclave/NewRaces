@@ -81,6 +81,9 @@ public class Guild extends AbstractWorldObject {
 	private String hash;
 	private boolean ownerIsNPC;
 
+	private static Guild errantGuild;
+	private static Guild errantNation;
+
 	public LocalDateTime lastWooEditTime;
 	public HashMap<Integer,GuildAlliances> guildAlliances = new HashMap<>();
 
@@ -407,7 +410,7 @@ public class Guild extends AbstractWorldObject {
 	 */
 
 	public boolean isErrant() {
-        return this.getObjectUUID() == Guild.errant.getObjectUUID();
+        return this.getObjectUUID() == Guild.errantGuild.getObjectUUID();
     }
 
 
@@ -721,14 +724,19 @@ Guild.serializeForClientMsg(guild,writer, null, false);
 
 	}
 
-	private static Guild errant;
-
 	public static Guild getErrantGuild() {
 
-		if (Guild.errant == null)
-			Guild.errant = new Guild("None", null, 10, "Despot Rule", GuildTag.ERRANT, 0);
+		if (Guild.errantGuild == null)
+			Guild.errantGuild = new Guild( "None", Guild.getErrantNation(), 0,
+					"Anarchy", GuildTag.ERRANT, 0);
 
-		return Guild.errant;
+		return Guild.errantGuild;
+	}
+
+	public static Guild getErrantNation() {
+		if (Guild.errantNation == null)
+			Guild.errantNation = new Guild("None", null, 10, "Despot Rule", GuildTag.ERRANT, 0);
+		return Guild.errantNation;
 	}
 
 	public static Guild getGuild(final int objectUUID) {
