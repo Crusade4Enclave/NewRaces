@@ -57,7 +57,7 @@ public class LeaveGuildHandler extends AbstractClientMsgHandler {
 		// get old Guild
 		Guild oldGuild = playerCharacter.getGuild();
 
-		if (oldGuild == null || oldGuild.isErrant()) {
+		if (oldGuild == null || oldGuild.isEmptyGuild()) {
 			return true;
 		}
 

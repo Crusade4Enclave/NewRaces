@@ -68,7 +68,7 @@ public class InviteToSubHandler extends AbstractClientMsgHandler {
 			return true;
 		}
 
-		if (sourceGuild.isErrant()){
+		if (sourceGuild.isEmptyGuild()){
 			sendChat(source, "You must be in a guild to invite to sub.");
 			return true;
 		}
@@ -80,7 +80,7 @@ public class InviteToSubHandler extends AbstractClientMsgHandler {
 			return true;
 		}
 
-		if (sourceGuild.getNation().isErrant())
+		if (sourceGuild.getNation().isEmptyGuild())
 			return true;
 
 		//target must be in a guild

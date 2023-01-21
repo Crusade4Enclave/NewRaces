@@ -90,7 +90,7 @@ public class ClaimAssetMsgHandler extends AbstractClientMsgHandler {
 
                 // Errant players cannot claim
                 
-                if (sourcePlayer.getGuild().isErrant())
+                if (sourcePlayer.getGuild().isEmptyGuild())
                     return true;
                 
                 // Can't claim an object without a blueprint

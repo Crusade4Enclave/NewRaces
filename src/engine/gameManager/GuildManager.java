@@ -61,13 +61,13 @@ public enum GuildManager  {
 		if (origin == null)
 			return false;
 
-		if (playerCharacter.getGuild().isErrant() == false && GuildStatusController.isGuildLeader(playerCharacter.getGuildStatus()))
+		if (playerCharacter.getGuild().isEmptyGuild() == false && GuildStatusController.isGuildLeader(playerCharacter.getGuildStatus()))
 			return false;
 
 		if (playerCharacter.getGuild() != null && playerCharacter.getGuild().isGuildLeader(playerCharacter.getObjectUUID()))
 			return false;
 
-		if (playerCharacter.getGuild() != null && !playerCharacter.getGuild().isErrant()){
+		if (playerCharacter.getGuild() != null && !playerCharacter.getGuild().isEmptyGuild()){
 			if (DbManager.GuildQueries.ADD_TO_GUILDHISTORY(playerCharacter.getGuildUUID(), playerCharacter, DateTime.now(), GuildHistoryType.LEAVE)){
 				GuildHistory guildHistory = new GuildHistory(playerCharacter.getGuildUUID(),playerCharacter.getGuild().getName(),DateTime.now(), GuildHistoryType.LEAVE) ;
 				playerCharacter.getGuildHistory().add(guildHistory);

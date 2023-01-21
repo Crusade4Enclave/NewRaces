@@ -52,7 +52,7 @@ public class DisbandGuildHandler extends AbstractClientMsgHandler {
 
 		guild = player.getGuild();
 
-		if (guild == null || guild.isErrant())
+		if (guild == null || guild.isEmptyGuild())
 			return true;
 
 		// Don't allow disbanding if a city is owned
@@ -86,7 +86,7 @@ public class DisbandGuildHandler extends AbstractClientMsgHandler {
 
 		// Remove us as a subguild of our nation
 
-		if (guild.getNation() != null && Guild.sameGuild(guild, guild.getNation()) == false && guild.getNation().isErrant() == false)
+		if (guild.getNation() != null && Guild.sameGuild(guild, guild.getNation()) == false && guild.getNation().isEmptyGuild() == false)
 			guild.getNation().removeSubGuild(guild);
 
 		// Update all online guild players

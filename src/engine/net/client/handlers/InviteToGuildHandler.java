@@ -79,7 +79,7 @@ public class InviteToGuildHandler extends AbstractClientMsgHandler {
 
 		// get sourcePlayer guild. Verify sourcePlayer player is in guild
 
-		if (sourcePlayer.getGuild().getObjectUUID() == 0 || sourcePlayer.getGuild().isErrant()) {
+		if (sourcePlayer.getGuild().getObjectUUID() == 0 || sourcePlayer.getGuild().isEmptyGuild()) {
 			ChatManager.chatGuildError(sourcePlayer,
 					"You cannot invite someone for errant!");
 			return true;
@@ -107,7 +107,7 @@ public class InviteToGuildHandler extends AbstractClientMsgHandler {
 		if (targetPlayer.isIgnoringPlayer(sourcePlayer))
 			return true;
 
-		if ((targetPlayer.getGuild().isErrant() == false)) {
+		if ((targetPlayer.getGuild().isEmptyGuild() == false)) {
 			ChatManager.chatGuildError(sourcePlayer,
 					targetPlayer.getFirstName() + " already belongs to a guild!");
 			return true;

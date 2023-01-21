@@ -133,7 +133,7 @@ public class ArcLoginNotifyMsgHandler extends AbstractClientMsgHandler {
 			DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
 		}
 
-		if (player.getGuild() != null && !player.getGuild().isErrant()) {
+		if (player.getGuild() != null && !player.getGuild().isEmptyGuild()) {
 			Guild.UpdateClientAlliancesForPlayer(player);
 		}
 		return true;

@@ -80,7 +80,7 @@ public class AcceptInviteToGuildHandler extends AbstractClientMsgHandler {
 			return true;
 
 		if ( (player.getGuild() != null) &&
-				(player.getGuild().isErrant() == false)) {
+				(player.getGuild().isEmptyGuild() == false)) {
 			ChatManager.chatGuildError(player,
 					"You already belongs to a guild!");
 			return true;

@@ -129,12 +129,12 @@ public class MerchantMsgHandler extends AbstractClientMsgHandler {
 			return;
 		}
 		
-		if (player.getGuild().isErrant()){
+		if (player.getGuild().isEmptyGuild()){
 			ErrorPopupMsg.sendErrorMsg(player, "You do not belong to a guild!"); //Cannot sub as errant guild.
 			return;
 		}
 
-		if (player.getGuild().getNation() != null && !player.getGuild().getNation().isErrant()){
+		if (player.getGuild().getNation() != null && !player.getGuild().getNation().isEmptyGuild()){
 			ErrorPopupMsg.sendErrorMsg(player, "You already belong to a nation!"); //Cannot sub as errant guild.
 			return;
 		}

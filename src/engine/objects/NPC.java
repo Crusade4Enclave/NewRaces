@@ -262,7 +262,7 @@ public class NPC extends AbstractCharacter {
 				else
 					this.guild = Guild.getGuild(guildID);
 
-			if (guildID != 0 && (this.guild == null || this.guild.isErrant()))
+			if (guildID != 0 && (this.guild == null || this.guild.isEmptyGuild()))
 				NPC.Oprhans.add(currentID);
 			else if(this.building == null && buildingID > 0) {
 				NPC.Oprhans.add(currentID);

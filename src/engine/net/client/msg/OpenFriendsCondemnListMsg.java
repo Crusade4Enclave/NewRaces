@@ -644,7 +644,7 @@ public class OpenFriendsCondemnListMsg extends ClientNetMsg {
 				writer.putInt(guild.getObjectType().ordinal());
 				writer.putInt(guild.getObjectUUID());
 
-				if (!guild.getNation().isErrant()) {
+				if (!guild.getNation().isEmptyGuild()) {
 					writer.putInt(guild.getNation().getObjectType().ordinal());
 					writer.putInt(guild.getNation().getObjectUUID());
 				}else{
@@ -741,7 +741,7 @@ public class OpenFriendsCondemnListMsg extends ClientNetMsg {
 				writer.putInt(heraldryCharacter.getGuild().getObjectType().ordinal());
 				writer.putInt(heraldryCharacter.getGuild().getObjectUUID());
 
-				if (!heraldryCharacter.getGuild().getNation().isErrant()) {
+				if (!heraldryCharacter.getGuild().getNation().isEmptyGuild()) {
 					writer.putInt(heraldryCharacter.getGuild().getNation().getObjectType().ordinal());
 					writer.putInt(heraldryCharacter.getGuild().getNation().getObjectUUID());
 				}else{

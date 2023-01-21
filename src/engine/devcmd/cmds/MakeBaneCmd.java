@@ -80,7 +80,7 @@ public class MakeBaneCmd extends AbstractDevCmd {
 
 		
 
-		if (player.getGuild().isErrant()) {
+		if (player.getGuild().isEmptyGuild()) {
 			throwbackError(pc, "Errant's can not place banes");
 			return;
 		}

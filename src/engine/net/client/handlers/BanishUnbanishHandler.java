@@ -42,7 +42,7 @@ public class BanishUnbanishHandler extends AbstractClientMsgHandler {
 		int target = msg.getTarget();
 		PlayerCharacter source = origin.getPlayerCharacter();
 
-		if(source == null || source.getGuild().isErrant() || source.getGuild().getObjectUUID() == 0)
+		if(source == null || source.getGuild().isEmptyGuild() || source.getGuild().getObjectUUID() == 0)
 			return true;
 
 		if (GuildStatusController.isGuildLeader(source.getGuildStatus()) == false && GuildStatusController.isInnerCouncil(source.getGuildStatus()) == false)

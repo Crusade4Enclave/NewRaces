@@ -46,10 +46,10 @@ public class AllianceChangeMsgHandler extends AbstractClientMsgHandler {
 
 		Guild toGuild = null;
 		toGuild = Guild.getGuild(msg.getSourceGuildID());
-		if (toGuild.isErrant())
+		if (toGuild.isEmptyGuild())
 			return true;
 
-		if (player.getGuild().isErrant())
+		if (player.getGuild().isEmptyGuild())
 			return true;
 
 

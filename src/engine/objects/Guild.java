@@ -37,8 +37,6 @@ import org.pmw.tinylog.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -322,7 +320,7 @@ public class Guild extends AbstractWorldObject {
         if (ac == null)
             return false;
         // errant guilds cant be guild leader.
-        if (this.isErrant())
+        if (this.isEmptyGuild())
             return false;
 
         if (!DbManager.GuildQueries.SET_GUILD_LEADER(ac.getObjectUUID(), this.getObjectUUID())) {
@@ -348,7 +346,7 @@ public class Guild extends AbstractWorldObject {
         if (ac == null)
             return false;
         // errant guilds cant be guild leader.
-        if (this.isErrant())
+        if (this.isEmptyGuild())
             return false;
 
         if (ac.getObjectType().equals(GameObjectType.PlayerCharacter))
@@ -401,7 +399,7 @@ public class Guild extends AbstractWorldObject {
      * Utils
      */
 
-    public boolean isErrant() {
+    public boolean isEmptyGuild() {
         return this.getObjectUUID() == Guild.errantGuild.getObjectUUID();
 
     }
@@ -415,7 +413,7 @@ public class Guild extends AbstractWorldObject {
     public static boolean sameGuildExcludeErrant(Guild a, Guild b) {
         if (a == null || b == null)
             return false;
-        if (a.isErrant() || b.isErrant())
+        if (a.isEmptyGuild() || b.isEmptyGuild())
             return false;
         return a.getObjectUUID() == b.getObjectUUID();
     }
@@ -423,7 +421,7 @@ public class Guild extends AbstractWorldObject {
     public static boolean sameGuildIncludeErrant(Guild a, Guild b) {
         if (a == null || b == null)
             return false;
-        if (a.isErrant() || b.isErrant())
+        if (a.isEmptyGuild() || b.isEmptyGuild())
             return true;
         return a.getObjectUUID() == b.getObjectUUID();
     }
@@ -445,7 +443,7 @@ public class Guild extends AbstractWorldObject {
             return true;
         if (a.nation == null || b.nation == null)
             return false;
-        return a.nation.getObjectUUID() == b.nation.getObjectUUID() && !a.nation.isErrant();
+        return a.nation.getObjectUUID() == b.nation.getObjectUUID() && !a.nation.isEmptyGuild();
     }
 
     public boolean isGuildLeader(int uuid) {
@@ -465,7 +463,7 @@ public class Guild extends AbstractWorldObject {
      */
     public void removePlayer(PlayerCharacter pc, GuildHistoryType historyType) {
 
-        if (this.isErrant()) {
+        if (this.isEmptyGuild()) {
             Logger.warn("Attempted to remove a PlayerCharacter (" + pc.getObjectUUID() + ") from an errant guild.");
             return;
         }
@@ -830,9 +828,9 @@ public class Guild extends AbstractWorldObject {
             this.guildState = GuildState.Nation;
         else if (this.nation.equals(this))
             this.guildState = GuildState.Sovereign;
-        else if (!this.nation.isErrant() && this.cityUUID != 0)
+        else if (!this.nation.isEmptyGuild() && this.cityUUID != 0)
             this.guildState = GuildState.Province;
-        else if (!this.nation.isErrant())
+        else if (!this.nation.isEmptyGuild())
             this.guildState = GuildState.Sworn;
         else
             this.guildState = GuildState.Errant;
@@ -1253,7 +1251,7 @@ public class Guild extends AbstractWorldObject {
         if (guild == null)
             return roster;
 
-        if (guild.isErrant())
+        if (guild.isEmptyGuild())
             return roster;
 
         if (DbManager.getList(GameObjectType.PlayerCharacter) == null)

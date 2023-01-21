@@ -68,7 +68,7 @@ public class TaxCityMsgHandler extends AbstractClientMsgHandler {
 		}
 
 
-		if (playerGuild == null || playerGuild.isErrant()){
+		if (playerGuild == null || playerGuild.isEmptyGuild()){
 			ErrorPopupMsg.sendErrorMsg(player, "You must belong to a guild to do that!");
 			return true;
 		}

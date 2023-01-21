@@ -403,7 +403,7 @@ public class Experience  {
 					xp -= (penalty * 0.01) * xp;
 
 					// Errant Penalty Calculation
-					if (pc.getGuild().isErrant())
+					if (pc.getGuild().isEmptyGuild())
 						xp *= 0.6;
 				}
 
@@ -431,7 +431,7 @@ public class Experience  {
 
 			// Errant penalty
 			if (xp != 1)
-				if (killer.getGuild().isErrant())
+				if (killer.getGuild().isEmptyGuild())
 					xp *= .6;
 
 			// Grant XP

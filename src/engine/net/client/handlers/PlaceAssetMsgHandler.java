@@ -431,7 +431,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 			if (building.getGuild() == null)
 				continue;
 
-			if (building.getGuild().isErrant())
+			if (building.getGuild().isEmptyGuild())
 				continue;
 
 			if (!building.getGuild().equals(serverCity.getGuild()) && !building.getGuild().equals(serverCity.getBane().getOwner().getGuild()))
@@ -1384,7 +1384,7 @@ public class PlaceAssetMsgHandler extends AbstractClientMsgHandler {
 
 		// Make sure it's not an errant tree
 
-		if ( (city.getGuild() == null || city.getGuild().isErrant() == true)) {
+		if ( (city.getGuild() == null || city.getGuild().isEmptyGuild() == true)) {
 			PlaceAssetMsg.sendPlaceAssetError(origin, 18, ""); //"There are no guild trees to be found"
 			return false;
 		}

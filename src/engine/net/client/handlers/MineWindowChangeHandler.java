@@ -9,19 +9,15 @@
 package engine.net.client.handlers;
 
 import engine.Enum;
-import engine.Enum.DispatchChannel;
 import engine.exception.MsgSendException;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.ChatManager;
 import engine.gameManager.DbManager;
 import engine.gameManager.SessionManager;
-import engine.net.Dispatch;
-import engine.net.DispatchMessage;
 import engine.net.client.ClientConnection;
 import engine.net.client.msg.ArcMineWindowChangeMsg;
 import engine.net.client.msg.ClientNetMsg;
 import engine.net.client.msg.ErrorPopupMsg;
-import engine.net.client.msg.KeepAliveServerClientMsg;
 import engine.objects.Building;
 import engine.objects.Guild;
 import engine.objects.GuildStatusController;
@@ -65,7 +61,7 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 
 		Guild mineGuild = treeOfLife.getGuild();
 
-		if (mineGuild.isErrant())
+		if (mineGuild.isEmptyGuild())
 			return true;
 
 		if (!Guild.sameGuild(mineGuild, playerCharacter.getGuild()))

@@ -328,7 +328,7 @@ public enum BuildingManager {
         if (building.getOwner().equals(player))
             return true;
 
-        if (player.getGuild().isErrant())
+        if (player.getGuild().isEmptyGuild())
             return false;
 
         if (building.getGuild().isGuildLeader(player.getObjectUUID()))

@@ -85,7 +85,7 @@ public class ClaimGuildTreeMsgHandler extends AbstractClientMsgHandler {
 
 				// Errant players cannot rename
 
-				if (sourcePlayer.getGuild().isErrant())
+				if (sourcePlayer.getGuild().isEmptyGuild())
 					return true;
 
 				// Can't rename an object without a blueprint
@@ -100,7 +100,7 @@ public class ClaimGuildTreeMsgHandler extends AbstractClientMsgHandler {
 					return true;
 
 				//dont rename if guild is null
-				if (building.getGuild().isErrant())
+				if (building.getGuild().isEmptyGuild())
 					return true;
 
 				if (!ManageCityAssetMsgHandler.playerCanManageNotFriends(sourcePlayer, building))
@@ -131,7 +131,7 @@ public class ClaimGuildTreeMsgHandler extends AbstractClientMsgHandler {
 					return true;
 				}
 
-				if (building.getGuild().isErrant())
+				if (building.getGuild().isEmptyGuild())
 					return true;
 
 

@@ -529,7 +529,7 @@ public class PlayerCharacter extends AbstractCharacter {
 					aN = attacker.getGuild().getNation();
 				if (this.getGuild() != null)
 					tN = this.getGuild().getNation();
-				if (aN == null || tN == null || aN.isErrant() || Guild.sameGuild(aN, tN) || this.isDeathShroud()) {
+				if (aN == null || tN == null || aN.isEmptyGuild() || Guild.sameGuild(aN, tN) || this.isDeathShroud()) {
 					//skip giving xp if same guild or attacker is errant, or target is in death shroud.
 				} else {
 					doPVPEXP = true;
@@ -1458,7 +1458,7 @@ public class PlayerCharacter extends AbstractCharacter {
 
 		Building returnBuilding;
 
-		if (player.getGuild() == null || player.getGuild().isErrant())
+		if (player.getGuild() == null || player.getGuild().isEmptyGuild())
 			return null;
 
 		if (player.getGuild().getOwnedCity() == null){
@@ -1899,7 +1899,7 @@ public void dismissNecroPets() {
 
 		Guild g = this.guild;
 
-		if (g == null || g.isErrant() || GuildStatusController.isGuildLeader(guildStatus))
+		if (g == null || g.isEmptyGuild() || GuildStatusController.isGuildLeader(guildStatus))
 			return;
 
 		//check level
@@ -4584,7 +4584,7 @@ public void dismissNecroPets() {
 		
 		int guildID = 0;
 		
-		if (!value.isErrant())
+		if (!value.isEmptyGuild())
 			guildID = value.getObjectUUID();
 		DbManager.PlayerCharacterQueries.UPDATE_GUILD(this, guildID);
 		super.setGuild(value);
@@ -5306,7 +5306,7 @@ public void dismissNecroPets() {
 
 	public static int GetPlayerRealmTitle(PlayerCharacter player){
 	
-		if (player.getGuild().isErrant())
+		if (player.getGuild().isEmptyGuild())
 			return 0;
 		if (!player.getGuild().isGuildLeader(player.getObjectUUID()))
 			return 0;

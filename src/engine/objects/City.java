@@ -159,7 +159,7 @@ public class City extends AbstractWorldObject {
 			if (this.motto.isEmpty()){
 				Guild guild = this.getGuild();
 				
-				if (guild != null && guild.isErrant() == false)
+				if (guild != null && guild.isEmptyGuild() == false)
 					this.motto = guild.getMotto();
 			}
 				
@@ -489,7 +489,7 @@ public class City extends AbstractWorldObject {
 
 		// Begin serializing nation guild info
 
-		if (rulingNation.isErrant()){
+		if (rulingNation.isEmptyGuild()){
 			writer.putInt(rulingGuild.getObjectType().ordinal());
 			writer.putInt(rulingGuild.getObjectUUID());
 		}
@@ -502,7 +502,7 @@ public class City extends AbstractWorldObject {
 
 		// Serialize nation name
 
-		if (rulingNation.isErrant())
+		if (rulingNation.isEmptyGuild())
 			writer.putString("None");
 		else
 			writer.putString(rulingNation.getName());
@@ -516,7 +516,7 @@ public class City extends AbstractWorldObject {
 
 		writer.putInt(city.population);
 
-		if (rulingNation.isErrant())
+		if (rulingNation.isEmptyGuild())
 			writer.putString(" ");
 		else
 			writer.putString(Guild.GetGL(rulingNation).getFirstName() + ' ' + Guild.GetGL(rulingNation).getLastName());
@@ -1126,7 +1126,7 @@ public class City extends AbstractWorldObject {
 
 		sourceNation = sourcePlayer.getGuild().getNation();
 
-		if (sourceGuild.isErrant())
+		if (sourceGuild.isEmptyGuild())
 			return;
 
 		//cant claim tree with owned tree.
@@ -1147,7 +1147,7 @@ public class City extends AbstractWorldObject {
 		// If currently a sub of another guild, desub when
 		// claiming your new tree and set as Landed
 
-		if (!sourceNation.isErrant() && sourceNation != sourceGuild) {
+		if (!sourceNation.isEmptyGuild() && sourceNation != sourceGuild) {
 			if (!DbManager.GuildQueries.UPDATE_PARENT(sourceGuild.getObjectUUID(), MBServerStatics.worldUUID)) {
 				ChatManager.chatGuildError((PlayerCharacter) sourcePlayer, "A Serious error has occurred. Please post details for to ensure transaction integrity");
 				return;
@@ -1221,7 +1221,7 @@ public class City extends AbstractWorldObject {
 		if (sourceGuild == null)
 			return false;
 
-		if (sourceGuild.isErrant())
+		if (sourceGuild.isEmptyGuild())
 			return false;
 
 		cityZone = this.parentZone;
@@ -1364,7 +1364,7 @@ public class City extends AbstractWorldObject {
 		}
 
 
-		if (playerGuild == null || playerGuild.isErrant()){
+		if (playerGuild == null || playerGuild.isEmptyGuild()){
 			ErrorPopupMsg.sendErrorMsg(player, "You must belong to a guild to do that!");
 			return true;
 		}

@@ -104,7 +104,7 @@ public class Mine extends AbstractGameObject {
         this.owningGuild = Guild.getGuild(ownerUID);
         Guild nation = null;
 
-        if (this.owningGuild.isErrant()) {
+        if (this.owningGuild.isEmptyGuild()) {
             this.guildName = "";
             this.guildTag = GuildTag.ERRANT;
             nation = Guild.getErrantGuild();
@@ -115,7 +115,7 @@ public class Mine extends AbstractGameObject {
             nation = this.owningGuild.getNation();
         }
 
-        if (!nation.isErrant()) {
+        if (!nation.isEmptyGuild()) {
             this.nationName = nation.getName();
             this.nationTag = nation.getGuildTag();
         } else {
@@ -152,10 +152,10 @@ public class Mine extends AbstractGameObject {
             return;
 
 
-        if (mine.getGuild().isErrant())
+        if (mine.getGuild().isEmptyGuild())
             return;
 
-        if (mine.getGuild().getNation().isErrant())
+        if (mine.getGuild().getNation().isEmptyGuild())
             return;
 
         if (mine.getTimeStamp("MineAttack") > System.currentTimeMillis())
@@ -298,7 +298,7 @@ public class Mine extends AbstractGameObject {
 		// If a mine is active serialize current datetime irrespective
 		// of any claim.
 
-        if (mineNatonGuild.isErrant() == false && mine.isActive == false) {
+        if (mineNatonGuild.isEmptyGuild() == false && mine.isActive == false) {
 
             int guildWOO = mineNatonGuild.getNation().getMineTime();
             LocalDateTime guildMineTime = mineOpenTime.withHour(guildWOO);
@@ -401,10 +401,10 @@ public class Mine extends AbstractGameObject {
 
         playerGuild = playerCharacter.getGuild();
 
-        if (playerGuild.isErrant())
+        if (playerGuild.isEmptyGuild())
             return false;
 
-        if (playerGuild.getNation().isErrant())
+        if (playerGuild.getNation().isEmptyGuild())
             return false;
 
         //Get a count of nation mines, can't go over capital tol rank.
@@ -523,7 +523,7 @@ public class Mine extends AbstractGameObject {
             return false;
         }
 
-        if (this.owningGuild.isErrant() || this.owningGuild.getNation().isErrant())
+        if (this.owningGuild.isEmptyGuild() || this.owningGuild.getNation().isEmptyGuild())
             return false;
 
         //Update ownership to map
@@ -580,7 +580,7 @@ public class Mine extends AbstractGameObject {
     }
     public boolean depositMineResources() {
 
-        if (this.owningGuild.isErrant())
+        if (this.owningGuild.isEmptyGuild())
             return false;
 
         if (this.owningGuild.getOwnedCity() == null)
@@ -667,7 +667,7 @@ public class Mine extends AbstractGameObject {
         if (this.isExpansion())
             return (int) totalModded;
 
-        if (this.owningGuild.isErrant() == false) {
+        if (this.owningGuild.isEmptyGuild() == false) {
             if (this.owningGuild.getOwnedCity() != null) {
                 float distanceSquared = this.owningGuild.getOwnedCity().getLoc().distanceSquared2D(mineBuilding.getLoc());
 

@@ -100,7 +100,7 @@ public class GuildTreeStatusMsg extends ClientNetMsg {
         canAccess = this.canModify();
         canBind = 0;
         
-        if (player.getGuild() != null && this.treeOfLife.getGuild() != null && !this.treeOfLife.getGuild().isErrant()
+        if (player.getGuild() != null && this.treeOfLife.getGuild() != null && !this.treeOfLife.getGuild().isEmptyGuild()
                 && player.getGuild().getNation() == this.treeOfLife.getGuild().getNation())
             canBind = 1;
 

@@ -120,7 +120,7 @@ public final class Bane {
 
         baningGuild = player.getGuild();
 
-        if (baningGuild.getNation().isErrant()) {
+        if (baningGuild.getNation().isEmptyGuild()) {
             PlaceAssetMsg.sendPlaceAssetError( origin, 55, ""); // You must be in a Nation
             return false;
         }
@@ -464,7 +464,7 @@ public final class Bane {
     public static Bane getBaneByAttackerGuild(Guild guild) {
             
     	
-    	if (guild == null || guild.isErrant())
+    	if (guild == null || guild.isEmptyGuild())
     		return null;
         ArrayList<Bane> baneList;
         
@@ -620,10 +620,10 @@ public final class Bane {
             return isErrant;
 
        
-        if (this.getOwner().getGuild().isErrant() == true)
+        if (this.getOwner().getGuild().isEmptyGuild() == true)
             return isErrant;
 
-        if (this.getOwner().getGuild().getNation().isErrant() == true)
+        if (this.getOwner().getGuild().getNation().isEmptyGuild() == true)
             return isErrant;
 
         // Bane passes validation
