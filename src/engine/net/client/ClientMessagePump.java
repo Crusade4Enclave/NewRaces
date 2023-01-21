@@ -262,9 +262,6 @@ public class ClientMessagePump implements NetMsgHandler {
 			case VENDORDIALOG:
 				VendorDialogMsg.replyDialog((VendorDialogMsg) msg, origin);
 				break;
-			case ARCMINEWINDOWAVAILABLETIME:
-				MineWindowAvailableTime((ArcMineWindowAvailableTimeMsg) msg, origin);
-				break;
 			case ARCOWNEDMINESLIST:
 				ListOwnedMines((ArcOwnedMinesListMsg) msg, origin);
 				break;
@@ -1422,37 +1419,6 @@ boolean updateCity = false;
 		vrm.configure();
 
 		Dispatch dispatch = Dispatch.borrow(player, vrm);
-		DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
-
-	}
-
-	private static void MineWindowAvailableTime(ArcMineWindowAvailableTimeMsg msg, ClientConnection origin) {
-		Building tol = BuildingManager.getBuildingFromCache(msg.getBuildingUUID());
-		Dispatch dispatch;
-
-		if (tol == null)
-			return;
-		
-		if (tol.getBlueprintUUID() == 0)
-			return;
-
-		if (tol.getBlueprint().getBuildingGroup() != BuildingGroup.TOL)
-			return;
-
-		PlayerCharacter pc = SessionManager.getPlayerCharacter(origin);
-
-		if (pc == null)
-			return;
-
-		if (!Guild.sameGuild(tol.getGuild(), pc.getGuild()))
-			return; //must be same guild
-
-		if (GuildStatusController.isInnerCouncil(pc.getGuildStatus()) == false) // is this only GL?
-			return;
-
-		ArcMineWindowAvailableTimeMsg amwat = new ArcMineWindowAvailableTimeMsg(tol, 10);
-		amwat.configure();
-		dispatch = Dispatch.borrow(pc, amwat);
 		DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
 
 	}
