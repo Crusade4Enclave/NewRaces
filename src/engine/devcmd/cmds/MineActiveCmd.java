@@ -41,11 +41,11 @@ public class MineActiveCmd extends AbstractDevCmd {
 		String trigger = args[0];
 		switch (trigger){
 		case "true":
-			HourlyJobThread.handleStartMineWindow(mine);
+			HourlyJobThread.mineWindowOpen(mine);
 			Mine.setLastChange(System.currentTimeMillis());
 			break;
 		case "false":
-			HourlyJobThread.handleEndMineWindow(mine);
+			HourlyJobThread.mineWindowClose(mine);
 			Mine.setLastChange(System.currentTimeMillis());
 			break;
 		default:

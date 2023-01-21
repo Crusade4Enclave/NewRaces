@@ -187,7 +187,7 @@ public class HourlyJobThread implements Runnable {
                     // Open Errant Mines
 
                     if (mine.getOwningGuild().isEmptyGuild()) {
-                        HourlyJobThread.handleStartMineWindow(mine);
+                        HourlyJobThread.mineWindowOpen(mine);
                         Mine.setLastChange(System.currentTimeMillis());
                         continue;
                     }
@@ -197,14 +197,14 @@ public class HourlyJobThread implements Runnable {
 
                     if (mine.getOwningGuild().getNation().getMineTime() ==
                             LocalDateTime.now().getHour()) {
-                        HourlyJobThread.handleStartMineWindow(mine);
+                        HourlyJobThread.mineWindowOpen(mine);
                         Mine.setLastChange(System.currentTimeMillis());
                         continue;
                     }
 
                     // Close all the remaining mines
 
-                    if (handleEndMineWindow(mine))
+                    if (mineWindowClose(mine))
                         Mine.setLastChange(System.currentTimeMillis());
 
                 } catch (Exception e) {
@@ -216,14 +216,14 @@ public class HourlyJobThread implements Runnable {
         }
     }
 
-    public static void handleStartMineWindow(Mine mine) {
+    public static void mineWindowOpen(Mine mine) {
 
         mine.setActive(true);
         ChatManager.chatSystemChannel(mine.getZoneName() + "'s Mine is now Active!");
         Logger.info(mine.getZoneName() + "'s Mine is now Active!");
     }
 
-    public static boolean handleEndMineWindow(Mine mine) {
+    public static boolean mineWindowClose(Mine mine) {
 
         // No need to end the window of a mine which never opened.
 
@@ -237,9 +237,10 @@ public class HourlyJobThread implements Runnable {
             return false;
         }
 
+        // Mine building still stands.
+        // It was never knocked down
+
         if (mineBuilding.getRank() > 0) {
-            //never knocked down, let's just move on.
-            //hasn't been claimed since server start.
             mine.setActive(false);
             mine.lastClaimer = null;
             return true;
