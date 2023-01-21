@@ -262,9 +262,6 @@ public class ClientMessagePump implements NetMsgHandler {
 			case VENDORDIALOG:
 				VendorDialogMsg.replyDialog((VendorDialogMsg) msg, origin);
 				break;
-			case ARCMINECHANGEPRODUCTION:
-				changeMineProduction((ArcMineChangeProductionMsg) msg, origin);
-				break;
 			case SHOPLIST:
 				openBuyFromNPCWindow((BuyFromNPCWindowMsg) msg, origin);
 				break;
@@ -1418,40 +1415,6 @@ boolean updateCity = false;
 		Dispatch dispatch = Dispatch.borrow(player, vrm);
 		DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
 
-	}
-
-	private static void changeMineProduction(ArcMineChangeProductionMsg msg, ClientConnection origin) {
-
-		PlayerCharacter sourcePlayer = SessionManager.getPlayerCharacter(origin);
-
-		if (sourcePlayer == null)
-			return;
-
-		//TODO verify this against the warehouse?
-
-		if (GuildStatusController.isInnerCouncil(sourcePlayer.getGuildStatus()) == false) // is this only GL?
-			return;
-
-		Mine mine = Mine.getMine(msg.getMineID());
-
-		if (mine == null)
-			return;
-
-		//make sure mine belongs to guild
-		if (mine.getOwningGuild().isEmptyGuild() || mine.getOwningGuild().getObjectUUID() != sourcePlayer.getGuild().getObjectUUID())
-			return;
-
-		//make sure valid resource
-		Resource r = Resource.resourceByHash.get(msg.getResourceHash());
-
-		if (r == null)
-			return;
-
-		//update resource
-		mine.changeProductionType(r);
-		Mine.setLastChange(System.currentTimeMillis());
-		Dispatch dispatch = Dispatch.borrow(sourcePlayer, msg);
-		DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
 	}
 
 	private static void randomRoll(RandomMsg msg, ClientConnection origin) throws MsgSendException {
