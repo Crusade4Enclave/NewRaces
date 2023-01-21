@@ -124,11 +124,7 @@ public class MagicBot extends ListenerAdapter {
         ChatChannel.Init();
 
         // Background thread to send Admin Events
-        Runnable adminLogRunnable = new Runnable() {
-            public void run() {
-                SendAdminLogUpdates();
-            }
-        };
+        Runnable adminLogRunnable = () -> SendAdminLogUpdates();
 
         ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
         exec.scheduleAtFixedRate(adminLogRunnable , 0, 1, TimeUnit.MINUTES);
