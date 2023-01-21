@@ -262,9 +262,6 @@ public class ClientMessagePump implements NetMsgHandler {
 			case VENDORDIALOG:
 				VendorDialogMsg.replyDialog((VendorDialogMsg) msg, origin);
 				break;
-			case ARCOWNEDMINESLIST:
-				ListOwnedMines((ArcOwnedMinesListMsg) msg, origin);
-				break;
 			case ARCMINECHANGEPRODUCTION:
 				changeMineProduction((ArcMineChangeProductionMsg) msg, origin);
 				break;
@@ -1421,22 +1418,6 @@ boolean updateCity = false;
 		Dispatch dispatch = Dispatch.borrow(player, vrm);
 		DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
 
-	}
-
-	private static void ListOwnedMines(ArcOwnedMinesListMsg msg, ClientConnection origin) {
-
-		PlayerCharacter pc = SessionManager.getPlayerCharacter(origin);
-
-		if (pc == null)
-			return;
-		//TODO verify this against the warehouse?
-		
-		if (GuildStatusController.isInnerCouncil(pc.getGuildStatus()) == false)// is this only GL?
-			return;
-
-		msg.setMineList(Mine.getMinesForGuild(pc.getGuild().getObjectUUID()));
-		Dispatch dispatch = Dispatch.borrow(pc, msg);
-		DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
 	}
 
 	private static void changeMineProduction(ArcMineChangeProductionMsg msg, ClientConnection origin) {

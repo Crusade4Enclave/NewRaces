@@ -24,7 +24,7 @@ import engine.objects.PlayerCharacter;
 public class ArcMineWindowAvailableTimeHandler extends AbstractClientMsgHandler {
 
     public ArcMineWindowAvailableTimeHandler() {
-        super(KeepAliveServerClientMsg.class);
+        super(ArcMineWindowAvailableTimeMsg.class);
     }
 
     @Override
