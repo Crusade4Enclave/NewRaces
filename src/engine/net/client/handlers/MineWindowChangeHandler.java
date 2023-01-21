@@ -96,12 +96,13 @@ public class MineWindowChangeHandler extends AbstractClientMsgHandler {
 			return true;
 	}
 
-		// Cannot set a time to a window that has not closed if mines are currently open.
+		// Cannot set a time to a window that has closed if mines are currently open.
 
 		if (LocalDateTime.now().getHour() >= MBServerStatics.MINE_EARLY_WINDOW &&
-				newMineTime <= LocalDateTime.now().getHour() &&
 				LocalDateTime.now().getHour() != MBServerStatics.MINE_LATE_WINDOW) {
-			ErrorPopupMsg.sendErrorMsg(playerCharacter, "You must first wait for that mine window to close.");
+
+			if (newMineTime <= LocalDateTime.now().getHour())
+				ErrorPopupMsg.sendErrorMsg(playerCharacter, "Cannot set mines to a previous window.");
 			return true;
 		}
 
