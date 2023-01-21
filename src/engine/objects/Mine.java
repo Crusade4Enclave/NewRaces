@@ -401,18 +401,17 @@ public class Mine extends AbstractGameObject {
 
         playerGuild = playerCharacter.getGuild();
 
+        // Can't claim something if you don't have a guild!
+
         if (playerGuild.isEmptyGuild())
             return false;
 
         if (playerGuild.getNation().isEmptyGuild())
             return false;
 
-        //Get a count of nation mines, can't go over capital tol rank.
-        City nationCapitol = playerGuild.getNation().getOwnedCity();
-        City guildCity = playerGuild.getOwnedCity();
+       // Guild must own a city to hold a mine.
 
-        if (nationCapitol == null)
-            return false;
+        City guildCity = playerGuild.getOwnedCity();
 
         if (guildCity == null)
             return false;
@@ -421,6 +420,10 @@ public class Mine extends AbstractGameObject {
             ErrorPopupMsg.sendErrorMsg(playerCharacter, "No Warehouse exists for this claim.");
             return false;
         }
+
+        // Number of mines is based on the rank of the nation's tree.
+
+        City nationCapitol = playerGuild.getNation().getOwnedCity();
 
         Building nationCapitolTOL = nationCapitol.getTOL();
 

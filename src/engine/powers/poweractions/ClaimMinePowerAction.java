@@ -27,9 +27,9 @@ public class ClaimMinePowerAction extends AbstractPowerAction {
 	}
 
 	@Override
-	protected void _startAction(AbstractCharacter source, AbstractWorldObject awo, Vector3fImmutable targetLoc, int trains, ActionsBase ab, PowersBase pb) {
+	protected void _startAction(AbstractCharacter source, AbstractWorldObject worldObject, Vector3fImmutable targetLoc, int trains, ActionsBase ab, PowersBase pb) {
 
-		if (source == null || awo == null)
+		if (source == null || worldObject == null)
 			return;
 
 		if (!(source.getObjectType().equals(Enum.GameObjectType.PlayerCharacter)))
@@ -37,10 +37,10 @@ public class ClaimMinePowerAction extends AbstractPowerAction {
 
 		PlayerCharacter playerCharacter = (PlayerCharacter) source;
 
-		if (!(awo.getObjectType().equals(Enum.GameObjectType.Building)))
+		if (!(worldObject.getObjectType().equals(Enum.GameObjectType.Building)))
 			return;
 
-		Building mineBuilding = (Building)awo;
+		Building mineBuilding = (Building)worldObject;
 
 		if (mineBuilding.getRank() > 0)
 			return;
