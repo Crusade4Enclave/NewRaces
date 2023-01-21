@@ -237,8 +237,8 @@ public class HourlyJobThread implements Runnable {
             return false;
         }
 
-        // Mine building still stands.
-        // It was never knocked down
+        // Mine building still stands; nothing to do.
+        // We can early exit here.
 
         if (mineBuilding.getRank() > 0) {
             mine.setActive(false);
@@ -250,15 +250,12 @@ public class HourlyJobThread implements Runnable {
         // we will therefore set it to errant
         // and keep the window open.
 
-        if (!Mine.validClaimer(mine.lastClaimer)) {
+        if (!Mine.validateClaimer(mine.lastClaimer)) {
             mine.lastClaimer = null;
             mine.updateGuildOwner(null);
             mine.setActive(true);
             return false;
         }
-
-        if (mine.getOwningGuild().isEmptyGuild() || mine.getOwningGuild().getNation().isEmptyGuild())
-            return false;
 
         //Update ownership to map
 

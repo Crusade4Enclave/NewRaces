@@ -20,13 +20,9 @@ package engine.objects;
 
 import engine.Enum;
 import engine.InterestManagement.WorldGrid;
-import engine.db.archive.DataWarehouse;
-import engine.db.archive.MineRecord;
 import engine.gameManager.*;
 import engine.net.ByteBufferWriter;
-import engine.net.DispatchMessage;
 import engine.net.client.msg.ErrorPopupMsg;
-import engine.net.client.msg.chat.ChatSystemMsg;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
 
@@ -381,7 +377,11 @@ public class Mine extends AbstractGameObject {
         this.buildingID = buildingID;
     }
 
-    public static boolean validClaimer(PlayerCharacter playerCharacter) {
+    public static boolean validateClaimer(PlayerCharacter playerCharacter) {
+
+        // Method validates that the claimer meets
+        // all the requirements to claim; landed
+        // guild with a warehouse, etc.
 
         Guild playerGuild;
 
@@ -491,7 +491,7 @@ public class Mine extends AbstractGameObject {
         if (claimer == null)
             return false;
 
-        if (!validClaimer(claimer))
+        if (!validateClaimer(claimer))
             return false;
 
         if (!this.isActive) {
