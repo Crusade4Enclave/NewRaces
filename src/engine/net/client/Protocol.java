@@ -33,7 +33,7 @@ public enum Protocol {
     ARCHOTZONECHANGE(0xDCFF196F, null, null), //change hotzone
     ARCIGNORELISTUPDATE(0x4B1B17C2, IgnoreListMsg.class, null), //req/show ignore list
     ARCLOGINNOTIFY(0x010FED87, ArcLoginNotifyMsg.class, ArcLoginNotifyMsgHandler.class), //Client Confirms entering world
-    ARCMINECHANGEPRODUCTION(0x1EAA993F,  ArcMineChangeProductionMsg.class, null),
+    ARCMINECHANGEPRODUCTION(0x1EAA993F,  ArcMineChangeProductionMsg.class, ArcMineChangeProductionMsgHandler.class),
     ARCMINETOWERCRESTUPDATE(0x34164D0D, null, null),
     ARCMINEWINDOWAVAILABLETIME(0x6C909DE7, ArcMineWindowAvailableTimeMsg.class, ArcMineWindowAvailableTimeHandler.class),
     ARCMINEWINDOWCHANGE(0x92B2148A, ArcMineWindowChangeMsg.class, MineWindowChangeHandler.class),
