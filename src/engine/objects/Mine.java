@@ -336,9 +336,14 @@ public class Mine extends AbstractGameObject {
     }
 
     public static ArrayList<Mine> getMinesForGuild(int guildID) {
+
         ArrayList<Mine> mineList = new ArrayList<>();
+
+        // Only inactive mines are returned.
+
         for (Mine mine : Mine.mineMap.keySet()) {
-            if (mine.owningGuild.getObjectUUID() == guildID)
+            if (mine.owningGuild.getObjectUUID() == guildID &&
+                mine.isActive == false)
                 mineList.add(mine);
         }
         return mineList;
