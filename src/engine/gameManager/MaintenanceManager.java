@@ -305,55 +305,15 @@ public enum MaintenanceManager {
 
     public static void dailyMaintenance() {
 
-        ArrayList<Shrine> shrineList = new ArrayList<>();
-
         Logger.info("Maintenance has started");
-
-        // Update shrines to proper city owner
-
-        for (Shrine shrine : Shrine.shrinesByBuildingUUID.values()) {
-            try {
-                Building shrineBuilding = (Building) DbManager.getObject(Enum.GameObjectType.Building, shrine.getBuildingID());
-
-                if (shrineBuilding == null)
-                    continue;
-                
-
-                if (shrineBuilding.getOwner().equals(shrineBuilding.getCity().getOwner()) == false)
-                    shrineBuilding.claim(shrineBuilding.getCity().getOwner());
-            } catch (Exception e) {
-                Logger.info("Shrine " + shrine.getBuildingID() + " Error " + e);
-            }
-        }
-
-        // Grab list of top two shrines of each type
-
-        for (Shrine shrine : Shrine.shrinesByBuildingUUID.values()) {
-
-            if (shrine.getRank() == 0 || shrine.getRank() == 1)
-                shrineList.add(shrine);
-        }
-
-        Logger.info("Decaying " + shrineList.size() + " shrines...");
-
-        // Top 2 shrines decay by 10% a day
-
-        for (Shrine shrine : shrineList) {
-
-            try {
-                shrine.decay();
-            } catch (Exception e) {
-                Logger.info("Shrine " + shrine.getBuildingID() + " Error " + e);
-            }
-        }
 
         // Run maintenance on player buildings
 
-        if ((boolean)  ConfigManager.MB_WORLD_MAINTENANCE.getValue().equalsIgnoreCase("true"))
+        if (ConfigManager.MB_WORLD_MAINTENANCE.getValue().equalsIgnoreCase("true"))
             processBuildingMaintenance();
         else
             Logger.info("Maintenance Costings: DISABLED");
 
-        Logger.info("process has completed!");
+        Logger.info("Maintenance has completed!");
     }
 }

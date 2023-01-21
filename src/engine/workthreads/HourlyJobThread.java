@@ -97,6 +97,11 @@ public class HourlyJobThread implements Runnable {
             }
         }
 
+        // Decay Shrines at midnight every day
+
+        if (LocalDateTime.now().getHour() == MINE_LATE_WINDOW)
+            decayShrines();
+
         // Update city population values
 
         ConcurrentHashMap<Integer, AbstractGameObject> map = DbManager.getMap(Enum.GameObjectType.City);
@@ -123,6 +128,47 @@ public class HourlyJobThread implements Runnable {
         Logger.info(SimulationManager.getPopulationString());
         Logger.info(MessageDispatcher.getNetstatString());
         Logger.info(PurgeOprhans.recordsDeleted.toString() + "orphaned items deleted");
+    }
+
+
+    public static void decayShrines() {
+        ArrayList<Shrine> shrineList = new ArrayList<>();
+
+        for (Shrine shrine : Shrine.shrinesByBuildingUUID.values()) {
+            try {
+                Building shrineBuilding = (Building) DbManager.getObject(Enum.GameObjectType.Building, shrine.getBuildingID());
+
+                if (shrineBuilding == null)
+                    continue;
+
+
+                if (shrineBuilding.getOwner().equals(shrineBuilding.getCity().getOwner()) == false)
+                    shrineBuilding.claim(shrineBuilding.getCity().getOwner());
+            } catch (Exception e) {
+                Logger.info("Shrine " + shrine.getBuildingID() + " Error " + e);
+            }
+        }
+
+        // Grab list of top two shrines of each type
+
+        for (Shrine shrine : Shrine.shrinesByBuildingUUID.values()) {
+
+            if (shrine.getRank() == 0 || shrine.getRank() == 1)
+                shrineList.add(shrine);
+        }
+
+        Logger.info("Decaying " + shrineList.size() + " shrines...");
+
+        // Top 2 shrines decay by 10% a day
+
+        for (Shrine shrine : shrineList) {
+
+            try {
+                shrine.decay();
+            } catch (Exception e) {
+                Logger.info("Shrine " + shrine.getBuildingID() + " Error " + e);
+            }
+        }
     }
 
     public static void processMineWindow() {
