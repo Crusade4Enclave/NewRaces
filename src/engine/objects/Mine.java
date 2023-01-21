@@ -44,7 +44,7 @@ public class Mine extends AbstractGameObject {
 
     private String zoneName;
     private Resource production;
-    private boolean isActive = false;
+    public boolean isActive = false;
 
     private float latitude;
     private float longitude;
@@ -61,10 +61,10 @@ public class Mine extends AbstractGameObject {
 
 
     // Not persisted to DB
-    private String guildName;
-    private GuildTag guildTag;
-    private String nationName;
-    private GuildTag nationTag;
+    public String guildName;
+    public GuildTag guildTag;
+    public String nationName;
+    public GuildTag nationTag;
     public static ConcurrentHashMap<Mine, Integer> mineMap = new ConcurrentHashMap<>(MBServerStatics.CHM_INIT_CAP, MBServerStatics.CHM_LOAD, MBServerStatics.CHM_THREAD_LOW);
     public static ConcurrentHashMap<Integer, Mine> towerMap = new ConcurrentHashMap<>(MBServerStatics.CHM_INIT_CAP, MBServerStatics.CHM_LOAD, MBServerStatics.CHM_THREAD_LOW);
 
@@ -381,13 +381,6 @@ public class Mine extends AbstractGameObject {
         this.buildingID = buildingID;
     }
 
-    public void handleStartMineWindow() {
-
-        this.setActive(true);
-        ChatManager.chatSystemChannel(this.zoneName + "'s Mine is now Active!");
-        Logger.info(this.zoneName + "'s Mine is now Active!");
-    }
-
     public static boolean validClaimer(PlayerCharacter playerCharacter) {
 
         Guild playerGuild;
@@ -491,72 +484,6 @@ public class Mine extends AbstractGameObject {
 
         Building building = (Building) getObject(Enum.GameObjectType.Building, this.buildingID);
         BuildingManager.cleanupHirelings(building);
-    }
-
-    public boolean handleEndMineWindow() {
-
-        // No need to end the window of a mine which never opened.
-
-        if (this.isActive == false)
-            return false;
-
-        Building mineBuilding = BuildingManager.getBuildingFromCache(this.buildingID);
-
-        if (mineBuilding == null) {
-            Logger.debug("Null mine building for Mine " + this.getObjectUUID() + " Building " + this.buildingID);
-            return false;
-        }
-
-        if (mineBuilding.getRank() > 0) {
-            //never knocked down, let's just move on.
-            //hasn't been claimed since server start.
-            this.setActive(false);
-            this.lastClaimer = null;
-            return true;
-        }
-
-        // This mine does not have a valid claimer
-        // we will therefore set it to errant
-        // and keep the window open.
-
-        if (!validClaimer(this.lastClaimer)) {
-            this.lastClaimer = null;
-            this.updateGuildOwner(null);
-            this.setActive(true);
-            return false;
-        }
-
-        if (this.owningGuild.isEmptyGuild() || this.owningGuild.getNation().isEmptyGuild())
-            return false;
-
-        //Update ownership to map
-
-        this.guildName = this.owningGuild.getName();
-        this.guildTag = this.owningGuild.getGuildTag();
-        Guild nation = this.owningGuild.getNation();
-        this.nationName = nation.getName();
-        this.nationTag = nation.getGuildTag();
-
-        setLastChange(System.currentTimeMillis());
-
-        mineBuilding.rebuildMine();
-        WorldGrid.updateObject(mineBuilding);
-
-        ChatSystemMsg chatMsg = new ChatSystemMsg(null, this.lastClaimer.getName() + " has claimed the mine in " + this.parentZone.getParent().getName() + " for " + this.owningGuild.getName() + ". The mine is no longer active.");
-        chatMsg.setMessageType(10);
-        chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
-        DispatchMessage.dispatchMsgToAll(chatMsg);
-
-        // Warehouse this claim event
-
-        MineRecord mineRecord = MineRecord.borrow(this, this.lastClaimer, Enum.RecordEventType.CAPTURE);
-        DataWarehouse.pushToWarehouse(mineRecord);
-
-        mineBuilding.setRank(mineBuilding.getRank());
-		this.lastClaimer = null;
-        this.setActive(false);
-        this.wasClaimed = true;
-        return true;
     }
 
     public boolean claimMine(PlayerCharacter claimer) {

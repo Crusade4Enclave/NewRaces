@@ -16,6 +16,7 @@ import engine.objects.AbstractGameObject;
 import engine.objects.Building;
 import engine.objects.Mine;
 import engine.objects.PlayerCharacter;
+import engine.workthreads.HourlyJobThread;
 
 /**
  *
@@ -40,11 +41,11 @@ public class MineActiveCmd extends AbstractDevCmd {
 		String trigger = args[0];
 		switch (trigger){
 		case "true":
-			mine.handleStartMineWindow();
+			HourlyJobThread.handleStartMineWindow(mine);
 			Mine.setLastChange(System.currentTimeMillis());
 			break;
 		case "false":
-			mine.handleEndMineWindow();
+			HourlyJobThread.handleEndMineWindow(mine);
 			Mine.setLastChange(System.currentTimeMillis());
 			break;
 		default:

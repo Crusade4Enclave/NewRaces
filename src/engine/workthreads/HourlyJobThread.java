@@ -10,10 +10,13 @@
 package engine.workthreads;
 
 import engine.Enum;
-import engine.gameManager.DbManager;
-import engine.gameManager.SimulationManager;
-import engine.gameManager.ZoneManager;
+import engine.InterestManagement.WorldGrid;
+import engine.db.archive.DataWarehouse;
+import engine.db.archive.MineRecord;
+import engine.gameManager.*;
+import engine.net.DispatchMessage;
 import engine.net.MessageDispatcher;
+import engine.net.client.msg.chat.ChatSystemMsg;
 import engine.objects.*;
 import engine.server.world.WorldServer;
 import org.pmw.tinylog.Logger;
@@ -184,23 +187,24 @@ public class HourlyJobThread implements Runnable {
                     // Open Errant Mines
 
                     if (mine.getOwningGuild().isEmptyGuild()) {
-                        mine.handleStartMineWindow();
+                        HourlyJobThread.handleStartMineWindow(mine);
                         Mine.setLastChange(System.currentTimeMillis());
                         continue;
                     }
 
-                    // Open Mines with a current guild hour
+                    // Open Mines owned by nations having their WOO
+                    // set to the current mine window.
 
                     if (mine.getOwningGuild().getNation().getMineTime() ==
                             LocalDateTime.now().getHour()) {
-                        mine.handleStartMineWindow();
+                        HourlyJobThread.handleStartMineWindow(mine);
                         Mine.setLastChange(System.currentTimeMillis());
                         continue;
                     }
 
-                    // Close all remaining mines
+                    // Close all the remaining mines
 
-                    if (mine.handleEndMineWindow())
+                    if (handleEndMineWindow(mine))
                         Mine.setLastChange(System.currentTimeMillis());
 
                 } catch (Exception e) {
@@ -210,5 +214,78 @@ public class HourlyJobThread implements Runnable {
         } catch (Exception e) {
             Logger.error(e.toString());
         }
+    }
+
+    public static void handleStartMineWindow(Mine mine) {
+
+        mine.setActive(true);
+        ChatManager.chatSystemChannel(mine.getZoneName() + "'s Mine is now Active!");
+        Logger.info(mine.getZoneName() + "'s Mine is now Active!");
+    }
+
+    public static boolean handleEndMineWindow(Mine mine) {
+
+        // No need to end the window of a mine which never opened.
+
+        if (mine.isActive == false)
+            return false;
+
+        Building mineBuilding = BuildingManager.getBuildingFromCache(mine.getBuildingID());
+
+        if (mineBuilding == null) {
+            Logger.debug("Null mine building for Mine " + mine.getObjectUUID() + " Building " + mine.getBuildingID());
+            return false;
+        }
+
+        if (mineBuilding.getRank() > 0) {
+            //never knocked down, let's just move on.
+            //hasn't been claimed since server start.
+            mine.setActive(false);
+            mine.lastClaimer = null;
+            return true;
+        }
+
+        // This mine does not have a valid claimer
+        // we will therefore set it to errant
+        // and keep the window open.
+
+        if (!Mine.validClaimer(mine.lastClaimer)) {
+            mine.lastClaimer = null;
+            mine.updateGuildOwner(null);
+            mine.setActive(true);
+            return false;
+        }
+
+        if (mine.getOwningGuild().isEmptyGuild() || mine.getOwningGuild().getNation().isEmptyGuild())
+            return false;
+
+        //Update ownership to map
+
+        mine.guildName = mine.getOwningGuild().getName();
+        mine.guildTag = mine.getOwningGuild().getGuildTag();
+        Guild nation = mine.getOwningGuild().getNation();
+        mine.nationName = nation.getName();
+        mine.nationTag = nation.getGuildTag();
+
+        Mine.setLastChange(System.currentTimeMillis());
+
+        mineBuilding.rebuildMine();
+        WorldGrid.updateObject(mineBuilding);
+
+        ChatSystemMsg chatMsg = new ChatSystemMsg(null, mine.lastClaimer.getName() + " has claimed the mine in " + mine.getParentZone().getParent().getName() + " for " + mine.getOwningGuild().getName() + ". The mine is no longer active.");
+        chatMsg.setMessageType(10);
+        chatMsg.setChannel(Enum.ChatChannelType.SYSTEM.getChannelID());
+        DispatchMessage.dispatchMsgToAll(chatMsg);
+
+        // Warehouse this claim event
+
+        MineRecord mineRecord = MineRecord.borrow(mine, mine.lastClaimer, Enum.RecordEventType.CAPTURE);
+        DataWarehouse.pushToWarehouse(mineRecord);
+
+        mineBuilding.setRank(mineBuilding.getRank());
+        mine.lastClaimer = null;
+        mine.setActive(false);
+        mine.wasClaimed = true;
+        return true;
     }
 }
