@@ -1,4 +1,4 @@
-package engine.net.client.handlers;
+package engine.util;
 
 import engine.gameManager.ConfigManager;
 import engine.gameManager.DbManager;
@@ -9,7 +9,7 @@ import org.pmw.tinylog.Logger;
 public enum KeyCloneAudit {
     KEYCLONEAUDIT;
 
-    void audit(PlayerCharacter player, Group group) {
+    public void audit(PlayerCharacter player, Group group) {
 
         int machineCount = 0;
         String machineID;

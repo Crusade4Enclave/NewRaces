@@ -24,7 +24,7 @@ import engine.objects.PlayerCharacter;
 
 import java.util.Set;
 
-import static engine.net.client.handlers.KeyCloneAudit.KEYCLONEAUDIT;
+import static engine.util.KeyCloneAudit.KEYCLONEAUDIT;
 
 public class GroupInviteResponseHandler extends AbstractClientMsgHandler {
 
