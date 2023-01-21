@@ -450,8 +450,6 @@ public class Mine extends AbstractGameObject {
 
         return true;
     }
-
-
     public void handleDestroyMine() {
 
         if (!this.isActive)
@@ -463,6 +461,8 @@ public class Mine extends AbstractGameObject {
         this.nationName = "";
         this.owningGuild = Guild.getErrantGuild();
         Mine.setLastChange(System.currentTimeMillis());
+        this.lastClaimer = null;
+        this.wasClaimed = false;
 
         // Update database
 
