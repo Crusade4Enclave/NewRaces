@@ -115,13 +115,6 @@ public class dbGuildHandler extends dbHandlerBase {
 		return outputStr;
 	}
 
-	public boolean SET_LAST_WOO_UPDATE(Guild guild, LocalDateTime lastEditTime) {
-		prepareCallable("UPDATE `obj_guild` SET `lastWooEditTime`=? WHERE `UID`=?");
-		setLocalDateTime(1, lastEditTime);
-		setLong(2, (long) guild.getObjectUUID());
-		return (executeUpdate() > 0);
-	}
-
 	public ArrayList<Guild> GET_GUILD_ALLIES(final int id) {
 		prepareCallable("SELECT g.* FROM `obj_guild` g, `dyn_guild_allianceenemylist` l "
 				+ "WHERE l.isAlliance = 1 && l.OtherGuildID = g.UID && l.GuildID=?");

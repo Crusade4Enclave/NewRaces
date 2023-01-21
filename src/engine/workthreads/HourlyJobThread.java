@@ -22,127 +22,147 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static engine.server.MBServerStatics.MINE_LATE_WINDOW;
+
 public class HourlyJobThread implements Runnable {
 
-	private static int hotzoneCount = 0;
+    private static final int hotzoneCount = 0;
 
-	public HourlyJobThread() {
+    public HourlyJobThread() {
 
-	}
+    }
 
-	public void run() {
+    public void run() {
 
-		// *** REFACTOR: TRY TRY TRY TRY {{{{{{{{{{{ OMG
+        // *** REFACTOR: TRY TRY TRY TRY {{{{{{{{{{{ OMG
 
-		Logger.info("Hourly job is now running.");
+        Logger.info("Hourly job is now running.");
 
-			try {
+        try {
 
-					ZoneManager.generateAndSetRandomHotzone();
-					Zone hotzone = ZoneManager.getHotZone();
+            ZoneManager.generateAndSetRandomHotzone();
+            Zone hotzone = ZoneManager.getHotZone();
 
-					if (hotzone == null) {
-						Logger.error( "Null hotzone returned from mapmanager");
-					} else {
-						Logger.info( "new hotzone: " + hotzone.getName());
-						WorldServer.setLastHZChange(System.currentTimeMillis());
-					}
+            if (hotzone == null) {
+                Logger.error("Null hotzone returned from mapmanager");
+            } else {
+                Logger.info("new hotzone: " + hotzone.getName());
+                WorldServer.setLastHZChange(System.currentTimeMillis());
+            }
 
-			} catch (Exception e) {
-				Logger.error( e.toString());
-			}
+        } catch (Exception e) {
+            Logger.error(e.toString());
+        }
 
-		// Open or Close mines for the current mine window.
+        // Open or Close mines for the current mine window.
 
-		processMineWindow();
+        processMineWindow();
 
-		for (Mine mine : Mine.getMines()) {
+        // Deposit mine resources to Guilds
 
-				try {
-					mine.depositMineResources();
-				} catch (Exception e) {
-					Logger.info(e.getMessage() + " for Mine " + mine.getObjectUUID());
-				}
-			}
+        for (Mine mine : Mine.getMines()) {
+
+            try {
+                mine.depositMineResources();
+            } catch (Exception e) {
+                Logger.info(e.getMessage() + " for Mine " + mine.getObjectUUID());
+            }
+        }
+
+        // Reset time-gated access to WOO slider.
+        // *** Do this after the mines open/close!
+
+        if (LocalDateTime.now().getHour() == MINE_LATE_WINDOW) {
+            Guild guild;
+
+            for (AbstractGameObject dbObject : DbManager.getList(Enum.GameObjectType.Guild)) {
+                guild = (Guild) dbObject;
+
+                if (guild != null)
+                    guild.wooWasModified = false;
+            }
+        }
 
 
-			// Update city population values
+        // Mines can only be claimed once per cycle.
+        // This will reset at 1am after the last mine
+        // window closes.
 
-			ConcurrentHashMap<Integer, AbstractGameObject> map = DbManager.getMap(Enum.GameObjectType.City);
+        if (LocalDateTime.now().getHour() == MINE_LATE_WINDOW + 1) {
 
-			if (map != null) {
+            for (Mine mine : Mine.getMines()) {
 
-				for (AbstractGameObject ago : map.values()){
+                if (mine.wasClaimed == true)
+                    mine.wasClaimed = false;
+            }
+        }
 
-					City city = (City)ago;
+        // Update city population values
 
-					if (city != null)
-						if (city.getGuild() != null) {
-							ArrayList<PlayerCharacter> guildList = Guild.GuildRoster(city.getGuild());
-							city.setPopulation(guildList.size());
-						}
-				}
-				City.lastCityUpdate = System.currentTimeMillis();
-			} else {
-				Logger.error("missing city map");
-			}
+        ConcurrentHashMap<Integer, AbstractGameObject> map = DbManager.getMap(Enum.GameObjectType.City);
 
-			// Log metrics to console
-			Logger.info( WorldServer.getUptimeString());
-			Logger.info( SimulationManager.getPopulationString());
-			Logger.info( MessageDispatcher.getNetstatString());
-			Logger.info(PurgeOprhans.recordsDeleted.toString() + "orphaned items deleted");
-	}
+        if (map != null) {
 
-	public static void processMineWindow() {
+            for (AbstractGameObject ago : map.values()) {
 
-		try {
+                City city = (City) ago;
 
-			ArrayList<Mine> mines = Mine.getMines();
+                if (city != null)
+                    if (city.getGuild() != null) {
+                        ArrayList<PlayerCharacter> guildList = Guild.GuildRoster(city.getGuild());
+                        city.setPopulation(guildList.size());
+                    }
+            }
+            City.lastCityUpdate = System.currentTimeMillis();
+        } else {
+            Logger.error("missing city map");
+        }
 
-			for (Mine mine : mines) {
-				try {
+        // Log metrics to console
+        Logger.info(WorldServer.getUptimeString());
+        Logger.info(SimulationManager.getPopulationString());
+        Logger.info(MessageDispatcher.getNetstatString());
+        Logger.info(PurgeOprhans.recordsDeleted.toString() + "orphaned items deleted");
+    }
 
-					// Mines can only be claimed once a cycle.
-					// The cycle resets at 01:00hrs after the
-					// Last mine window closes.
+    public static void processMineWindow() {
 
-					if (mine.wasClaimed == true) {
+        try {
 
-						if (LocalDateTime.now().getHour() == 01)
-							mine.wasClaimed = false;
+            ArrayList<Mine> mines = Mine.getMines();
 
-						continue;
-					}
+            for (Mine mine : mines) {
 
-					// Open Errant Mines
+                try {
 
-					if (mine.getOwningGuild().isErrant()) {
-						mine.handleStartMineWindow();
-						Mine.setLastChange(System.currentTimeMillis());
-						continue;
-					}
+                    // Open Errant Mines
 
-					// Open Mines with a current guild hour
+                    if (mine.getOwningGuild().isErrant()) {
+                        mine.handleStartMineWindow();
+                        Mine.setLastChange(System.currentTimeMillis());
+                        continue;
+                    }
 
-					if (mine.getOwningGuild().getNation().getMineTime() ==
-						LocalDateTime.now().getHour()) {
-						mine.handleStartMineWindow();
-						Mine.setLastChange(System.currentTimeMillis());
-						continue;
-					}
+                    // Open Mines with a current guild hour
 
-					// Close all remaining mines
+                    if (mine.getOwningGuild().getNation().getMineTime() ==
+                            LocalDateTime.now().getHour()) {
+                        mine.handleStartMineWindow();
+                        Mine.setLastChange(System.currentTimeMillis());
+                        continue;
+                    }
 
-					 if (mine.handleEndMineWindow())
-							Mine.setLastChange(System.currentTimeMillis());
+                    // Close all remaining mines
 
-				} catch (Exception e) {
-					Logger.error ("mineID: " + mine.getObjectUUID(), e.toString());
-				}
-			}
-		} catch (Exception e) {
-			Logger.error( e.toString());
-		}
-	}
+                    if (mine.handleEndMineWindow())
+                        Mine.setLastChange(System.currentTimeMillis());
+
+                } catch (Exception e) {
+                    Logger.error("mineID: " + mine.getObjectUUID(), e.toString());
+                }
+            }
+        } catch (Exception e) {
+            Logger.error(e.toString());
+        }
+    }
 }

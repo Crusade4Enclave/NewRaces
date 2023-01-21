@@ -793,7 +793,7 @@ public class MBServerStatics {
 	public static final int MAX_PLAYER_LOAD_SIZE = 1000;
 
 	// Mine related
-	public static final int MINE_EARLY_WINDOW = 16; // 3pm
+	public static final int MINE_EARLY_WINDOW = 16; // 4pm
 	public static final int MINE_LATE_WINDOW = 0; // Midnight
 
 	// Race
