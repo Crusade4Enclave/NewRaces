@@ -2213,6 +2213,8 @@ public void dismissNecroPets() {
 			for (Effect eff : playerCharacter.getEffects().values()) {
 				if (eff.getPower() == null && otherPlayer)
 					continue;
+				if (eff.getPower().token == 429506619) // Oblivion's Caress
+					continue;
 				if ( !eff.serializeForLoad(writer))
 					continue;
 				++total;
