@@ -196,7 +196,7 @@ public class HourlyJobThread implements Runnable {
                     // set to the current mine window.
 
                     if (mine.getOwningGuild().getNation().getMineTime() ==
-                            LocalDateTime.now().getHour()) {
+                            LocalDateTime.now().getHour() && mine.wasClaimed == false) {
                         HourlyJobThread.mineWindowOpen(mine);
                         Mine.setLastChange(System.currentTimeMillis());
                         continue;
