@@ -3580,19 +3580,16 @@ public void dismissNecroPets() {
 			conVal += Math.round(this.bonuses.getFloat(ModType.Attr, SourceType.Constitution));
 			intVal += Math.round(this.bonuses.getFloat(ModType.Attr, SourceType.Intelligence));
 			spiVal += Math.round(this.bonuses.getFloat(ModType.Attr, SourceType.Spirit));
-			
 
 			// apply dex penalty for armor
 			dexVal *= this.dexPenalty;
 
 			// modify percent amounts. DO THIS LAST!
-			strVal *= (1 +Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Strength)));
-			dexVal *= (1 +Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Dexterity)));
-			conVal *= (1 + Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Constitution)));
-			intVal *= (1+Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Intelligence)));
-			spiVal *= (1+Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Spirit)));
-
-			//boons?
+				strVal *= (1 + this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Strength));
+				dexVal *= (1 + this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Dexterity));
+				conVal *= (1 + this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Constitution));
+				intVal *= (1 + this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Intelligence));
+				spiVal *= (1 + this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Spirit));
 
 		} else
 			// apply dex penalty for armor
