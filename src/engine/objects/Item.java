@@ -319,6 +319,60 @@ public class Item extends AbstractWorldObject {
 	public short getDurabilityMax() {
 		return durabilityMax;
 	}
+	public float getArmorPiercing(){
+		float val = 1;
+		for(String eff : this.effectNames){
+			switch(eff)
+			{
+				case"PRE-001":
+					val += -0.20f;
+					break;
+				case"PRE-002":
+					val += -0.10f;
+					break;
+				case"PRE-003":
+					val += 0.020f;
+					break;
+				case"PRE-004":
+					val += 0.040f;
+					break;
+				case"PRE-005":
+					val += 0.060f;
+					break;
+				case"PRE-006":
+					val += 0.080f;
+					break;
+				case"PRE-007":
+					val += 0.10f;
+					break;
+				case"PRE-008":
+					val += 0.12f;
+					break;
+				case"PRE-009":
+					val += 0.14f;
+					break;
+				case"PRE-010":
+					val += 0.15f;
+					break;
+				case"PRE-311":
+					val += 0.20f;
+					break;
+				case"SUF-008":
+					val += 0.05f;
+					break;
+				case"SUF-009":
+					val += 0.10f;
+					break;
+				case"SUF-010":
+					val += 0.15f;
+					break;
+				case"SUF-301":
+					val += 0.20f;
+					break;
+			}
+		}
+		return val;
+	}
 
 	public void setDurabilityCurrent(short value) {
 		this.durabilityCurrent = value;
