@@ -3591,6 +3591,9 @@ public void dismissNecroPets() {
 			conVal *= (1 + Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Constitution)));
 			intVal *= (1+Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Intelligence)));
 			spiVal *= (1+Math.round(this.bonuses.getFloatPercentAll(ModType.Attr, SourceType.Spirit)));
+
+			//boons?
+
 		} else
 			// apply dex penalty for armor
 			dexVal *= this.dexPenalty;
