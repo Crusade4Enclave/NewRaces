@@ -317,7 +317,177 @@ public class Item extends AbstractWorldObject {
 	}
 
 	public short getDurabilityMax() {
-		return durabilityMax;
+		short max = durabilityMax;
+		for(String eff : this.effectNames){
+			switch(eff){
+				case "PRE-022":
+					max *= 1 + -0.40f;
+					break;
+				case "PRE-023":
+					max *= 1 + -0.20f;
+					break;
+				case "PRE-024":
+					max *= 1 + 0.20f;
+					break;
+				case "PRE-025":
+					max *= 1 + 0.30f;
+					break;
+				case "PRE-026":
+					max *= 1 + 0.4f;
+					break;
+				case "PRE-027":
+					max *= 1 + -0.50f;
+					break;
+				case "PRE-028":
+					max *= 1 + 0.60f;
+					break;
+				case "PRE-029":
+					max *= 1 + 0.70f;
+					break;
+				case "PRE-030":
+					max *= 1 + 0.80f;
+					break;
+				case "PRE-031":
+					max *= 1 + -0.90f;
+					break;
+				case "PRE-116":
+					max *= 1 + -0.40f;
+					break;
+				case "PRE-117":
+					max *= 1 + -0.20f;
+					break;
+				case "PRE-118":
+					max *= 1 + 0.10f;
+					break;
+				case "PRE-119":
+					max *= 1 + 0.15f;
+					break;
+				case "PRE-120":
+					max *= 1 + 0.20f;
+					break;
+				case "PRE-121":
+					max *= 1 + 0.25f;
+					break;
+				case "PRE-122":
+					max *= 1 + 0.30f;
+					break;
+				case "PRE-123":
+					max *= 1 + 0.35f;
+					break;
+				case "PRE-124":
+					max *= 1 + 0.40f;
+					break;
+				case "PRE-125":
+					max *= 1 + 0.50f;
+					break;
+				case "PRE-126":
+					max *= 1 + -0.40f;
+					break;
+				case "PRE-127":
+					max *= 1 + -0.20f;
+					break;
+				case "PRE-128":
+					max *= 1 + 0.10f;
+					break;
+				case "PRE-129":
+					max *= 1 + 0.15f;
+					break;
+				case "PRE-130":
+					max *= 1 + 0.20f;
+					break;
+				case "PRE-131":
+					max *= 1 + 0.25f;
+					break;
+				case "PRE-132":
+					max *= 1 + 0.30f;
+					break;
+				case "PRE-133":
+					max *= 1 + 0.35f;
+					break;
+				case "PRE-134":
+					max *= 1 + 0.40f;
+					break;
+				case "PRE-135":
+					max *= 1 + 0.50f;
+					break;
+				case "PRE-136":
+					max *= 1 + -0.40f;
+					break;
+				case "PRE-137":
+					max *= 1 + -0.20f;
+					break;
+				case "PRE-138":
+					max *= 1 + 0.10f;
+					break;
+				case "PRE-139":
+					max *= 1 + 0.15f;
+					break;
+				case "PRE-140":
+					max *= 1 + 0.20f;
+					break;
+				case "PRE-141":
+					max *= 1 + 0.25f;
+					break;
+				case "PRE-142":
+					max *= 1 + 0.30f;
+					break;
+				case "PRE-143":
+					max *= 1 + 0.35f;
+					break;
+				case "PRE-144":
+					max *= 1 + 0.40f;
+					break;
+				case "PRE-145":
+					max *= 1 + 0.50f;
+					break;
+				case "PRE-146":
+					max *= 1 + -0.40f;
+					break;
+				case "PRE-147":
+					max *= 1 + -0.20f;
+					break;
+				case "PRE-148":
+					max *= 1 + 0.10f;
+					break;
+				case "PRE-149":
+					max *= 1 + 0.15f;
+					break;
+				case "PRE-150":
+					max *= 1 + 0.20f;
+					break;
+				case "PRE-151":
+					max *= 1 + 0.25f;
+					break;
+				case "PRE-152":
+					max *= 1 + 0.30f;
+					break;
+				case "PRE-153":
+					max *= 1 + 0.35f;
+					break;
+				case "PRE-154":
+					max *= 1 + 0.50f;
+					break;
+				case "SUF-099":
+					max *= 1 + -0.25f;
+					break;
+				case "SUF-100":
+					max *= 1 + -0.50f;
+					break;
+				case "SUF-101":
+					max *= 1 + 0.25f;
+					break;
+				case "SUF-102":
+					max *= 1 + 0.50f;
+					break;
+				case "SUF-103":
+					max *= 1 + 0.75f;
+					break;
+				case "SUF-104":
+					max *= 1 + 1.00f;
+					break;
+			}
+		}
+		return max;
 	}
 
 	public void setDurabilityCurrent(short value) {
