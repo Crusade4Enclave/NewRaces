@@ -320,7 +320,7 @@ public class Item extends AbstractWorldObject {
 		return durabilityMax;
 	}
 	public float getArmorPiercing(){
-		float val = 1;
+		float val = 0;
 		for(String eff : this.effectNames){
 			switch(eff)
 			{
