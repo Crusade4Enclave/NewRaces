@@ -305,9 +305,13 @@ public class Resists {
 	public float getResistedDamage(AbstractCharacter source, AbstractCharacter target, DamageType type, float damage, int trains) {
 		//handle fortitudes
 		damage = handleFortitude(target, type, damage);
-
 		//check to see if any damage absorbers should cancel
-		float damageAfterResists = damage * (1 - (this.getResist(type, trains) / 100));
+		float apMod = 0;
+
+		if(source.getCharItemManager().getEquipped(2) != null) {
+			apMod = source.getCharItemManager().getEquipped(2).getArmorPiercing(); // need to get the item in players off-hand and check for armor piercing enchants
+		}
+		float damageAfterResists = damage * (1 - (this.getResist(type, trains) / 100) + apMod);
 		if (target != null) {
 			//debug damage shields if any found
 			if (source.getDebug(2) && source.getObjectType().equals(Enum.GameObjectType.PlayerCharacter)) {
