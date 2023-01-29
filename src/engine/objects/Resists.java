@@ -16,11 +16,13 @@ import engine.Enum.SourceType;
 import engine.gameManager.ChatManager;
 import engine.gameManager.DbManager;
 import engine.powers.EffectsBase;
+import engine.powers.effectmodifiers.ArmorPiercingEffectModifier;
 import engine.server.MBServerStatics;
 import org.pmw.tinylog.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -305,13 +307,10 @@ public class Resists {
 	public float getResistedDamage(AbstractCharacter source, AbstractCharacter target, DamageType type, float damage, int trains) {
 		//handle fortitudes
 		damage = handleFortitude(target, type, damage);
+		//calculate armor piercing
+		float ap = source.getBonuses().getFloatPercentAll(ModType.ArmorPiercing,SourceType.None);
+		float damageAfterResists = damage * (1 - (this.getResist(type, trains) * 0.01f) + ap);
 		//check to see if any damage absorbers should cancel
-		float apMod = 0;
-
-		if(source.getCharItemManager().getEquipped(2) != null) {
-			apMod = source.getCharItemManager().getEquipped(2).getArmorPiercing(); // need to get the item in players off-hand and check for armor piercing enchants
-		}
-		float damageAfterResists = damage * (1 - (this.getResist(type, trains) / 100) + apMod);
 		if (target != null) {
 			//debug damage shields if any found
 			if (source.getDebug(2) && source.getObjectType().equals(Enum.GameObjectType.PlayerCharacter)) {
