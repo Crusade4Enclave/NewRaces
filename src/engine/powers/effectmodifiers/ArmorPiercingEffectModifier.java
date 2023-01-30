@@ -31,7 +31,6 @@ public class ArmorPiercingEffectModifier extends AbstractEffectModifier {
 	public void applyBonus(AbstractCharacter ac, int trains) {
 		Float amount = 0f;
 		PlayerBonuses bonus = ac.getBonuses();
-		//for to testing:
 		amount = this.percentMod;
 		bonus.addFloat(this, amount * 0.01f);
 	}

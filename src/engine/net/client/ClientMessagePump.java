@@ -28,6 +28,7 @@ import engine.net.client.msg.*;
 import engine.net.client.msg.chat.AbstractChatMsg;
 import engine.net.client.msg.commands.ClientAdminCommandMsg;
 import engine.objects.*;
+import engine.powers.effectmodifiers.AbstractEffectModifier;
 import engine.server.MBServerStatics;
 import engine.server.world.WorldServer;
 import engine.session.Session;
@@ -36,6 +37,7 @@ import org.pmw.tinylog.Logger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -2022,10 +2024,17 @@ boolean updateCity = false;
 			//make sure item is damaged and not destroyed
 			short dur = toRepair.getDurabilityCurrent();
 			short max = toRepair.getDurabilityMax();
-
-			if (dur >= max || dur < 1)
+			//account for durability modifications
+			float durMod = toRepair.getBonusPercent(ModType.Durability,SourceType.None);
+			max *= (1 + (durMod * 0.01f));
+			if (dur >= max || dur < 1) {
+				//redundancy message to clear item from window in client
+				toRepair.setDurabilityCurrent(max);
+				msg.setupRepairAck(max - dur);
+				dispatch = Dispatch.borrow(player, msg);
+				DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
 				return;
-
+			}
 			//TODO get cost to repair
 			int cost = (int) ((max - dur) * 80.1);
 			Building b = (!npc.isStatic()) ? npc.getBuilding() : null;
@@ -2056,14 +2065,11 @@ boolean updateCity = false;
 			ugm.configure();
 			dispatch = Dispatch.borrow(player, ugm);
 			DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
-
 			//update durability to database
 			if (!DbManager.ItemQueries.SET_DURABILITY(toRepair, max))
 				return;
-
 			//repair the item
 			toRepair.setDurabilityCurrent(max);
-
 			//send repair msg
 			msg.setupRepairAck(max - dur);
 			dispatch = Dispatch.borrow(player, msg);
