@@ -10,6 +10,7 @@ package engine.gameManager;
 
 import engine.Enum;
 import engine.Enum.GameObjectType;
+import engine.ai.StaticMobActions;
 import engine.db.handlers.*;
 import engine.objects.*;
 import engine.pooling.ConnectionPool;
@@ -60,7 +61,7 @@ public enum DbManager {
 			outObject =  NPC.getNPC(objectUUID);
 			break;
 		case Mob:
-			outObject = Mob.getFromCache(objectUUID);
+			outObject = StaticMobActions.getFromCache(objectUUID);
 			break;
 		case Building:
 			outObject = BuildingManager.getBuilding(objectUUID);

@@ -6,6 +6,7 @@ import engine.Enum.DispatchChannel;
 import engine.Enum.ItemType;
 import engine.InterestManagement.RealmMap;
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.exception.MsgSendException;
 import engine.gameManager.*;
 import engine.math.Bounds;
@@ -179,7 +180,7 @@ public class ObjectActionMsgHandler extends AbstractClientMsgHandler {
 						int objectType = AbstractWorldObject.extractTypeID(compID).ordinal();
 						Mob toCommand;
 						if (objectType == engine.Enum.GameObjectType.Mob.ordinal()) {
-							toCommand = Mob.getFromCache((int)compID);
+							toCommand = StaticMobActions.getFromCache((int)compID);
 						} //Only Command Mob Types.
 						else {
 							return true;
@@ -189,7 +190,7 @@ public class ObjectActionMsgHandler extends AbstractClientMsgHandler {
 							return true;
 						}
 
-						if (!toCommand.isSiege())
+						if (!toCommand.isSiege)
 							return true;
 
 						if (player.commandSiegeMinion(toCommand)) {

@@ -14,6 +14,7 @@ import engine.Enum;
 import engine.Enum.CharacterSkills;
 import engine.Enum.ModType;
 import engine.Enum.SourceType;
+import engine.ai.StaticMobActions;
 import engine.gameManager.DbManager;
 import engine.net.ByteBufferWriter;
 import engine.server.MBServerStatics;
@@ -286,7 +287,7 @@ public class CharacterSkill extends AbstractGameObject {
 		if (cs.ownerUID == 0)
 			return null;
 		if (cs.isMobOwner)
-			return Mob.getFromCache(cs.ownerUID);
+			return StaticMobActions.getFromCache(cs.ownerUID);
 		else
 			return PlayerCharacter.getFromCache(cs.ownerUID);
 	}

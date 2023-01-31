@@ -72,7 +72,7 @@ public class DeferredPowerPowerAction extends AbstractPowerAction {
 			((PlayerCharacter)awo).setWeaponPower(eff);
 			break;
 		case Mob:
-			((Mob)awo).setWeaponPower(eff);
+			((Mob)awo).weaponPower = eff;
 			break;
 		default:
 			break;

@@ -14,6 +14,7 @@ import engine.Enum;
 import engine.Enum.BuildingGroup;
 import engine.Enum.GameObjectType;
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.job.JobContainer;
 import engine.job.JobScheduler;
 import engine.jobs.UpgradeBuildingJob;
@@ -260,7 +261,7 @@ public enum BuildingManager {
                 if (slottedNPC.getObjectType() == Enum.GameObjectType.NPC)
                     ((NPC) slottedNPC).remove();
                 else if (slottedNPC.getObjectType() == Enum.GameObjectType.Mob)
-                    ((Mob) slottedNPC).remove(building);
+                    StaticMobActions.remove(((Mob) slottedNPC),building);
             }
             return;
         }
@@ -285,7 +286,7 @@ public enum BuildingManager {
                     else
                         building.getHirelings().remove(npc);
                 } else if (mob != null) {
-                    if (!mob.remove(building))
+                    if (!StaticMobActions.remove(mob,building))
                         Logger.error("Failed to remove npc " + npc.getObjectUUID()
                                 + "from Building " + building.getObjectUUID());
                     else
@@ -476,9 +477,9 @@ public enum BuildingManager {
             if (mob == null)
                 return false;
 
-            mob.setRank(rank);
-            mob.setPlayerGuard(true);
-            mob.setParentZone(zone);
+            mob.level = (short) (rank * 10);
+            mob.isPlayerGuard = true;
+            mob.parentZone = zone;
             return true;
         } else {
             npc = NPC.createNPC( pirateName, NpcID.getObjectUUID(), NpcLoc, contractOwner.getGuild(), false, zone, (short) rank, false, building);

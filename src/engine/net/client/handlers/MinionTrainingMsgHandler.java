@@ -4,6 +4,7 @@ import engine.Enum;
 import engine.Enum.DispatchChannel;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.MobileFSM;
+import engine.ai.StaticMobActions;
 import engine.exception.MsgSendException;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.DbManager;
@@ -61,26 +62,26 @@ public class MinionTrainingMsgHandler extends AbstractClientMsgHandler {
 				try {
 					if (minionMsg.getType() == 2) {
 
-						Mob toRemove = Mob.getFromCache(minionMsg.getUUID());
+						Mob toRemove = StaticMobActions.getFromCache(minionMsg.getUUID());
 
 						if (!npc.getSiegeMinionMap().containsKey(toRemove))
 							return true;
 
-						toRemove.setState(MobileFSM.STATE.Disabled);
+						toRemove.state = MobileFSM.STATE.Disabled;
 						npc.getSiegeMinionMap().remove(toRemove);
 
 						//toRemove.disableIntelligence();
 						WorldGrid.RemoveWorldObject(toRemove);
 
-						if (toRemove.getParentZone() != null)
-							toRemove.getParentZone().zoneMobSet.remove(toRemove);
+						if (toRemove.parentZone != null)
+							toRemove.parentZone.zoneMobSet.remove(toRemove);
 
 						DbManager.removeFromCache(toRemove);
 						PlayerCharacter petOwner = toRemove.getOwner();
 
 						if (petOwner != null) {
 							petOwner.setPet(null);
-							toRemove.setOwner(null);
+							StaticMobActions.setOwner(toRemove,null);
 							PetMsg petMsg = new PetMsg(5, null);
 							Dispatch dispatch = Dispatch.borrow(petOwner, petMsg);
 							DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
@@ -156,10 +157,10 @@ public class MinionTrainingMsgHandler extends AbstractClientMsgHandler {
 
 						//   toCreate.despawn();
 						if (toCreate != null) {
-							toCreate.setSpawnTime(60 * 15);
-							toCreate.setTimeToSpawnSiege(System.currentTimeMillis() + (60 * 15 * 1000));
-							toCreate.setDeathTime(System.currentTimeMillis());
-							toCreate.setState(MobileFSM.STATE.Respawn);
+							toCreate.spawnTime = 60 * 15;
+							toCreate.timeToSpawnSiege = System.currentTimeMillis() + (60 * 15 * 1000);
+							toCreate.deathTime = System.currentTimeMillis();
+							toCreate.state = MobileFSM.STATE.Respawn;
 						}
 					}
 
@@ -175,7 +176,7 @@ public class MinionTrainingMsgHandler extends AbstractClientMsgHandler {
 
 		}else if (minionMsg.getNpcType() == Enum.GameObjectType.Mob.ordinal()){
 
-			Mob npc = Mob.getFromCache(minionMsg.getNpcID());
+			Mob npc = StaticMobActions.getFromCache(minionMsg.getNpcID());
 
 			if (npc == null)
 				return true;
@@ -191,28 +192,28 @@ public class MinionTrainingMsgHandler extends AbstractClientMsgHandler {
 				try {
 					if (minionMsg.getType() == 2) {
 
-						Mob toRemove = Mob.getFromCache(minionMsg.getUUID());
-						if (!npc.getSiegeMinionMap().containsKey(toRemove))
+						Mob toRemove = StaticMobActions.getFromCache(minionMsg.getUUID());
+						if (!npc.siegeMinionMap.containsKey(toRemove))
 							return true;
 
-						if (!DbManager.MobQueries.REMOVE_FROM_GUARDS(npc.getObjectUUID(), toRemove.getMobBaseID(), npc.getSiegeMinionMap().get(toRemove)))
+						if (!DbManager.MobQueries.REMOVE_FROM_GUARDS(npc.getObjectUUID(), toRemove.mobBase.getObjectUUID(),npc.siegeMinionMap.get(toRemove)))
 							return true;
 
-						toRemove.setState(MobileFSM.STATE.Disabled);
-						npc.getSiegeMinionMap().remove(toRemove);
+						toRemove.state = MobileFSM.STATE.Disabled;
+						npc.siegeMinionMap.remove(toRemove);
 
 						//toRemove.disableIntelligence();
 						WorldGrid.RemoveWorldObject(toRemove);
 
-						if (toRemove.getParentZone() != null)
-							toRemove.getParentZone().zoneMobSet.remove(toRemove);
+						if (toRemove.parentZone != null)
+							toRemove.parentZone.zoneMobSet.remove(toRemove);
 
 						DbManager.removeFromCache(toRemove);
 						PlayerCharacter petOwner = toRemove.getOwner();
 
 						if (petOwner != null) {
 							petOwner.setPet(null);
-							toRemove.setOwner(null);
+							StaticMobActions.setOwner(toRemove,null);
 							PetMsg petMsg = new PetMsg(5, null);
 							Dispatch dispatch = Dispatch.borrow(petOwner, petMsg);
 							DispatchMessage.dispatchMsgDispatch(dispatch, DispatchChannel.SECONDARY);
@@ -240,14 +241,14 @@ public class MinionTrainingMsgHandler extends AbstractClientMsgHandler {
 						//Add Minion
 					}
 					else {
-						Zone zone = npc.getParentZone();
+						Zone zone = npc.parentZone;
 
 						if (zone == null)
 							return true;
 
 						int maxSlots = 5;
 
-						if (npc.getContract().getContractID() == 842)
+						if (npc.contract.getContractID() == 842)
 							maxSlots = 1;
 
 						switch (npc.getRank()){
@@ -270,17 +271,17 @@ public class MinionTrainingMsgHandler extends AbstractClientMsgHandler {
 								break;
 						}
 
-						if (npc.getSiegeMinionMap().size() == maxSlots)
+						if (npc.siegeMinionMap.size() == maxSlots)
 							return true;
 
-						int mobBase = npc.getMobBaseID();
+						int mobBase = npc.mobBase.getObjectUUID();
 						
 						if (mobBase == 0)
 							return true;
 
 						String pirateName = NPC.getPirateName(mobBase);
 
-						if (!DbManager.MobQueries.ADD_TO_GUARDS(npc.getObjectUUID(), mobBase, pirateName, npc.getSiegeMinionMap().size() + 1))
+						if (!DbManager.MobQueries.ADD_TO_GUARDS(npc.getObjectUUID(), mobBase, pirateName, npc.siegeMinionMap.size() + 1))
 							return true;
 
 						Mob toCreate = npc.createGuardMob(mobBase, npc.getGuild(), zone, b.getLoc(), npc.getLevel(),pirateName);
@@ -290,9 +291,9 @@ public class MinionTrainingMsgHandler extends AbstractClientMsgHandler {
 
 						//   toCreate.despawn();
 						if (toCreate != null) {
-							toCreate.setTimeToSpawnSiege(System.currentTimeMillis() + MBServerStatics.FIFTEEN_MINUTES);
-							toCreate.setDeathTime(System.currentTimeMillis());
-							toCreate.setState(MobileFSM.STATE.Respawn);
+							toCreate.timeToSpawnSiege = System.currentTimeMillis() + MBServerStatics.FIFTEEN_MINUTES;
+							toCreate.deathTime = System.currentTimeMillis();
+							toCreate.state = MobileFSM.STATE.Respawn;
 						}
 					}
 

@@ -10,6 +10,7 @@ package engine.gameManager;
 
 import engine.Enum.*;
 import engine.ai.MobileFSM.STATE;
+import engine.ai.StaticMobActions;
 import engine.exception.MsgSendException;
 import engine.job.JobContainer;
 import engine.job.JobScheduler;
@@ -71,7 +72,7 @@ public enum CombatManager {
 		} else if (targetType == GameObjectType.Building.ordinal()) {
 			target = BuildingManager.getBuildingFromCache(msg.getTargetID());
 		} else if (targetType == GameObjectType.Mob.ordinal()) {
-			target = Mob.getFromCache(msg.getTargetID());
+			target = StaticMobActions.getFromCache(msg.getTargetID());
 		}else{
 			player.setCombatTarget(null);
 			return; //not valid type to attack
@@ -164,7 +165,7 @@ public enum CombatManager {
 		else if (targetType == GameObjectType.Building.ordinal())
 			target = BuildingManager.getBuildingFromCache(msg.getTargetID());
 		else if (targetType == GameObjectType.Mob.ordinal())
-			target = Mob.getFromCache(msg.getTargetID());
+			target = StaticMobActions.getFromCache(msg.getTargetID());
 		else {
 			pet.setCombatTarget(null);
 			return; //not valid type to attack
@@ -183,7 +184,7 @@ public enum CombatManager {
 
 		//set sources target
 		pet.setCombatTarget(target);
-		pet.setState(STATE.Attack);
+		pet.state = STATE.Attack;
 		//		setFirstHitCombatTarget(player,target);
 
 		//put in combat if not already
@@ -471,7 +472,7 @@ public enum CombatManager {
 
 			if (abstractCharacter.getObjectType() == GameObjectType.Mob) {
 				Mob minion = (Mob) abstractCharacter;
-				if (minion.isSiege()) {
+				if (minion.isSiege) {
 					range = 300f;
 				}
 			}
@@ -676,7 +677,7 @@ public enum CombatManager {
 						building.getTimestamps().put("CallForHelp", System.currentTimeMillis() + 15000);
 						int count = 0;
 						for (Mob mob:building.getParentZone().zoneMobSet){
-							if (!mob.isPlayerGuard())
+							if (!mob.isPlayerGuard)
 								continue;
 							if (mob.getCombatTarget() != null)
 								continue;
@@ -691,7 +692,7 @@ public enum CombatManager {
 								count++;
 
 							mob.setCombatTarget(ac);
-							mob.setState(STATE.Attack);
+							mob.state = STATE.Attack;
 						}
 					}
 				}
@@ -826,7 +827,7 @@ public enum CombatManager {
 				if (wb != null) {
 					damageType = wb.getDamageType();
 				}
-				else if (ac.getObjectType().equals(GameObjectType.Mob) && ((Mob) ac).isSiege()) {
+				else if (ac.getObjectType().equals(GameObjectType.Mob) && ((Mob) ac).isSiege) {
 					damageType = DamageType.Siege;
 				}
 				else {
@@ -879,7 +880,7 @@ public enum CombatManager {
 					}
 					if (tarAc.getObjectType() == GameObjectType.Mob) {
 						ac.setHateValue(damage * MBServerStatics.PLAYER_COMBAT_HATE_MODIFIER);
-						((Mob) tarAc).handleDirectAggro(ac);
+						StaticMobActions.handleDirectAggro(((Mob) tarAc),ac);
 					}
 
 					if (tarAc.getHealth() > 0)
@@ -965,7 +966,7 @@ public enum CombatManager {
 					}
 				}
 				if (target.getObjectType() == GameObjectType.Mob) {
-					((Mob) target).handleDirectAggro(ac);
+					StaticMobActions.handleDirectAggro(((Mob) target),ac);
 				}
 
 				errorTrack = 17;
@@ -1320,7 +1321,7 @@ public enum CombatManager {
 		boolean isCombat = tarAc.isCombat();
 		//If target in combat and has no target, then attack back
 		AbstractWorldObject awoCombTar = tarAc.getCombatTarget();
-		if ((tarAc.isCombat() && awoCombTar == null) || (isCombat && awoCombTar != null && (!awoCombTar.isAlive() ||tarAc.isCombat() && NotInRange(tarAc, awoCombTar, tarAc.getRange()))) || (tarAc != null && tarAc.getObjectType() == GameObjectType.Mob && ((Mob) tarAc).isSiege())) {
+		if ((tarAc.isCombat() && awoCombTar == null) || (isCombat && awoCombTar != null && (!awoCombTar.isAlive() ||tarAc.isCombat() && NotInRange(tarAc, awoCombTar, tarAc.getRange()))) || (tarAc != null && tarAc.getObjectType() == GameObjectType.Mob && ((Mob) tarAc).isSiege)) {
 			// we are in combat with no valid target
 			if (tarAc.getObjectType().equals(GameObjectType.PlayerCharacter)) {
 				PlayerCharacter pc = (PlayerCharacter) tarAc;
@@ -1339,19 +1340,19 @@ public enum CombatManager {
 			Mob pet = ((PlayerCharacter) tarAc).getPet();
 			if (pet != null && pet.assist() && pet.getCombatTarget() == null) {
 				pet.setCombatTarget(ac);
-				pet.setState(STATE.Retaliate);
+				pet.state = STATE.Retaliate;
 			}
 		}
 
 		//Handle Mob Retaliate.
 		if (tarAc.getObjectType() == GameObjectType.Mob) {
 			Mob retaliater = (Mob) tarAc;
-			if (retaliater.getCombatTarget() != null && !retaliater.isSiege())
+			if (retaliater.getCombatTarget() != null && !retaliater.isSiege)
 				return;
-			if (ac.getObjectType() == GameObjectType.Mob && retaliater.isSiege())
+			if (ac.getObjectType() == GameObjectType.Mob && retaliater.isSiege)
 				return;
 			retaliater.setCombatTarget(ac);
-			retaliater.setState(STATE.Retaliate);
+			retaliater.state = STATE.Retaliate;
 
 		}
 	}

@@ -1,6 +1,7 @@
 package engine.devcmd.cmds;
 
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.devcmd.AbstractDevCmd;
 import engine.gameManager.DbManager;
 import engine.gameManager.ZoneManager;
@@ -75,7 +76,7 @@ public class PullCmd extends AbstractDevCmd {
 		DbManager.MobQueries.MOVE_MOB(targetMobile.getObjectUUID(), serverZone.getObjectUUID(), localCoords.x, localCoords.y, localCoords.z);
 		targetMobile.setBindLoc(newLoc);
 		targetMobile.setLoc(newLoc);
-		targetMobile.refresh();
+		StaticMobActions.refresh(targetMobile);
 	}
 
 	private static void MoveBuilding(Building targetBuilding, PlayerCharacter pcSender, Vector3fImmutable newLoc, Zone serverZone) {

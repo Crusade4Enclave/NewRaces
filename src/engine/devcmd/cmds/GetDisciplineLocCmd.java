@@ -37,7 +37,7 @@ public class GetDisciplineLocCmd extends AbstractDevCmd {
 				if (mob.getLevel() >= 80)
 					continue;
 
-				ArrayList<SpecialLoot> specialLootList = SpecialLoot.LootMap.get(mob.getLootSet());
+				ArrayList<SpecialLoot> specialLootList = SpecialLoot.LootMap.get(mob.lootSet);
 
 
 				if (specialLootList != null)
@@ -45,7 +45,7 @@ public class GetDisciplineLocCmd extends AbstractDevCmd {
 
 
 						ItemBase itemBase = ItemBase.getItemBase(specialLoot.getItemID());
-						System.out.println(mob.getObjectUUID() + " : " + mob.getName() + " :  " + (mob.getParentZone().isMacroZone() ? mob.getParentZone().getName() : mob.getParentZone().getParent().getName()) + " , "   + mob.getLoc().toString2D() + " , " + itemBase.getName() + " , " + specialLoot.getDropChance() + '%');
+						System.out.println(mob.getObjectUUID() + " : " + mob.getName() + " :  " + (mob.parentZone.isMacroZone() ? mob.parentZone.getName() : mob.parentZone.getParent().getName()) + " , "   + mob.getLoc().toString2D() + " , " + itemBase.getName() + " , " + specialLoot.getDropChance() + '%');
 					}
 			}
 		}

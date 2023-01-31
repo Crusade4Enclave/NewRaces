@@ -11,6 +11,7 @@ package engine.gameManager;
 import engine.Enum.*;
 import engine.InterestManagement.HeightMap;
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.job.AbstractJob;
 import engine.job.AbstractScheduleJob;
 import engine.job.JobContainer;
@@ -702,7 +703,7 @@ SourceType sourceType = SourceType.GetSourceType(pb.getCategory());
 		// TODO if target immune to powers, cancel unless aoe
 		// Also make sure No.ImmuneToPowers is false for target
 		// if there's a different power waiting to finish, stop here
-		if (caster.getLastMobPowerToken() != 0)
+		if (caster.lastMobPowerToken != 0)
 			return true;
 
 		//get power cost and calculate any power cost modifiers
@@ -739,17 +740,17 @@ SourceType sourceType = SourceType.GetSourceType(pb.getCategory());
 
 		// set player is casting for regens
 		caster.setIsCasting(true);
-		caster.setLastMobPowerToken(pb.getToken());
+		caster.lastMobPowerToken = pb.getToken();
 
 		// run timer job to end cast
 		if (time < 1 || pb.getToken() == -1994153779){
 			// run immediately
 			finishUseMobPower(msg, caster, casterLiveCounter, targetLiveCounter);
-			caster.setLastMobPowerToken(0);
+			caster.lastMobPowerToken = 0;
 		}
 			
 		else {
-			caster.setLastMobPowerToken(pb.getToken());
+			caster.lastMobPowerToken = pb.getToken();
 			caster.setTimeStamp("FinishCast", System.currentTimeMillis() + (pb.getCastTime(trains)));
 		}
 		//			finishUseMobPower(msg, caster, casterLiveCounter, targetLiveCounter); //			UseMobPowerJob upj = new UseMobPowerJob(caster, msg, msg.getPowerUsedID(), pb, casterLiveCounter, targetLiveCounter);
@@ -946,20 +947,20 @@ SourceType sourceType = SourceType.GetSourceType(pb.getCategory());
 				if (target.getObjectType() == GameObjectType.Mob) {
 					Mob mobTarget = (Mob) target;
 					if (pb.isHarmful())
-						mobTarget.handleDirectAggro(playerCharacter);
+						StaticMobActions.handleDirectAggro(mobTarget,playerCharacter);
 				}
 				continue;
 			}
 			if (target.getObjectType() == GameObjectType.Mob) {
 				Mob mobTarget = (Mob) target;
 				if (pb.isHarmful())
-					mobTarget.handleDirectAggro(playerCharacter);
+					StaticMobActions.handleDirectAggro(mobTarget,playerCharacter);
 			}
 			//Power is aiding a target, handle aggro if combat target is a Mob.
 			if (!pb.isHarmful() && target.getObjectType() == GameObjectType.PlayerCharacter) {
 				PlayerCharacter pcTarget = (PlayerCharacter) target;
 				if (!pb.isHarmful())
-					Mob.HandleAssistedAggro(playerCharacter, pcTarget);
+					StaticMobActions.HandleAssistedAggro(playerCharacter, pcTarget);
 			}
 
 			// update target of used power timer
@@ -1094,7 +1095,7 @@ SourceType sourceType = SourceType.GetSourceType(pb.getCategory());
 		
 		PowersBase pb = PowersManager.powersBaseByToken.get(msg.getPowerUsedID());
 		// clear power.
-				caster.setLastMobPowerToken(0);
+				caster.lastMobPowerToken = 0;
 
 		if (pb == null) {
 			Logger.error(
@@ -1270,9 +1271,9 @@ SourceType sourceType = SourceType.GetSourceType(pb.getCategory());
 		} else if (target.getObjectType().equals(GameObjectType.Mob)) {
 			Mob mob = (Mob) target;
 
-			if (pb.targetMob() && !mob.isMob() && !mob.isSiege())
+			if (pb.targetMob() && !mob.isMob() && !mob.isSiege)
 				return false;
-			else if (pb.targetPet() && !mob.isPet() && !mob.isSiege())
+			else if (pb.targetPet() && !mob.isPet() && !mob.isSiege)
 				return false;
 
 			switch (mtp) {
@@ -1289,7 +1290,7 @@ SourceType sourceType = SourceType.GetSourceType(pb.getCategory());
 					return false;
 				break;
 			case "Siege":
-				if (!mob.isSiege())
+				if (!mob.isSiege)
 					return false;
 				break;
 			case "Undead":

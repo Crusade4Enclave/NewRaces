@@ -11,6 +11,7 @@
 package engine.devcmd.cmds;
 
 import engine.Enum.GameObjectType;
+import engine.ai.StaticMobActions;
 import engine.devcmd.AbstractDevCmd;
 import engine.objects.AbstractGameObject;
 import engine.objects.Mob;
@@ -44,16 +45,16 @@ public class DespawnCmd extends AbstractDevCmd {
 			mob = (Mob)target;
 		
 		if (mob == null)
-			mob = Mob.getFromCache(Integer.parseInt(words[1]));
+			mob = StaticMobActions.getFromCache(Integer.parseInt(words[1]));
 		
 		if (mob == null)
 			return;
 		
 		if (words[0].equalsIgnoreCase("respawn")){
-			mob.respawn();
+			StaticMobActions.respawn(mob);
 			this.throwbackInfo(pc, "Mob with ID " + mob.getObjectUUID() + " Respawned"); 
 		}else if (words[0].equalsIgnoreCase("despawn")){
-			mob.despawn();
+			StaticMobActions.despawn(mob);
 			this.throwbackInfo(pc, "Mob with ID " + mob.getObjectUUID() + " Despawned");
 		}
 	}

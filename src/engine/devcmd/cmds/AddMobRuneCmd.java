@@ -72,14 +72,14 @@ public class AddMobRuneCmd extends AbstractDevCmd {
 		}
 		
 		
-		if (!DbManager.MobBaseQueries.ADD_MOBBASE_RUNE(mobTarget.getMobBaseID(), runeID)){
+		if (!DbManager.MobBaseQueries.ADD_MOBBASE_RUNE(mobTarget.mobBase.getObjectUUID(), runeID)){
 			this.throwbackError(pcSender, "Failed to update Database");
 			return;
 		}
 		
 		mobTarget.getMobBase().updateRunes();
 		
-		this.throwbackInfo(pcSender, "Successfuly added rune  " + rune.getName() + " to Mobbase with UID " + mobTarget.getMobBaseID());
+		this.throwbackInfo(pcSender, "Successfuly added rune  " + rune.getName() + " to Mobbase with UID " + mobTarget.mobBase.getObjectUUID());
 		
 		
 		

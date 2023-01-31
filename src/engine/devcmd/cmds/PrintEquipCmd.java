@@ -63,8 +63,8 @@ public class PrintEquipCmd extends AbstractDevCmd {
 		if (tar.getObjectType() == GameObjectType.Mob){
 			Mob tarMob = (Mob)tar;
 			throwbackInfo(pc, "Equip for " + type + ' ' + name + " (" + tar.getObjectUUID() + ')');
-			for (int slot:tarMob.getEquip().keySet()){
-				MobEquipment equip = tarMob.getEquip().get(slot);
+			for (int slot:tarMob.equip.keySet()){
+				MobEquipment equip = tarMob.equip.get(slot);
 				throwbackInfo(pc, equip.getItemBase().getUUID() +  "  :  " + equip.getItemBase().getName() + ", slot: " + slot);
 			}
 			return;

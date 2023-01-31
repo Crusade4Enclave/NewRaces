@@ -134,11 +134,11 @@ public class HealthEffectModifier extends AbstractEffectModifier {
 				//				max *= (0.62 + 0.0192 * pc.getStatIntCurrent() + 0.00415 * pc.getStatSpiCurrent() + 0.015 * focus);
 				float intt = (pc.getStatIntCurrent() >= 1) ? (float)pc.getStatIntCurrent() : 1f;
 
-				if (pc.isPlayerGuard())
+				if (pc.isPlayerGuard)
 					intt = 200;
 				float spi = (pc.getStatSpiCurrent() >= 1) ? (float)pc.getStatSpiCurrent() : 1f;
 
-				if (pc.isPlayerGuard())
+				if (pc.isPlayerGuard)
 					spi = 200;
 				//				min *= (intt * 0.0045 + 0.055 * (float)Math.sqrt(intt - 0.5) + spi * 0.006 + 0.07 * (float)Math.sqrt(spi - 0.5) + 0.02 * (int)focus);
 				//				max *= (intt * 0.0117 + 0.13 * (float)Math.sqrt(intt - 0.5) + spi * 0.0024 + (float)Math.sqrt(spi - 0.5) * 0.021 + 0.015 * (int)focus);

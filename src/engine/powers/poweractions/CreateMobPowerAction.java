@@ -12,6 +12,7 @@ package engine.powers.poweractions;
 import engine.Enum;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.MobileFSM.STATE;
+import engine.ai.StaticMobActions;
 import engine.gameManager.DbManager;
 import engine.gameManager.ZoneManager;
 import engine.math.Vector3fImmutable;
@@ -77,17 +78,17 @@ public class CreateMobPowerAction extends AbstractPowerAction {
 		Mob pet = Mob.createPet(mobID, guild, seaFloor, owner, (short)mobLevel);
 
 
-		if(pet.getMobBaseID() == 12021 || pet.getMobBaseID() == 12022) { //is a necro pet
-			if(currentPet!= null && !currentPet.isNecroPet() && !currentPet.isSiege()) {
+		if(pet.mobBase.getObjectUUID() == 12021 || pet.mobBase.getObjectUUID() == 12022) { //is a necro pet
+			if(currentPet!= null && !currentPet.mobBase.isNecroPet() && !currentPet.isSiege) {
 				DbManager.removeFromCache(currentPet);
 				WorldGrid.RemoveWorldObject(currentPet);
-				currentPet.setState(STATE.Disabled);
+				currentPet.state = STATE.Disabled;
 				currentPet.setCombatTarget(null);
 
-				if (currentPet.getParentZone() != null)
-					currentPet.getParentZone().zoneMobSet.remove(currentPet);
+				if (currentPet.parentZone != null)
+					currentPet.parentZone.zoneMobSet.remove(currentPet);
 
-				currentPet.getPlayerAgroMap().clear();
+				currentPet.playerAgroMap.clear();
 
 				try {
 					currentPet.clearEffects();
@@ -96,9 +97,9 @@ public class CreateMobPowerAction extends AbstractPowerAction {
 				}
 
 				//currentPet.disableIntelligence();
-			}else if (currentPet != null && currentPet.isSiege()){
+			}else if (currentPet != null && currentPet.isSiege){
 				currentPet.setMob();
-				currentPet.setOwner(null);
+				StaticMobActions.setOwner(currentPet,null);
 				currentPet.setCombatTarget(null);
 
 				if (currentPet.isAlive())
@@ -112,23 +113,23 @@ public class CreateMobPowerAction extends AbstractPowerAction {
 		}
 		else { //is not a necro pet
 			if(currentPet != null) {
-				if(!currentPet.isNecroPet() && !currentPet.isSiege()) {
+				if(!currentPet.mobBase.isNecroPet() && !currentPet.isSiege) {
 					DbManager.removeFromCache(currentPet);
 					currentPet.setCombatTarget(null);
-					currentPet.setState(STATE.Disabled);
+					currentPet.state = STATE.Disabled;
 
-					currentPet.setOwner(null);
+					StaticMobActions.setOwner(currentPet,null);
 					WorldGrid.RemoveWorldObject(currentPet);
 
-					currentPet.getParentZone().zoneMobSet.remove(currentPet);
-					currentPet.getPlayerAgroMap().clear();
+					currentPet.parentZone.zoneMobSet.remove(currentPet);
+					currentPet.playerAgroMap.clear();
 					currentPet.clearEffects();
 					//currentPet.disableIntelligence();
 				}
 				else {
-					if (currentPet.isSiege()){
+					if (currentPet.isSiege){
 						currentPet.setMob();
-						currentPet.setOwner(null);
+						StaticMobActions.setOwner(currentPet,null);
 						currentPet.setCombatTarget(null);
 
 						if (currentPet.isAlive())

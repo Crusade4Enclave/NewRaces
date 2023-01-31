@@ -10,6 +10,7 @@
 package engine.devcmd;
 
 import engine.Enum.GameObjectType;
+import engine.ai.StaticMobActions;
 import engine.gameManager.ChatManager;
 import engine.gameManager.DbManager;
 import engine.objects.*;
@@ -150,7 +151,7 @@ public abstract class AbstractDevCmd {
         int targetType = pc.getLastTargetType().ordinal();
         int targetID = pc.getLastTargetID();
         if (targetType == GameObjectType.Mob.ordinal()) {
-            Mob b = Mob.getMob(targetID);
+            Mob b = StaticMobActions.getMob(targetID);
             if (b == null) {
                 ChatManager.chatSystemError(pc,
                         "Command Failed. Could not find Mob of ID " + targetID);

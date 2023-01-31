@@ -13,6 +13,7 @@ import engine.Enum;
 import engine.Enum.*;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.MobileFSM.STATE;
+import engine.ai.StaticMobActions;
 import engine.exception.SerializationException;
 import engine.gameManager.*;
 import engine.job.JobContainer;
@@ -808,7 +809,7 @@ public class NPC extends AbstractCharacter {
 
 		for (Mob toRemove : this.siegeMinionMap.keySet()) {
 
-			toRemove.setState(STATE.Disabled);
+			toRemove.state = STATE.Disabled;
 
 			try {
 				toRemove.clearEffects();
@@ -816,8 +817,8 @@ public class NPC extends AbstractCharacter {
 				Logger.error( e.getMessage());
 			}
 
-			if (toRemove.getParentZone() != null)
-				toRemove.getParentZone().zoneMobSet.remove(toRemove);
+			if (toRemove.parentZone != null)
+				toRemove.parentZone.zoneMobSet.remove(toRemove);
 
 			WorldGrid.RemoveWorldObject(toRemove);
 			DbManager.removeFromCache(toRemove);
@@ -827,7 +828,7 @@ public class NPC extends AbstractCharacter {
 			if (petOwner != null) {
 
 				petOwner.setPet(null);
-				toRemove.setOwner(null);
+				StaticMobActions.setOwner(toRemove,null);
 
 				PetMsg petMsg = new PetMsg(5, null);
 				Dispatch dispatch = Dispatch.borrow(petOwner, petMsg);
@@ -1458,13 +1459,13 @@ public class NPC extends AbstractCharacter {
 		DbManager.addToCache(mob);
 
 		if (parent != null)
-			mob.setRelPos(parent, loc.x - parent.absX, loc.y - parent.absY, loc.z - parent.absZ);
+			StaticMobActions.setRelPos(mob,parent, loc.x - parent.absX, loc.y - parent.absY, loc.z - parent.absZ);
 
-		mob.setObjectTypeMask(MBServerStatics.MASK_MOB | mob.getTypeMasks());
+		mob.setObjectTypeMask(MBServerStatics.MASK_MOB | mob.mobBase.getTypeMasks());
 
 		// mob.setMob();
-		mob.setSiege(true);
-		mob.setParentZone(parent);
+		mob.isSiege = true;
+		mob.parentZone = parent;
 
 		int slot = 0;
 
@@ -1474,15 +1475,15 @@ public class NPC extends AbstractCharacter {
 			slot = 2;
 
 		siegeMinionMap.put(mob, slot);
-		mob.setInBuildingLoc(this.building, this);
+		StaticMobActions.setInBuildingLoc(mob,this.building, this);
 	
-		Vector3fImmutable buildingWorldLoc = ZoneManager.convertLocalToWorld(this.building, mob.getInBuildingLoc());
+		Vector3fImmutable buildingWorldLoc = ZoneManager.convertLocalToWorld(this.building, mob.inBuildingLoc);
 		mob.setBindLoc(buildingWorldLoc);
 		mob.setLoc(buildingWorldLoc);
 		
-		mob.setSpawnTime(10);
-		mob.setNpcOwner(this);
-		mob.setState(STATE.Awake);
+		mob.spawnTime = 10;
+		mob.npcOwner = this;
+		mob.state = STATE.Awake;
 
 		return mob;
 	}

@@ -59,7 +59,7 @@ public class FearPowerAction extends AbstractPowerAction {
 		int duration = 10 + ((int)(trains * 0.5));
 		String stackType = ab.getStackType();
 		EndFearJob efj = new EndFearJob(source, awo, stackType, trains, ab, pb, null);
-		((Mob)awo).setFearedObject(source);
+		((Mob)awo).fearedObject = source;
 		JobScheduler.getInstance().scheduleJob(efj, duration * 1000);
 	}
 

@@ -29,7 +29,7 @@ public class EndFearJob extends AbstractEffectJob {
         if (this.target == null || (!(this.target instanceof Mob)))
             return;
         
-        ((Mob) this.target).setFearedObject(null);
+        ((Mob) this.target).fearedObject = null;
     }
 
     @Override
@@ -40,6 +40,6 @@ public class EndFearJob extends AbstractEffectJob {
         if (this.target == null || (!(this.target instanceof Mob))) 
             return;
         
-        ((Mob) this.target).setFearedObject(null);
+        ((Mob) this.target).fearedObject = null;
     }
 }

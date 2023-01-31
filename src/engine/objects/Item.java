@@ -11,6 +11,7 @@ package engine.objects;
 
 import engine.Enum;
 import engine.Enum.*;
+import engine.ai.StaticMobActions;
 import engine.exception.SerializationException;
 import engine.gameManager.ConfigManager;
 import engine.gameManager.DbManager;
@@ -263,7 +264,7 @@ public class Item extends AbstractWorldObject {
 		else if (this.ownerType == OwnerType.PlayerCharacter)
 			return PlayerCharacter.getFromCache(this.ownerID);
 		else if (this.ownerType == OwnerType.Mob)
-			return Mob.getFromCache(this.ownerID);
+			return StaticMobActions.getFromCache(this.ownerID);
 		else if (this.ownerType == OwnerType.Account)
 			return DbManager.AccountQueries.GET_ACCOUNT(this.ownerID);
 		else

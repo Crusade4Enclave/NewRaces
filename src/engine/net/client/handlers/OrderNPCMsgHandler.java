@@ -3,6 +3,7 @@ package engine.net.client.handlers;
 import engine.Enum.DispatchChannel;
 import engine.Enum.GameObjectType;
 import engine.Enum.ProfitType;
+import engine.ai.StaticMobActions;
 import engine.exception.MsgSendException;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.DbManager;
@@ -180,7 +181,7 @@ public class OrderNPCMsgHandler extends AbstractClientMsgHandler {
 
         } else if (orderNPCMsg.getObjectType() == GameObjectType.Mob.ordinal()) {
 
-            mob = Mob.getFromCacheDBID(orderNPCMsg.getNpcUUID());
+            mob = StaticMobActions.getFromCacheDBID(orderNPCMsg.getNpcUUID());
 
             if (mob == null)
                 return true;
@@ -209,7 +210,7 @@ public class OrderNPCMsgHandler extends AbstractClientMsgHandler {
                     if (building.getHirelings().containsKey(mob) == false)
                         return true;
 
-                    if (mob.remove(building) == false) {
+                    if (StaticMobActions.remove(mob,building) == false) {
                         PlaceAssetMsg.sendPlaceAssetError(player.getClientConnection(), 1, "A Serious error has occurred. Please post details for to ensure transaction integrity");
                         return true;
                     }
@@ -389,7 +390,7 @@ public class OrderNPCMsgHandler extends AbstractClientMsgHandler {
 
             for (AbstractCharacter guard : building.getHirelings().keySet()) {
                 if (guard.getObjectType() == GameObjectType.Mob)
-                    ((Mob) guard).setPatrolPointIndex(0);
+                    ((Mob) guard).patrolPointIndex = 0;
             }
         } else if (building.getPatrolPoints() != null)
             ClearPatrolPoints(building.getObjectUUID());
@@ -439,22 +440,22 @@ public class OrderNPCMsgHandler extends AbstractClientMsgHandler {
             case Mob:
 
                 Mob mob = (Mob) abstractCharacter;
-                building = mob.getBuilding();
+                building = mob.building;
 
-                if (mob.getBuilding() == null)
+                if (mob.building == null)
                     return;
 
                 City mobCity = building.getCity();
 
                 if (mobCity == null) {
-                    mob.processUpgradeMob(player);
+                    StaticMobActions.processUpgradeMob(mob,player);
                     return;
                 }
 
                 mobCity.transactionLock.writeLock().lock();
 
                 try {
-                    mob.processUpgradeMob(player);
+                    StaticMobActions.processUpgradeMob(mob,player);
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     Logger.error(e);
@@ -482,7 +483,7 @@ public class OrderNPCMsgHandler extends AbstractClientMsgHandler {
                 break;
             case Mob:
                 Mob mob = (Mob) abstractCharacter;
-                mob.processRedeedMob(origin);
+                StaticMobActions.processRedeedMob(mob,origin);
                 break;
         }
     }

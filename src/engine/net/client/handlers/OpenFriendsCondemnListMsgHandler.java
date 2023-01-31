@@ -3,6 +3,7 @@ package engine.net.client.handlers;
 import engine.Enum;
 import engine.Enum.DispatchChannel;
 import engine.Enum.GameObjectType;
+import engine.ai.StaticMobActions;
 import engine.exception.MsgSendException;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.DbManager;
@@ -75,7 +76,7 @@ public class OpenFriendsCondemnListMsgHandler extends AbstractClientMsgHandler {
 			else if (msg.getPlayerType() == GameObjectType.NPC.ordinal())
 				toAdd = NPC.getFromCache(msg.getPlayerID());
 			else if (msg.getPlayerType() == GameObjectType.Mob.ordinal())
-				toAdd = Mob.getFromCache(msg.getPlayerID());
+				toAdd = StaticMobActions.getFromCache(msg.getPlayerID());
 			else{
 				ErrorPopupMsg.sendErrorMsg(player, "Invalid Heraldry Object.");
 				return true;

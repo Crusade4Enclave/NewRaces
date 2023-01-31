@@ -10,6 +10,7 @@
 package engine.net.client.msg;
 
 
+import engine.ai.StaticMobActions;
 import engine.net.AbstractConnection;
 import engine.net.ByteBufferReader;
 import engine.net.ByteBufferWriter;
@@ -86,7 +87,7 @@ public class PetMsg extends ClientNetMsg {
 		this.type = reader.getInt();
 		reader.getInt();
 		int petID = reader.getInt();
-		this.pet = Mob.getFromCache(petID);
+		this.pet = StaticMobActions.getFromCache(petID);
 		if (this.type == 5) {
 			reader.getInt();
 		} else if (this.type == 6) {

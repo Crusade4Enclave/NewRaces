@@ -10,6 +10,7 @@
 package engine.db.handlers;
 
 import engine.ai.MobileFSM.STATE;
+import engine.ai.StaticMobActions;
 import engine.math.Vector3fImmutable;
 import engine.objects.Mob;
 import engine.objects.PlayerCharacter;
@@ -34,20 +35,20 @@ public class dbMobHandler extends dbHandlerBase {
 	public Mob ADD_MOB(Mob toAdd, boolean isMob)
 			 {
 		prepareCallable("CALL `mob_CREATE`(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-		setLong(1, toAdd.getParentZoneID());
-		setInt(2, toAdd.getMobBaseID());
+		setLong(1, toAdd.parentZone.getObjectUUID());
+		setInt(2, toAdd.mobBase.getObjectUUID());
 		setInt(3, toAdd.getGuildUUID());
-		setFloat(4, toAdd.getSpawnX());
-		setFloat(5, toAdd.getSpawnY());
-		setFloat(6, toAdd.getSpawnZ());
+		setFloat(4, toAdd.statLat);
+		setFloat(5, toAdd.statAlt);
+		setFloat(6, toAdd.statLon);
 		setInt(7, 0);
-		setFloat(8, toAdd.getSpawnRadius());
-		setInt(9, toAdd.getTrueSpawnTime());
-		if (toAdd.getContract() != null)
-			setInt(10, toAdd.getContract().getContractID());
+		setFloat(8, toAdd.spawnRadius);
+		setInt(9, toAdd.spawnTime);
+		if (toAdd.contract != null)
+			setInt(10, toAdd.contract.getContractID());
 		else
 			setInt(10, 0);
-		setInt(11, toAdd.getBuildingID());
+		setInt(11, toAdd.building.parentBuildingID);
 		setInt(12, toAdd.getLevel());
 		int objectUUID = (int) getUUID();
 		if (objectUUID > 0)
@@ -58,16 +59,16 @@ public class dbMobHandler extends dbHandlerBase {
 	public Mob ADD_SIEGE_MOB(Mob toAdd, boolean isMob)
 			 {
 		prepareCallable("CALL `mob_SIEGECREATE`(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-		setLong(1, toAdd.getParentZoneID());
-		setInt(2, toAdd.getMobBaseID());
+		setLong(1, toAdd.parentZone.getObjectUUID());
+		setInt(2, toAdd.mobBase.getObjectUUID());
 		setInt(3, toAdd.getGuildUUID());
-		setFloat(4, toAdd.getSpawnX());
-		setFloat(5, toAdd.getSpawnY());
-		setFloat(6, toAdd.getSpawnZ());
+		setFloat(4, toAdd.statLat);
+		setFloat(5, toAdd.statAlt);
+		setFloat(6, toAdd.statLon);
 		setInt(7,0);
-		setFloat(8, toAdd.getSpawnRadius());
-		setInt(9, toAdd.getTrueSpawnTime());
-		setInt(10, toAdd.getBuildingID());
+		setFloat(8, toAdd.spawnRadius);
+		setInt(9, toAdd.spawnTime);
+		setInt(10, toAdd.building.parentBuildingID);
 
 		int objectUUID = (int) getUUID();
 		if (objectUUID > 0)
@@ -118,16 +119,16 @@ public class dbMobHandler extends dbHandlerBase {
 			while (rs.next()) {
 				int mobBaseID = rs.getInt("mobBaseID");
 				String name = rs.getString("name");
-				Mob toCreate = captain.createGuardMob(mobBaseID, captain.getGuild(), captain.getParentZone(), captain.getBuilding().getLoc(), captain.getLevel(),name);
+				Mob toCreate = captain.createGuardMob(mobBaseID, captain.getGuild(), captain.parentZone, captain.building.getLoc(), captain.getLevel(),name);
 				if (toCreate == null)
 					return;
 
 				//   toCreate.despawn();
 				if (toCreate != null) {
 					
-					toCreate.setTimeToSpawnSiege(System.currentTimeMillis() + MBServerStatics.FIFTEEN_MINUTES);
-					toCreate.setDeathTime(System.currentTimeMillis());
-					toCreate.setState(STATE.Respawn);
+					toCreate.timeToSpawnSiege = System.currentTimeMillis() + MBServerStatics.FIFTEEN_MINUTES;
+					toCreate.deathTime = System.currentTimeMillis();
+					toCreate.state = STATE.Respawn;
 
 				}
 			}
@@ -240,8 +241,8 @@ public class dbMobHandler extends dbHandlerBase {
 			worldDelta = new Vector3fImmutable(targetZone.getAbsX(), targetZone.getAbsY(), targetZone.getAbsZ());
 			worldDelta = worldDelta.subtract(new Vector3fImmutable(sourceZone.getAbsX(), sourceZone.getAbsY(), sourceZone.getAbsZ()));
 
-			newMobile = Mob.createMob(mobile.getLoadID(),
-					mobile.getLoc().add(worldDelta), null, true, targetZone, mobile.getBuilding(), 0);
+			newMobile = Mob.createMob(mobile.loadID,
+					mobile.getLoc().add(worldDelta), null, true, targetZone, mobile.building, 0);
 
 			if (newMobile != null) {
 				newMobile.updateDatabase();

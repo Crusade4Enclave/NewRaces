@@ -65,20 +65,20 @@ public class PurgeObjectsCmd extends AbstractDevCmd {
                         WorldGrid.RemoveWorldObject(mob);
                         WorldGrid.removeObject(mob, pc);
                         //Mob.getRespawnMap().remove(mob);
-                        if (mob.getParentZone() != null)
-                            mob.getParentZone().zoneMobSet.remove(mob);
+                        if (mob.parentZone != null)
+                            mob.parentZone.zoneMobSet.remove(mob);
                     }
                     DbManager.NPCQueries.DELETE_NPC(npc);
                     DbManager.removeFromCache(GameObjectType.NPC,
                             npc.getObjectUUID());
                     WorldGrid.RemoveWorldObject(npc);
                 }else if (mobA != null){
-                    for (Mob mob: mobA.getSiegeMinionMap().keySet()){
+                    for (Mob mob: mobA.siegeMinionMap.keySet()){
                         WorldGrid.RemoveWorldObject(mob);
                         WorldGrid.removeObject(mob, pc);
                         //Mob.getRespawnMap().remove(mob);
-                        if (mob.getParentZone() != null)
-                            mob.getParentZone().zoneMobSet.remove(mob);
+                        if (mob.parentZone != null)
+                            mob.parentZone.zoneMobSet.remove(mob);
                     }
                     DbManager.MobQueries.DELETE_MOB(mobA);
                     DbManager.removeFromCache(GameObjectType.Mob,
@@ -264,20 +264,20 @@ public class PurgeObjectsCmd extends AbstractDevCmd {
 					WorldGrid.RemoveWorldObject(mob);
 					WorldGrid.removeObject(mob, pc);
 					//Mob.getRespawnMap().remove(mob);
-					if (mob.getParentZone() != null)
-						mob.getParentZone().zoneMobSet.remove(mob);
+					if (mob.parentZone != null)
+						mob.parentZone.zoneMobSet.remove(mob);
 				}
 				DbManager.NPCQueries.DELETE_NPC(npc);
 				DbManager.removeFromCache(Enum.GameObjectType.NPC,
 						npc.getObjectUUID());
 				WorldGrid.RemoveWorldObject(npc);
 			}else if (mobA != null){
-				for (Mob mob: mobA.getSiegeMinionMap().keySet()){
+				for (Mob mob: mobA.siegeMinionMap.keySet()){
 					WorldGrid.RemoveWorldObject(mob);
 					WorldGrid.removeObject(mob, pc);
 					//Mob.getRespawnMap().remove(mob);
-					if (mob.getParentZone() != null)
-						mob.getParentZone().zoneMobSet.remove(mob);
+					if (mob.parentZone != null)
+						mob.parentZone.zoneMobSet.remove(mob);
 				}
 				DbManager.MobQueries.DELETE_MOB(mobA);
 				DbManager.removeFromCache(Enum.GameObjectType.Mob,

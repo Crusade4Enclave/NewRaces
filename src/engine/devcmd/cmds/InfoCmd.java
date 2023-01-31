@@ -12,6 +12,7 @@ package engine.devcmd.cmds;
 import engine.Enum.BuildingGroup;
 import engine.Enum.GameObjectType;
 import engine.Enum.TargetColor;
+import engine.ai.StaticMobActions;
 import engine.devcmd.AbstractDevCmd;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.SessionManager;
@@ -417,7 +418,7 @@ public class InfoCmd extends AbstractDevCmd {
 			if (mobBase != null)
 				output += "RaceID: " + mobBase.getObjectUUID();
 			else
-				output += "RaceID: " + targetMob.getLoadID();
+				output += "RaceID: " + targetMob.loadID;
 			output += newline;
 			output += "NoAggro: " + mobBase.getNoAggro().toString();
 			output += newline;
@@ -446,24 +447,24 @@ public class InfoCmd extends AbstractDevCmd {
 
 			}
 			if (targetMob.isMob()) {
-				output += "SpawnRadius: " + targetMob.getSpawnRadius();
+				output += "SpawnRadius: " + targetMob.spawnRadius;
 				output += newline;
-				output += "Spawn Timer: " + targetMob.getSpawnTimeAsString();
+				output += "Spawn Timer: " + StaticMobActions.getSpawnTimeAsString(targetMob);
 				output += newline;
 			}
 			output += StringUtils.addWS("isAlive: "
 					+ targetMob.isAlive(), 20);
 			output += newline;
-			output += "Mob State: " +targetMob.getState().name();
+			output += "Mob State: " +targetMob.state.name();
 
 			output += newline;
 			output += "Speed : " + targetMob.getSpeed();
 			output += newline;
-			output += "Fidelity ID: " + targetMob.getFidalityID();
+			output += "Fidelity ID: " + targetMob.fidalityID;
 			output += newline;
-			output += "EquipSet: " + targetMob.getEquipmentSetID();
+			output += "EquipSet: " + targetMob.equipmentSetID;
 			output += newline;
-			output += "Parent Zone LoadNum : " + targetMob.getParentZone().getLoadNum();
+			output += "Parent Zone LoadNum : " + targetMob.parentZone.getLoadNum();
 			output += newline;
 			output += "isMoving : " + targetMob.isMoving();
 			break;

@@ -94,7 +94,7 @@ public class DeferredPowerJob extends AbstractEffectJob {
 			PowersManager.finishEffectTime(this.source, this.target, this.action, this.trains);
 			break;
 		case Mob:
-			((Mob) this.source).setWeaponPower(null);
+			((Mob) this.source).weaponPower = null;
 			if (def == null) {
 				return;
 			}

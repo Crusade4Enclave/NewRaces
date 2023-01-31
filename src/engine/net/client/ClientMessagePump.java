@@ -13,6 +13,7 @@ package engine.net.client;
 import engine.Enum.*;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.MobileFSM.STATE;
+import engine.ai.StaticMobActions;
 import engine.exception.MsgSendException;
 import engine.gameManager.*;
 import engine.job.JobContainer;
@@ -1064,7 +1065,7 @@ boolean updateCity = false;
 				return;
 			break;
 		case Mob:
-			characterTarget = Mob.getFromCache(msg.getTargetID());
+			characterTarget = StaticMobActions.getFromCache(msg.getTargetID());
 			if ((characterTarget == null) || characterTarget.isAlive()) {
 				return;
 			}
@@ -1074,9 +1075,9 @@ boolean updateCity = false;
 
 				Logger.info(pc.getFirstName() + " tried looting at " + pc.getLoc().distance2D(characterTarget.getLoc()) + " distance." );
 
-				if (!((Mob)characterTarget).isLootSync()){
+				if (!((Mob)characterTarget).lootSync){
 
-					((Mob)characterTarget).setLootSync(true);
+					((Mob)characterTarget).lootSync = true;
 					WorldGrid.updateObject(characterTarget, pc);
 				}
 
@@ -1163,7 +1164,7 @@ boolean updateCity = false;
 					else if (targetType == GameObjectType.NPC.ordinal())
 						tar = NPC.getFromCache(targetID);
 					else if (targetType == GameObjectType.Mob.ordinal())
-						tar = Mob.getFromCache(targetID);
+						tar = StaticMobActions.getFromCache(targetID);
 					if (tar == null)
 						return;
 					
@@ -1196,12 +1197,12 @@ boolean updateCity = false;
 							//Take equipment off mob
 							if (tar.getObjectType() == GameObjectType.Mob && itemRet != null){
 								Mob mobTarget = (Mob)tar;
-								if (mobTarget.getFidalityID() != 0){
+								if (mobTarget.fidalityID != 0){
 									if (item != null && item.getObjectType() == GameObjectType.MobLoot){
 										int fidelityEquipID = ((MobLoot)item).getFidelityEquipID();
 
 										if (fidelityEquipID != 0){
-											for (MobEquipment equip: mobTarget.getEquip().values()){
+											for (MobEquipment equip: mobTarget.equip.values()){
 												if (equip.getObjectUUID() == fidelityEquipID){
 													TransferItemFromEquipToInventoryMsg back = new TransferItemFromEquipToInventoryMsg(mobTarget, equip.getSlot());
 
@@ -1381,7 +1382,7 @@ boolean updateCity = false;
 		else if (targetType == GameObjectType.NPC.ordinal())
 			tar = NPC.getFromCache(msg.getTargetID());
 		else if (targetType == GameObjectType.Mob.ordinal())
-			tar = Mob.getFromCache(msg.getTargetID());
+			tar = StaticMobActions.getFromCache(msg.getTargetID());
 
 		if (tar == null || !tar.isAlive() || !tar.isActive())
 			return;
@@ -2220,7 +2221,7 @@ boolean updateCity = false;
 		
 		if (pet.getCombatTarget() == null)
 			return;
-		pet.setState(STATE.Attack);
+		pet.state = STATE.Attack;
 	}
 
 	protected static void petCmd(PetCmdMsg msg, ClientConnection conn) throws MsgSendException {
@@ -2238,7 +2239,7 @@ boolean updateCity = false;
 		if (!pet.isAlive())
 			return;
 
-		if (pet.getState() == STATE.Disabled)
+		if (pet.state == STATE.Disabled)
 			return;
 
 		int type = msg.getType();
@@ -2246,11 +2247,11 @@ boolean updateCity = false;
 		if (type == 1) { //stop attack
 			pet.setCombatTarget(null);
 			pc.setCombat(false);
-			pet.setState(STATE.Awake);
+			pet.state = STATE.Awake;
 
 		}
 		else if (type == 2) { //dismiss
-			pet.dismiss();
+			StaticMobActions.dismiss(pet);
 			pc.dismissPet();
 			
 			if (pet.isAlive())

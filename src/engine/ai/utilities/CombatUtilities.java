@@ -177,7 +177,7 @@ public class CombatUtilities {
 		case Mob:
 
 			Mob mob = (Mob)target;
-			if (mob.isSiege())
+			if (mob.isSiege)
 				defenseScore = attackScore;
 			break;
 		case Building:
@@ -222,7 +222,7 @@ public class CombatUtilities {
 
 		if (chance > 75f)
 			chance = 75f;
-		if (agent.isSiege() && AbstractWorldObject.IsAbstractCharacter(ac))
+		if (agent.isSiege && AbstractWorldObject.IsAbstractCharacter(ac))
 			chance = 100;
 
 		return ThreadLocalRandom.current().nextInt(100) < chance;
@@ -244,7 +244,7 @@ public class CombatUtilities {
 		else
 			speed = agent.getSpeedHandTwo();
 		DamageType dt = DamageType.Crush;
-		if (agent.isSiege())
+		if (agent.isSiege)
 			dt = DamageType.Siege;
 		if (wb != null) {
 			anim = CombatManager.getSwingAnimation(wb, null,mainHand);
@@ -357,20 +357,20 @@ public class CombatUtilities {
 			//finished with casting check
 				swingIsDamage(agent,target, determineDamage(agent,target, mainHand, speed, dt), anim);
 
-			if (agent.getWeaponPower() != null)
-				agent.getWeaponPower().attack(target, MBServerStatics.ONE_MINUTE);
+			if (agent.weaponPower != null)
+				agent.weaponPower.attack(target, MBServerStatics.ONE_MINUTE);
 		}
 		
 		if (target.getObjectType().equals(GameObjectType.PlayerCharacter)){
 			PlayerCharacter player = (PlayerCharacter)target;
 			if (player.getDebug(64)){
-				ChatManager.chatSayInfo(player, "Debug Combat: Mob UUID " + agent.getObjectUUID() + " || Building ID  = " + agent.getBuildingID() + " || Floor = " + agent.getInFloorID() + " || Level = " + agent.getInBuilding() );//combat debug
+				ChatManager.chatSayInfo(player, "Debug Combat: Mob UUID " + agent.getObjectUUID() + " || Building ID  = " + agent.building.parentBuildingID + " || Floor = " + agent.getInFloorID() + " || Level = " + agent.getInBuilding() );//combat debug
 			}
 		}
 
 		//SIEGE MONSTERS DO NOT ATTACK GUARDSs
 		if (target.getObjectType() == GameObjectType.Mob)
-			if (((Mob)target).isSiege())
+			if (((Mob)target).isSiege)
 				return;
 
 		//handle the retaliate
@@ -380,7 +380,7 @@ public class CombatUtilities {
 
 		if (target.getObjectType() == GameObjectType.Mob){
 			Mob targetMob = (Mob)target;
-			if (targetMob.isSiege())
+			if (targetMob.isSiege)
 				return;
 
 			if (System.currentTimeMillis() < targetMob.getTimeStamp("CallForHelp"))
@@ -394,7 +394,7 @@ public class CombatUtilities {
 
 	public static void CallForHelp(Mob aiAgent) {
 
-		Set<Mob> zoneMobs = aiAgent.getParentZone().zoneMobSet;
+		Set<Mob> zoneMobs = aiAgent.parentZone.zoneMobSet;
 
 
 		AbstractWorldObject target = aiAgent.getCombatTarget();
@@ -406,7 +406,7 @@ public class CombatUtilities {
 		for (Mob mob: zoneMobs){
 			if (!mob.isAlive())
 				continue;
-			if (mob.isSiege() || mob.isPet() || !Enum.MobFlagType.AGGRESSIVE.elementOf(mob.getMobBase().getFlags()))
+			if (mob.isSiege || mob.isPet() || !Enum.MobFlagType.AGGRESSIVE.elementOf(mob.getMobBase().getFlags()))
 				continue;
 			if (count == 5)
 				continue;
@@ -415,10 +415,10 @@ public class CombatUtilities {
 			if (mob.getCombatTarget() != null)
 				continue;
 
-			if (!aiAgent.isPlayerGuard() && mob.isPlayerGuard())
+			if (!aiAgent.isPlayerGuard && mob.isPlayerGuard)
 				continue;
 
-			if (aiAgent.isPlayerGuard() && !mob.isPlayerGuard() )
+			if (aiAgent.isPlayerGuard && !mob.isPlayerGuard )
 				continue;
 
 			if (target.getObjectType() == GameObjectType.PlayerCharacter){
@@ -444,9 +444,9 @@ public class CombatUtilities {
 
 
 
-			if (mob.getState() == STATE.Awake || mob.getState() == STATE.Patrol){
+			if (mob.state == STATE.Awake || mob.state == STATE.Patrol){
 				mob.setCombatTarget(target);
-				mob.setState(STATE.Attack);
+				mob.state = STATE.Attack;
 			}
 		}
 

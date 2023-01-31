@@ -34,16 +34,16 @@ public class MovementUtilities {
 		
 		
 		
-		if (agent.isPlayerGuard()){
+		if (agent.isPlayerGuard){
 			
 			Mob guardCaptain = null;
-			if (agent.getContract() != null)
+			if (agent.contract != null)
 				guardCaptain = agent;
 			else
-		guardCaptain = (Mob) agent.getNpcOwner();
+		guardCaptain = (Mob) agent.npcOwner;
 			
 			if (guardCaptain != null){
-				Building barracks = guardCaptain.getBuilding();
+				Building barracks = guardCaptain.building;
 				
 				if (barracks != null){
 					City city = barracks.getCity();
@@ -66,21 +66,21 @@ public class MovementUtilities {
 		}
 
 		Vector3fImmutable sl = new Vector3fImmutable(agent.getLoc().getX(), 0, agent.getLoc().getZ());
-		Vector3fImmutable tl = new Vector3fImmutable(agent.getTrueBindLoc().x,0,agent.getTrueBindLoc().z);
+		Vector3fImmutable tl = new Vector3fImmutable(agent.bindLoc.x,0,agent.bindLoc.z);
 
 		float distanceSquaredToTarget = sl.distanceSquared2D(tl); //distance to center of target
 		float zoneRange = 250;
 
-		if (agent.getParentZone() != null){
-			if (agent.getParentZone().getBounds() != null)
-				zoneRange = agent.getParentZone().getBounds().getHalfExtents().x * 2;
+		if (agent.parentZone != null){
+			if (agent.parentZone.getBounds() != null)
+				zoneRange = agent.parentZone.getBounds().getHalfExtents().x * 2;
 		}
 
 		if (zoneRange > 300)
 			zoneRange = 300;
 		
-		if (agent.getSpawnRadius() > zoneRange)
-			zoneRange = agent.getSpawnRadius();
+		if (agent.spawnRadius > zoneRange)
+			zoneRange = agent.spawnRadius;
 		
 
 		return distanceSquaredToTarget < sqr(MBServerStatics.AI_DROP_AGGRO_RANGE + zoneRange);
@@ -95,7 +95,7 @@ public class MovementUtilities {
 		float distanceSquaredToTarget = sl.distanceSquared2D(tl) - sqr(agent.calcHitBox() + target.calcHitBox()); //distance to center of target
 		float range = MBServerStatics.AI_BASE_AGGRO_RANGE;
 
-		if (agent.isPlayerGuard())
+		if (agent.isPlayerGuard)
 			range = 150;
 
 		return distanceSquaredToTarget < sqr(range);

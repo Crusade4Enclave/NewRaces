@@ -12,6 +12,7 @@ package engine.net.client.msg;
 import engine.Enum.GameObjectType;
 import engine.Enum.MinionType;
 import engine.Enum.ProtectionState;
+import engine.ai.StaticMobActions;
 import engine.gameManager.PowersManager;
 import engine.net.AbstractConnection;
 import engine.net.ByteBufferReader;
@@ -467,7 +468,7 @@ public class ManageNPCMsg extends ClientNetMsg {
 							writer.putInt(1);
 							writer.put((byte) 0);
 							long curTime = System.currentTimeMillis() / 1000;
-							long upgradeTime = mob.getTimeToSpawnSiege() / 1000;
+							long upgradeTime = mob.timeToSpawnSiege / 1000;
 							long timeLife = upgradeTime - curTime;
 
 							writer.putInt(900);
@@ -638,14 +639,14 @@ public class ManageNPCMsg extends ClientNetMsg {
 
 			}else if (this.targetType == GameObjectType.Mob.ordinal()){
 
-				mobA = Mob.getFromCacheDBID(this.targetID);
+				mobA = StaticMobActions.getFromCacheDBID(this.targetID);
 				if (mobA == null) {
 					Logger.error("Missing Mob of ID " + this.targetID);
 					return;
 				}
 
 				if (mobA != null){
-					Contract con = mobA.getContract();
+					Contract con = mobA.contract;
 					if (con == null) {
 						Logger.error("Missing contract for NPC " + this.targetID);
 						return;
@@ -682,10 +683,10 @@ public class ManageNPCMsg extends ClientNetMsg {
 					writer.putInt(0);//static....
 					writer.putInt(Blueprint.getNpcMaintCost(mobA.getRank()));  // salary
 
-					writer.putInt(Mob.getUpgradeCost(mobA));
+					writer.putInt(StaticMobActions.getUpgradeCost(mobA));
 
-					if (mobA.isRanking() && mobA.getUpgradeDateTime().isAfter(DateTime.now()))
-						upgradePeriod = new Period(DateTime.now(), mobA.getUpgradeDateTime());
+					if (mobA.upgradeDateTime != null && mobA.upgradeDateTime.isAfter(DateTime.now()))
+						upgradePeriod = new Period(DateTime.now(), mobA.upgradeDateTime);
 					else
 						upgradePeriod = new Period(0);
 
@@ -697,8 +698,8 @@ public class ManageNPCMsg extends ClientNetMsg {
 					writer.put((byte) upgradePeriod.getMinutes());  //for timer
 					writer.put((byte) upgradePeriod.getSeconds());  //for timer
 
-					if (mobA.isRanking() && mobA.getUpgradeDateTime().isAfter(DateTime.now()))
-						upgradePeriodInSeconds = Seconds.secondsBetween(DateTime.now(), mobA.getUpgradeDateTime()).getSeconds();
+					if (mobA.upgradeDateTime != null && mobA.upgradeDateTime.isAfter(DateTime.now()))
+						upgradePeriodInSeconds = Seconds.secondsBetween(DateTime.now(), mobA.upgradeDateTime).getSeconds();
 					else
 						upgradePeriodInSeconds = 0;
 
@@ -742,11 +743,11 @@ public class ManageNPCMsg extends ClientNetMsg {
 					writer.putInt(0); //runemaster list
 
 					//artillery captain list
-					ConcurrentHashMap<Mob, Integer> siegeMinions = mobA.getSiegeMinionMap();
+					ConcurrentHashMap<Mob, Integer> siegeMinions = mobA.siegeMinionMap;
 
 				
 						writer.putInt(siegeMinions.size() + 1);
-							serializeGuardList(writer, mobA.getContract().getContractID()); //Guard
+							serializeGuardList(writer, mobA.contract.getContractID()); //Guard
 				
 					if (siegeMinions != null && siegeMinions.size() > 0)
 
@@ -762,7 +763,7 @@ public class ManageNPCMsg extends ClientNetMsg {
 							writer.putInt(1);
 							writer.put((byte) 0);
 							long curTime = System.currentTimeMillis() / 1000;
-							long upgradeTime = mob.getTimeToSpawnSiege() / 1000;
+							long upgradeTime = mob.timeToSpawnSiege / 1000;
 							long timeLife = upgradeTime - curTime;
 
 							writer.putInt(900);
@@ -770,7 +771,7 @@ public class ManageNPCMsg extends ClientNetMsg {
 							writer.putInt((int) timeLife); //time remaining?
 							writer.putInt(0);
 							writer.put((byte)0);
-							writer.putString(mob.getNameOverride().isEmpty() ? mob.getName() : mob.getNameOverride());
+							writer.putString(mob.nameOverride.isEmpty() ? mob.getName() : mob.nameOverride);
 							writer.put((byte) 0);
 						}
 

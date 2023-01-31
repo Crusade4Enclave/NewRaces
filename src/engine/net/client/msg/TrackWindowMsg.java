@@ -10,6 +10,7 @@
 package engine.net.client.msg;
 
 import engine.Enum.GameObjectType;
+import engine.ai.StaticMobActions;
 import engine.net.AbstractConnection;
 import engine.net.AbstractNetMsg;
 import engine.net.ByteBufferReader;
@@ -109,7 +110,7 @@ public class TrackWindowMsg extends ClientNetMsg {
 			else if (objectType == GameObjectType.NPC.ordinal())
 				ac = NPC.getFromCache(objectID);
 			else if (objectType == GameObjectType.Mob.ordinal())
-				ac = Mob.getFromCache(objectID);
+				ac = StaticMobActions.getFromCache(objectID);
 
 			//If found, add to message list
 			if (ac != null)

@@ -74,13 +74,13 @@ public class AddMobPowerCmd extends AbstractDevCmd {
 			return;
 		}
 		
-		if (!DbManager.MobBaseQueries.ADD_MOBBASE_POWER(mobTarget.getMobBaseID(), pb.getToken(), rank)){
+		if (!DbManager.MobBaseQueries.ADD_MOBBASE_POWER(mobTarget.mobBase.getObjectUUID(), pb.getToken(), rank)){
 			this.throwbackError(pcSender, "Failed to update Database");
 		}
 		
 		mobTarget.getMobBase().updatePowers();
 		
-		this.throwbackInfo(pcSender, "Successfuly added Power " + pb.getIDString() + " to Mobbase with UID " + mobTarget.getMobBaseID());
+		this.throwbackInfo(pcSender, "Successfuly added Power " + pb.getIDString() + " to Mobbase with UID " + mobTarget.mobBase.getObjectUUID());
 		
 		
 	}

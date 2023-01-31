@@ -10,6 +10,7 @@
 package engine.objects;
 
 import engine.Enum.GameObjectType;
+import engine.ai.StaticMobActions;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.DbManager;
 import engine.job.JobContainer;
@@ -196,7 +197,7 @@ public abstract class AbstractGameObject {
 			return NPC.getNPC(tableID);
 
 		case Mob:
-			return Mob.getMob(tableID);
+			return StaticMobActions.getMob(tableID);
 
 		case Building:
 			return BuildingManager.getBuilding(tableID);

@@ -87,7 +87,7 @@ public class PrintStatsCmd extends AbstractDevCmd {
 		out += "Defense: " + tar.getDefenseRating() + newline;
 
 		//get weapons
-		HashMap<Integer, MobEquipment> equip = tar.getEquip();
+		HashMap<Integer, MobEquipment> equip = tar.equip;
 		ItemBase main =  null;
 
 		if (equip != null)

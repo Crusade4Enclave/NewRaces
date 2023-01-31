@@ -16,6 +16,7 @@ import engine.InterestManagement.InterestManager;
 import engine.InterestManagement.RealmMap;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.MobileFSM.STATE;
+import engine.ai.StaticMobActions;
 import engine.db.archive.CharacterRecord;
 import engine.db.archive.DataWarehouse;
 import engine.db.archive.PvpRecord;
@@ -1494,7 +1495,7 @@ public class PlayerCharacter extends AbstractCharacter {
 			return NPC.getFromCache(this.lastTargetID);
 
 		case Mob:
-			return Mob.getFromCache(this.lastTargetID);
+			return StaticMobActions.getFromCache(this.lastTargetID);
 
 		case Item:
 			return DbManager.getFromCache(GameObjectType.Item, this.lastTargetID);
@@ -1601,7 +1602,7 @@ public static void auditNecroPets(PlayerCharacter player){
 			removeIndex++;
 			continue;
 		}
-		toRemove.dismissNecroPet(true);
+		StaticMobActions.dismissNecroPet(toRemove,true);//toRemove.dismissNecroPet(true);
 		player.necroPets.remove(toRemove);
 		removeIndex++;
 		
@@ -1618,7 +1619,7 @@ public static void resetNecroPets(PlayerCharacter player){
 	public void spawnNecroPet(Mob mob) {
 		if (mob == null)
 			return;
-		if (mob.getMobBaseID() != 12021 && mob.getMobBaseID() != 12022)
+		if (mob.mobBase.getObjectUUID() != 12021 && mob.mobBase.getObjectUUID() != 12022)
 			return;
 		
 		PlayerCharacter.auditNecroPets(this);
@@ -1630,7 +1631,7 @@ public static void resetNecroPets(PlayerCharacter player){
 
 	public void dismissPet() {
 		if (this.pet != null) {
-			this.pet.dismiss();
+			StaticMobActions.dismiss(this.pet);
 			this.pet = null;
 		}
 	}
@@ -1644,9 +1645,9 @@ public void dismissNecroPets() {
 		for (Mob necroPet: this.necroPets){
 			
 			try{
-				necroPet.dismissNecroPet(true);
+				StaticMobActions.dismissNecroPet(necroPet,true);//necroPet.dismissNecroPet(true);
 			}catch(Exception e){
-				necroPet.setState(STATE.Disabled);
+				necroPet.state = STATE.Disabled;
 				Logger.error(e);
 			}
 				}
@@ -4625,7 +4626,7 @@ public void dismissNecroPets() {
 	}
 
 	public boolean commandSiegeMinion(Mob toCommand) {
-		if (!toCommand.isSiege())
+		if (!toCommand.isSiege)
 			return false;
 		if (toCommand.isPet() || !toCommand.isAlive())
 			return false;
@@ -4635,28 +4636,28 @@ public void dismissNecroPets() {
 
 		if (this.pet != null) {
 			Mob currentPet = this.pet;
-			if (!currentPet.isSiege()) {
+			if (!currentPet.isSiege) {
 
 				currentPet.setCombatTarget(null);
-				currentPet.setState(STATE.Disabled);
+				currentPet.state = STATE.Disabled;
 
-				if (currentPet.getParentZone() != null)
+				if (currentPet.parentZone != null)
 
-					currentPet.getParentZone().zoneMobSet.remove(currentPet);
+					currentPet.parentZone.zoneMobSet.remove(currentPet);
 
 				try {
 					currentPet.clearEffects();
 				}catch(Exception e){
 					Logger.error( e.getMessage());
 				}
-				currentPet.getPlayerAgroMap().clear();
+				currentPet.playerAgroMap.clear();
 				WorldGrid.RemoveWorldObject(currentPet);
 				DbManager.removeFromCache(currentPet);
 
 			} else
-				if (currentPet.isSiege()) {
+				if (currentPet.isSiege) {
 					currentPet.setMob();
-					currentPet.setOwner(null);
+					StaticMobActions.setOwner(currentPet,null);
 					currentPet.setCombatTarget(null);
 					if (currentPet.isAlive())
 						WorldGrid.updateObject(currentPet);

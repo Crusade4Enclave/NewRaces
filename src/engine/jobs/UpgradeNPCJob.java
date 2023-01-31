@@ -11,6 +11,7 @@ package engine.jobs;
 
 import engine.Enum.GameObjectType;
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.job.AbstractScheduleJob;
 import engine.objects.AbstractCharacter;
 import engine.objects.Mob;
@@ -49,8 +50,8 @@ public class UpgradeNPCJob extends AbstractScheduleJob {
 
 
 
-			((Mob)this.rankingAC).setRank(newRank);
-			Mob.setUpgradeDateTime((Mob)this.rankingAC, null);
+			((Mob)this.rankingAC).level = (short) (newRank * 10);
+			StaticMobActions.setUpgradeDateTime((Mob)this.rankingAC, null);
 			WorldGrid.updateObject(this.rankingAC);
 
 		}

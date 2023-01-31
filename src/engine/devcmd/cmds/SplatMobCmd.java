@@ -1,5 +1,6 @@
 package engine.devcmd.cmds;
 
+import engine.ai.StaticMobActions;
 import engine.devcmd.AbstractDevCmd;
 import engine.gameManager.ZoneManager;
 import engine.math.Vector3fImmutable;

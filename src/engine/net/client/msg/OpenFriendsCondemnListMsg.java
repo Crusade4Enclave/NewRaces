@@ -10,6 +10,7 @@
 package engine.net.client.msg;
 
 import engine.Enum.GameObjectType;
+import engine.ai.StaticMobActions;
 import engine.gameManager.DbManager;
 import engine.net.AbstractConnection;
 import engine.net.ByteBufferReader;
@@ -724,7 +725,7 @@ public class OpenFriendsCondemnListMsg extends ClientNetMsg {
 			else if (characterType == GameObjectType.NPC.ordinal())
 				heraldryCharacter = NPC.getFromCache(characterID);
 			else if (characterType == GameObjectType.Mob.ordinal())
-				heraldryCharacter = Mob.getFromCache(characterID);
+				heraldryCharacter = StaticMobActions.getFromCache(characterID);
 			
 			if (heraldryCharacter == null)
 				this.showNullHeraldryCharacter(writer);

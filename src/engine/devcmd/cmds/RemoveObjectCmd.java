@@ -13,6 +13,7 @@ import engine.Enum.BuildingGroup;
 import engine.Enum.DbObjectType;
 import engine.Enum.GameObjectType;
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.devcmd.AbstractDevCmd;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.ChatManager;
@@ -98,7 +99,7 @@ public class RemoveObjectCmd extends AbstractDevCmd {
 			removeNPC(player, targetNPC);
 			break;
 		case MOB:
-			targetMob = Mob.getMob(targetID);
+			targetMob = StaticMobActions.getMob(targetID);
 			removeMob(player, targetMob);
 			break;
 		default:
@@ -158,20 +159,20 @@ public class RemoveObjectCmd extends AbstractDevCmd {
 					WorldGrid.RemoveWorldObject(mob);
 					WorldGrid.removeObject(mob, pc);
 					//Mob.getRespawnMap().remove(mob);
-					if (mob.getParentZone() != null)
-						mob.getParentZone().zoneMobSet.remove(mob);
+					if (mob.parentZone != null)
+						mob.parentZone.zoneMobSet.remove(mob);
 				}
 				DbManager.NPCQueries.DELETE_NPC(npc);
 				DbManager.removeFromCache(npc);
 				WorldGrid.RemoveWorldObject(npc);
 				WorldGrid.removeObject(npc, pc);
 			}else if (mobA != null){
-				for (Mob mob : mobA.getSiegeMinionMap().keySet()) {
+				for (Mob mob : mobA.siegeMinionMap.keySet()) {
 					WorldGrid.RemoveWorldObject(mob);
 					WorldGrid.removeObject(mob, pc);
 					//Mob.getRespawnMap().remove(mob);
-					if (mob.getParentZone() != null)
-						mob.getParentZone().zoneMobSet.remove(mob);
+					if (mob.parentZone != null)
+						mob.parentZone.zoneMobSet.remove(mob);
 				}
 				DbManager.MobQueries.DELETE_MOB(mobA);
 				DbManager.removeFromCache(mobA);
@@ -206,8 +207,8 @@ public class RemoveObjectCmd extends AbstractDevCmd {
 		for (Mob mob : npc.getSiegeMinionMap().keySet()) {
 			WorldGrid.RemoveWorldObject(mob);
 			WorldGrid.removeObject(mob, pc);
-			if (mob.getParentZone() != null)
-				mob.getParentZone().zoneMobSet.remove(mob);
+			if (mob.parentZone != null)
+				mob.parentZone.zoneMobSet.remove(mob);
 		}
 
 		DbManager.NPCQueries.DELETE_NPC(npc);
@@ -227,7 +228,7 @@ public class RemoveObjectCmd extends AbstractDevCmd {
 			return;
 		}
 
-		if (mob.getParentZone() != null && mob.getParentZone() != currentZone && !mob.isPet() && !mob.isNecroPet()) {
+		if (mob.parentZone != null && mob.parentZone != currentZone && !mob.isPet() && !mob.mobBase.isNecroPet()) {
 			this.throwbackError(pc, "Error 376954: Could not Remove Mob.Mob is not in the same zone as player.");
 			return;
 		}
@@ -242,8 +243,8 @@ public class RemoveObjectCmd extends AbstractDevCmd {
 		WorldGrid.RemoveWorldObject(mob);
 		WorldGrid.removeObject(mob, pc);
 
-		if (mob.getParentZone() != null)
-			mob.getParentZone().zoneMobSet.remove(mob);
+		if (mob.parentZone != null)
+			mob.parentZone.zoneMobSet.remove(mob);
 
 		ChatManager.chatSayInfo(pc,
 				"Mob with ID " + mob.getDBID() + " removed");

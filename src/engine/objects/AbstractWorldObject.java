@@ -47,17 +47,17 @@ public abstract class AbstractWorldObject extends AbstractGameObject {
 	protected Vector3fImmutable loc = new Vector3fImmutable(0.0f, 0.0f, 0.0f);
 	private byte tier = 0;
 	private Vector3f rot = new Vector3f(0.0f, 0.0f, 0.0f);
-	protected AtomicFloat health = new AtomicFloat();
+	public AtomicFloat health = new AtomicFloat();
 	public float healthMax;
 	protected boolean load = true;
-	protected ConcurrentHashMap<String, Effect> effects = new ConcurrentHashMap<>(MBServerStatics.CHM_INIT_CAP, MBServerStatics.CHM_LOAD, MBServerStatics.CHM_THREAD_LOW);
+	public ConcurrentHashMap<String, Effect> effects = new ConcurrentHashMap<>(MBServerStatics.CHM_INIT_CAP, MBServerStatics.CHM_LOAD, MBServerStatics.CHM_THREAD_LOW);
 	private int objectTypeMask = 0;
 	private Bounds bounds;
 	
 	public int gridX = -1;
 	public int gridZ = -1;
 	
-	protected GridObjectType gridObjectType;
+	public GridObjectType gridObjectType;
 	
 	protected float altitude = 0;
 	protected Regions region;
@@ -242,7 +242,7 @@ public abstract class AbstractWorldObject extends AbstractGameObject {
 		//hacky way to dispell trebs.
 		if (this.getObjectType() == GameObjectType.Mob){
 			Mob mob = (Mob)this;
-			if (mob.isSiege()){
+			if (mob.isSiege){
 				if (mob.isPet()){
 					PlayerCharacter petOwner = mob.getOwner();
 					if (petOwner != null && source.equals(EffectSourceType.Effect)){

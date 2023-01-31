@@ -282,7 +282,7 @@ public class ManageCityAssetsMsg extends ClientNetMsg {
 				if (npcHire.getObjectType() == GameObjectType.NPC)
 					writer.putInt(((NPC)npcHire).getContract().getIconID()); // Was 60
 				else if (npcHire.getObjectType() == GameObjectType.Mob){
-					writer.putInt(((Mob)npcHire).getContract().getIconID()); // Was 60
+					writer.putInt(((Mob)npcHire).contract.getIconID()); // Was 60
 				}
 				else
 					writer.putInt(5);
@@ -701,13 +701,13 @@ public class ManageCityAssetsMsg extends ClientNetMsg {
 					if (npcHire.getObjectType() == GameObjectType.NPC)
 						writer.putInt(((NPC)npcHire).getContract().getIconID()); // Was 60
 					else  if (npcHire.getObjectType() == GameObjectType.Mob)
-						writer.putInt(((Mob)npcHire).getContract().getIconID()); // Was 60
+						writer.putInt(((Mob)npcHire).contract.getIconID()); // Was 60
 
 					int contractID = 0;
 
 
 					if (npcHire.getObjectType() == GameObjectType.Mob)
-						contractID = ((Mob)npcHire).getContract().getContractID();
+						contractID = ((Mob)npcHire).contract.getContractID();
 					else if (npcHire.getObjectType() == GameObjectType.NPC)
 						contractID = ((NPC)npcHire).getContract().getContractID();
 

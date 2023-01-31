@@ -19,6 +19,7 @@ import engine.InterestManagement.HeightMap;
 import engine.InterestManagement.RealmMap;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.MobileFSMManager;
+import engine.ai.StaticMobActions;
 import engine.db.archive.DataWarehouse;
 import engine.exception.MsgSendException;
 import engine.gameManager.*;
@@ -570,12 +571,12 @@ public class WorldServer {
 				mobs = DbManager.MobQueries.GET_ALL_MOBS_FOR_ZONE(zone);
 
 				for (Mob m : mobs) {
-					m.setObjectTypeMask(MBServerStatics.MASK_MOB | m.getTypeMasks());
+					m.setObjectTypeMask(MBServerStatics.MASK_MOB | m.mobBase.getTypeMasks());
 					m.setLoc(m.getLoc());
-					m.setParentZone(zone);
+					m.parentZone = zone;
 
 				//ADD GUARDS HERE.
-				if (m.getBuilding() != null && m.getBuilding().getBlueprint() != null && m.getBuilding().getBlueprint().getBuildingGroup() == BuildingGroup.BARRACK)
+				if (m.building != null && m.building.getBlueprint() != null && m.building.getBlueprint().getBuildingGroup() == BuildingGroup.BARRACK)
 					DbManager.MobQueries.LOAD_PATROL_POINTS(m);
 				}
 
@@ -692,7 +693,7 @@ public class WorldServer {
 			player.getTimers().remove("Logout");
 
 		if (player.getPet() != null)
-			player.getPet().dismiss();
+			StaticMobActions.dismiss(player.getPet());
 		
 		player.dismissNecroPets();
 

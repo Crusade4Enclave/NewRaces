@@ -330,8 +330,8 @@ public class LootTable {
 
 	private static void handleSpecialLoot(ArrayList<MobLoot> loot, Mob mob, boolean onDeath) {
 
-		if (SpecialLoot.LootMap.containsKey(mob.getLootSet())) {
-			ArrayList<SpecialLoot> specialLoot = SpecialLoot.LootMap.get(mob.getLootSet());
+		if (SpecialLoot.LootMap.containsKey(mob.lootSet)) {
+			ArrayList<SpecialLoot> specialLoot = SpecialLoot.LootMap.get(mob.lootSet);
 			for (SpecialLoot sl : specialLoot) {
 				if ((onDeath && sl.dropOnDeath()) || (!onDeath && !sl.dropOnDeath()))
 					if (ThreadLocalRandom.current().nextInt(100) < sl.getDropChance()) {
@@ -395,7 +395,7 @@ public class LootTable {
 		ItemBase itemBase = null;
 		MobLoot mobLoot;
 
-		Zone zone = mob.getParentZone();
+		Zone zone = mob.parentZone;
 		// Member variable assignment
 		if (!LootTable.lootGroups.containsKey(lootTableID))
 			return;
@@ -735,7 +735,7 @@ public class LootTable {
 		ItemBase itemBase;
 		MobLoot mobLoot;
 
-		Zone zone = mob.getParentZone();
+		Zone zone = mob.parentZone;
 		// Member variable assignment
 		if (!LootTable.lootGroups.containsKey(lootTableID))
 			return;

@@ -13,6 +13,7 @@ import engine.Enum;
 import engine.Enum.*;
 import engine.InterestManagement.InterestManager;
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.exception.SerializationException;
 import engine.gameManager.*;
 import engine.job.AbstractJob;
@@ -43,28 +44,28 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AbstractCharacter extends AbstractWorldObject {
 
-	protected String firstName;
-	protected String lastName;
-	protected short statStrCurrent;
-	protected short statDexCurrent;
-	protected short statConCurrent;
-	protected short statIntCurrent;
-	protected short statSpiCurrent;
+	public String firstName;
+	public String lastName;
+	public short statStrCurrent;
+	public short statDexCurrent;
+	public short statConCurrent;
+	public short statIntCurrent;
+	public short statSpiCurrent;
 	protected short unusedStatPoints;
-	protected short level;
+	public short level;
 	protected int exp;
-	protected Vector3fImmutable bindLoc;
+	public Vector3fImmutable bindLoc;
 	protected Vector3fImmutable faceDir;
 	protected Guild guild;
 	protected byte runningTrains;
 	protected ConcurrentHashMap<Integer, CharacterPower> powers;
-	protected  ConcurrentHashMap<String, CharacterSkill> skills;
-	protected final CharacterItemManager charItemManager;
+	public ConcurrentHashMap<String, CharacterSkill> skills;
+	public final CharacterItemManager charItemManager;
 
 	// Variables NOT to be stored in db
 	protected boolean sit = false;
-	protected boolean walkMode;
-	protected boolean combat = false;
+	public boolean walkMode;
+	public boolean combat = false;
 
 	protected Vector3fImmutable startLoc = Vector3fImmutable.ZERO;
 	protected Vector3fImmutable endLoc = Vector3fImmutable.ZERO;
@@ -78,30 +79,30 @@ public abstract class AbstractCharacter extends AbstractWorldObject {
 	protected Vector3fImmutable nextEndLoc = Vector3fImmutable.ZERO;
 
 	protected float speed;
-	protected AtomicFloat stamina = new AtomicFloat();
-	protected float staminaMax;
-	protected AtomicFloat mana = new AtomicFloat();
-	protected float manaMax;                                            // Health/Mana/Stamina
-	protected AtomicBoolean isAlive = new AtomicBoolean(true);
+	public AtomicFloat stamina = new AtomicFloat();
+	public float staminaMax;
+	public AtomicFloat mana = new AtomicFloat();
+	public float manaMax;                                            // Health/Mana/Stamina
+	public AtomicBoolean isAlive = new AtomicBoolean(true);
 	protected Resists resists = new Resists("Genric");
-	protected AbstractWorldObject combatTarget;
+	public AbstractWorldObject combatTarget;
 	protected ConcurrentHashMap<String, JobContainer> timers;
 	protected ConcurrentHashMap<String, Long> timestamps;
-	protected int atrHandOne;
-	protected int atrHandTwo;
-	protected int minDamageHandOne;
-	protected int maxDamageHandOne;
-	protected int minDamageHandTwo;
-	protected int maxDamageHandTwo;
-	protected float rangeHandOne;
-	protected float rangeHandTwo;
-	protected float speedHandOne;
-	protected float speedHandTwo;
-	protected int defenseRating;
-	protected boolean isActive; // <-Do not use this for deleting character!
+	public int atrHandOne;
+	public int atrHandTwo;
+	public int minDamageHandOne;
+	public int maxDamageHandOne;
+	public int minDamageHandTwo;
+	public int maxDamageHandTwo;
+	public float rangeHandOne;
+	public float rangeHandTwo;
+	public float speedHandOne;
+	public float speedHandTwo;
+	public int defenseRating;
+	public boolean isActive; // <-Do not use this for deleting character!
 	protected float altitude = 0; // 0=on terrain, 1=tier 1, 2=tier 2, etc.
 	protected ConcurrentHashMap<Integer, JobContainer> recycleTimers;
-	protected PlayerBonuses bonuses;
+	public PlayerBonuses bonuses;
 	protected JobContainer lastChant;
 	protected boolean isCasting = false;
 	private final ReentrantReadWriteLock healthLock = new ReentrantReadWriteLock();
@@ -783,7 +784,7 @@ public abstract class AbstractCharacter extends AbstractWorldObject {
 
 		if (this.getObjectType() == GameObjectType.Mob) {
 			Mob mob = (Mob) this;
-			if (mob.isSiege()) {
+			if (mob.isSiege) {
 				return 300;
 			}
 		}
@@ -1347,7 +1348,7 @@ public abstract class AbstractCharacter extends AbstractWorldObject {
 			PlayerCharacter.serializePlayerForClientMsgOtherPlayer((PlayerCharacter)abstractCharacter, writer, asciiLastName);
 			break;
 		case Mob:
-			Mob.serializeMobForClientMsgOtherPlayer((Mob)abstractCharacter, writer,asciiLastName);
+			StaticMobActions.serializeMobForClientMsgOtherPlayer((Mob)abstractCharacter, writer,asciiLastName);
 			break;
 		case NPC:
 			NPC.serializeNpcForClientMsgOtherPlayer((NPC)abstractCharacter, writer, asciiLastName);
@@ -1690,7 +1691,7 @@ public abstract class AbstractCharacter extends AbstractWorldObject {
 					Mob mob = (Mob) this;
 
 					//recalculate formulas
-					mob.recalculateStats();
+					StaticMobActions.recalculateStats(mob);
 				}
 			} catch (Exception e) {
 				Logger.error( e);

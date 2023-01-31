@@ -10,6 +10,7 @@
 package engine.devcmd.cmds;
 
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.devcmd.AbstractDevCmd;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.ChatManager;
@@ -107,7 +108,7 @@ public class RotateCmd extends AbstractDevCmd {
 						// NPC failed, try mob
 						Mob mob;
 						if (id != 0)
-							mob = Mob.getMob(id);
+							mob = StaticMobActions.getMob(id);
 						else
 							mob = getTargetAsMob(pc);
 						if (mob != null) {
@@ -167,7 +168,7 @@ public class RotateCmd extends AbstractDevCmd {
 			// NPC failed, try mob
 			Mob mob;
 			if (id != 0)
-				mob = Mob.getMob(id);
+				mob = StaticMobActions.getMob(id);
 			else
 				mob = getTargetAsMob(pc);
 			if (mob != null) {

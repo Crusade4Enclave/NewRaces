@@ -11,6 +11,7 @@
 package engine.devcmd.cmds;
 
 import engine.InterestManagement.WorldGrid;
+import engine.ai.StaticMobActions;
 import engine.devcmd.AbstractDevCmd;
 import engine.gameManager.BuildingManager;
 import engine.gameManager.ChatManager;
@@ -82,9 +83,9 @@ public class SetRankCmd extends AbstractDevCmd {
 				break;
 			case Mob:
 				Mob toRankCaptain = (Mob)target;
-				if (toRankCaptain.getContract() != null){
-					toRankCaptain.setRank(targetRank * 10);
-					Mob.setUpgradeDateTime(toRankCaptain, null);
+				if (toRankCaptain.contract != null){
+					toRankCaptain.level = (short) (targetRank * 10);
+					StaticMobActions.setUpgradeDateTime(toRankCaptain, null);
 					WorldGrid.updateObject(toRankCaptain);
 				}
 

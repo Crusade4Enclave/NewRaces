@@ -15,6 +15,7 @@ import engine.Enum.ModType;
 import engine.Enum.SourceType;
 import engine.InterestManagement.WorldGrid;
 import engine.ai.MobileFSM.STATE;
+import engine.ai.StaticMobActions;
 import engine.gameManager.ZoneManager;
 import engine.math.Vector3fImmutable;
 import engine.net.Dispatch;
@@ -31,7 +32,7 @@ public abstract class AbstractIntelligenceAgent extends AbstractCharacter {
 	private boolean assist = false;
 	private AbstractCharacter callForHelpAggro = null;
 	private int type = 0; //Mob: 0, Pet: 1, Guard: 2
-	protected Vector3fImmutable lastBindLoc;
+	public Vector3fImmutable lastBindLoc;
 	private boolean clearAggro = false;
 
 
@@ -109,7 +110,7 @@ public abstract class AbstractIntelligenceAgent extends AbstractCharacter {
 		else
 			this.type = 2; //charmed
 		if (this.getObjectType().equals(GameObjectType.Mob)) {
-			((Mob)this).setOwner(owner);
+			StaticMobActions.setOwner(((Mob)this),owner);
 		}
 	}
 
@@ -204,9 +205,9 @@ public abstract class AbstractIntelligenceAgent extends AbstractCharacter {
 
 				WorldGrid.RemoveWorldObject(this);
 				if (this.getObjectType() == GameObjectType.Mob){
-					((Mob)this).setState(STATE.Disabled);
-					if (((Mob)this).getParentZone() != null)
-						((Mob)this).getParentZone().zoneMobSet.remove(this);
+					((Mob)this).state = STATE.Disabled;
+					if (((Mob)this).parentZone != null)
+						((Mob)this).parentZone.zoneMobSet.remove(this);
 				}
 
 			} else { //revert charmed pet
@@ -229,7 +230,7 @@ public abstract class AbstractIntelligenceAgent extends AbstractCharacter {
 					owner.setPet(null);
 
 				if (this.getObjectType().equals(GameObjectType.Mob))
-					((Mob)this).setOwner(null);
+					StaticMobActions.setOwner(((Mob)this),null);
 			}
 
 
