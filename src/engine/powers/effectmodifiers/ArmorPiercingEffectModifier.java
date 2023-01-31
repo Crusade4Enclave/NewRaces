@@ -10,10 +10,7 @@
 package engine.powers.effectmodifiers;
 
 import engine.jobs.AbstractEffectJob;
-import engine.objects.AbstractCharacter;
-import engine.objects.AbstractWorldObject;
-import engine.objects.Building;
-import engine.objects.Item;
+import engine.objects.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +29,10 @@ public class ArmorPiercingEffectModifier extends AbstractEffectModifier {
 
 	@Override
 	public void applyBonus(AbstractCharacter ac, int trains) {
-
+		Float amount = 0f;
+		PlayerBonuses bonus = ac.getBonuses();
+		amount = this.percentMod;
+		bonus.addFloat(this, amount * 0.01f);
 	}
 
 	@Override

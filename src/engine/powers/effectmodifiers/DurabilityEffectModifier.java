@@ -9,14 +9,13 @@
 
 package engine.powers.effectmodifiers;
 
+import engine.Enum;
 import engine.jobs.AbstractEffectJob;
-import engine.objects.AbstractCharacter;
-import engine.objects.AbstractWorldObject;
-import engine.objects.Building;
-import engine.objects.Item;
+import engine.objects.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DurabilityEffectModifier extends AbstractEffectModifier {
 
@@ -35,7 +34,17 @@ public class DurabilityEffectModifier extends AbstractEffectModifier {
 	}
 
 	@Override
-	public void applyBonus(Item item, int trains) {}
+	public void applyBonus(Item item, int trains)
+	{
+		if(item == null){
+			return;
+		}
+		float amount = 0;
+		amount = this.percentMod;
+		item.addBonus(this,amount);
+
+
+	}
 	@Override
 	public void applyBonus(Building building, int trains) {}
 }

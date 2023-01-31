@@ -489,7 +489,6 @@ public class Item extends AbstractWorldObject {
 		}
 		return max;
 	}
-
 	public void setDurabilityCurrent(short value) {
 		this.durabilityCurrent = value;
 	}
