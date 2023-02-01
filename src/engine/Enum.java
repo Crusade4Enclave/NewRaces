@@ -171,6 +171,9 @@ public class Enum {
 
 		@SuppressWarnings("unchecked")
 
+		private static HashMap<Integer, 
+		RaceType> _raceTypeByID = new HashMap<>();
+
 		int runeID;
 		private AggroType aggroType;
 		private CharacterSex characterSex;
