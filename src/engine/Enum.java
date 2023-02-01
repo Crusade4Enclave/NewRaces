@@ -122,6 +122,7 @@ public class Enum {
 		HUMAN,
 		IREKEI,
 		MINO,
+		REPTILE,
 		NEPH,
 		SHADE,
 		VAMP,
@@ -166,9 +167,9 @@ public class Enum {
 		HALFGIANTFEMALE(2027, AggroType.HALFGIANT, RunSpeed.STANDARD, CharacterSex.FEMALE,1.15f),
 		VAMPMALE(2028, AggroType.VAMP, RunSpeed.STANDARD, CharacterSex.MALE, 1),
 		VAMPFEMALE(2029, AggroType.VAMP, RunSpeed.STANDARD, CharacterSex.FEMALE,1);
+		REPTILEMALE(2030,AggroType.REPTILE, RunSpeed.STANDARD, CharacterSex.MALE,1);
 
 		@SuppressWarnings("unchecked")
-		private static HashMap<Integer, RaceType> _raceTypeByID = new HashMap<>();
 
 		int runeID;
 		private AggroType aggroType;
