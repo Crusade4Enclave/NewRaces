@@ -170,7 +170,9 @@ public class Enum {
 		REPTILE(2030, AggroType.REPTILE, RunSpeed.STANDARD, CharacterSex.OTHER,1);
 
 		@SuppressWarnings("unchecked")
-		private static HashMap<Integer, RaceType> _raceTypeByID = new HashMap<>();
+
+		private static HashMap<Integer, 
+		RaceType> _raceTypeByID = new HashMap<>();
 
 		int runeID;
 		private AggroType aggroType;
