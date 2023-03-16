@@ -166,8 +166,8 @@ public class Enum {
 		NEPHFEMALE(2026, AggroType.NEPH, RunSpeed.STANDARD, CharacterSex.FEMALE,1.1f),
 		HALFGIANTFEMALE(2027, AggroType.HALFGIANT, RunSpeed.STANDARD, CharacterSex.FEMALE,1.15f),
 		VAMPMALE(2028, AggroType.VAMP, RunSpeed.STANDARD, CharacterSex.MALE, 1),
-		VAMPFEMALE(2029, AggroType.VAMP, RunSpeed.STANDARD, CharacterSex.FEMALE,1);
-		REPTILEMALE(2030,AggroType.REPTILE, RunSpeed.STANDARD, CharacterSex.MALE,1);
+		VAMPFEMALE(2029, AggroType.VAMP, RunSpeed.STANDARD, CharacterSex.FEMALE,1)
+		REPTILEMALE(2030, AggroType.REPTILE, RunSpeed.STANDARD, CharacterSex.MALE, 1);
 
 		@SuppressWarnings("unchecked")
 
